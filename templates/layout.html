@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ title or "Dotabank" }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap.min.css" rel="stylesheet"/>
+    {%- block style %}
+    {%- endblock style %}
+</head>
+
+<body>
+    <div class="navbar navbar-static-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for("index") }}">DOTABANK</a>
+            <ul class="nav navbar-nav">
+                <li><a href="#">1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">3</a></li>
+            </ul>
+            <ul class="nav navbar-nav pull-right">
+            {% if g.user %}
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown"> {{ g.user.name }} <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for("user", _id=g.user.id) }}">Profile</a></li>
+                        <li><a href="{{ url_for("logout") }}">Logout</a></li>
+                    </ul>
+                </li>
+            {% else %}
+                <li><a href="{{ url_for("login") }}"><img src="{{ url_for('static', filename='images/sits_small.png') }}" alt="Sign in with Steam"/></a></li>
+            {% endif %}
+            </ul>
+
+        </div>
+    </div>
+    <div class="container">
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="flash alert {{ "alert-" + category if category != "message" else ""}}">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% block content %}
+        {% endblock %}
+    </div>
+    <hr>
+    <div class="container">
+        <p class="text-muted">© <a href="http://rjackson.me">RJ</a>, PROBABLY. <a href="http://steampowered.com">Powered by Steam</a>.</p>
+    </div>
+    {% block scripts %}
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+            // Javascript to enable link to tab
+            var hash = document.location.hash;
+            var prefix = "tab_";
+            if (hash) {
+                $('.nav-tabs a[href='+hash.replace(prefix,"")+']').tab('show');
+            }
+
+            // Change hash for page-reload
+            $('.nav-tabs a').on('click', function (e) {
+                window.location.hash = e.target.hash.replace("#", "#" + prefix);
+            });
+        </script>
+    {% endblock %}
+</body>
+</html>
