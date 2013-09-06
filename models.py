@@ -35,7 +35,12 @@ class Replay(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(80))
-    state = db.Column(db.Enum("REPLAY_AVAILABLE", "REPLAY_NOT_RECORDED", "REPLAY_EXPIRED"))
+    state = db.Column(db.Enum(
+        "REPLAY_AVAILABLE",
+        "REPLAY_NOT_RECORDED",
+        "REPLAY_EXPIRED",
+        "UNKNOWN"
+    ))
     parse_state = db.Column(db.Enum(
         "WAITING_GC",
         "WAITING_DOWNLOAD",
@@ -49,7 +54,7 @@ class Replay(db.Model):
 
     ratings = db.relationship('ReplayRating', backref='replay', lazy='select')
 
-    def __init__(self, _id=None, url=None, state=None, parse_state="WAITING_GC"):
+    def __init__(self, _id=None, url=None, state="UNKNOWN", parse_state="WAITING_GC"):
         self.id = _id
         self.url = url
         self.state = state
