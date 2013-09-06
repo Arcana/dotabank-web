@@ -103,7 +103,7 @@ class UserAdmin(ModelView):
 
 class ReplayAdmin(ModelView):
     column_display_pk = True
-    form_columns = ("id", "url", "state", "parsed")
+    form_columns = ("id", "url", "state", "parse_state")
 
     def __init__(self, session):
         # Just call parent class with predefined model.
