@@ -1,5 +1,6 @@
 from flask import Flask
 from flask.ext.cache import Cache
+from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.debugtoolbar import DebugToolbarExtension
@@ -13,6 +14,8 @@ app.config.from_pyfile("settings.py")
 
 cache = Cache(app)
 oid = OpenID(app)
+login_manager = LoginManager(app)
+
 db = SQLAlchemy(app)
 toolbar = DebugToolbarExtension(app)
 

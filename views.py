@@ -1,15 +1,24 @@
 from flask import render_template, flash, redirect, session, g, request, jsonify
 
-from app import app, oid, steam, db
+from app import app, oid, steam, db, login_manager
 from models import *
 
 from flask.ext.admin.contrib.sqlamodel import ModelView
+from flask.ext.login import login_user, logout_user, current_user, login_required
+
 
 # User authentication
+
+@login_manager.user_loader
+def load_user(user_id):
+    user = User.query.get(user_id)
+    return user
+
+
 @app.route('/login/')
 @oid.loginhandler
 def login():
-    if g.user is not None:
+    if current_user.is_authenticated():
         return redirect(oid.get_next_url())
     return oid.try_login('http://steamcommunity.com/openid')
 
@@ -18,28 +27,23 @@ def login():
 def create_or_login(resp):
     steam_id = long(resp.identity_url.replace("http://steamcommunity.com/openid/id/", ""))
     account_id = int(steam_id & 0xFFFFFFFF)
-    g.user = User.query.filter(User.id == int(account_id & 0xFFFFFFFF)).first()
+    user = User.query.filter(User.id == int(account_id & 0xFFFFFFFF)).first()
 
-    if not g.user:
-        g.user = User(int(account_id & 0xFFFFFFFF), steam.user.profile(steam_id).persona or account_id)
+    if not user:
+        user = User(int(account_id & 0xFFFFFFFF), steam.user.profile(steam_id).persona or account_id)
 
-        db.session.add(g.user)
+        db.session.add(user)
         db.session.commit()
-    session['user_id'] = g.user.id
-    flash('You are logged in as %s' % g.user.name, "success")
+
+    login_user(user)
+    flash('You are logged in as %s' % user.name, "success")
     return redirect(oid.get_next_url())
 
 
-@app.before_request
-def before_request():
-    g.user = None
-    if 'user_id' in session:
-        g.user = User.query.filter(User.id == session['user_id']).first()
-
-
 @app.route('/logout/')
+@login_required
 def logout():
-    session.pop('user_id', None)
+    logout_user()
     return redirect(oid.get_next_url())
 
 
@@ -47,9 +51,9 @@ def logout():
 @app.route('/')
 def index():
     latest_replays = Replay.query.limit(64).all()
-    user_id = g.user.id if g.user else 0
+    user_id = current_user.get_id() or 0
     for replay in latest_replays:
-        replay.user_rating = next((rating for rating in replay.ratings if rating.user_id == user_id), None)
+        replay.user_rating = next((rating for rating in replay.ratings if rating.user_id == int(user_id)), None)
 
     return render_template("dotabank.html", latest_replays=latest_replays)
 
@@ -65,14 +69,15 @@ def replay(_id):
 
 
 @app.route("/replay/<int:_id>/rate")
+@login_required
 def replay_rate(_id):
-    current_rating = ReplayRating.query.filter(ReplayRating.replay_id == _id, ReplayRating.user_id == g.user.id).first() or ReplayRating()
+    current_rating = ReplayRating.query.filter(ReplayRating.replay_id == _id, ReplayRating.user_id == current_user.id).first() or ReplayRating()
     if "positive" in request.args:
         try:
             positive_arg = bool(int(request.args["positive"]))
 
             current_rating.positive = positive_arg
-            current_rating.user_id = g.user.id
+            current_rating.user_id = current_user.id
             current_rating.replay_id = _id
 
             db.session.add(current_rating)
@@ -89,7 +94,7 @@ def replay_rate(_id):
 
 class UserAdmin(ModelView):
     column_display_pk = True
-    form_columns = ('id', 'name', 'replay_ratings')
+    form_columns = ('id', 'name', 'enabled')
 
     def __init__(self, session):
         # Just call parent class with predefined model.
@@ -98,7 +103,7 @@ class UserAdmin(ModelView):
 
 class ReplayAdmin(ModelView):
     column_display_pk = True
-    form_columns = ("id", "ratings", "url", "state", "parsed")
+    form_columns = ("id", "url", "state", "parsed")
 
     def __init__(self, session):
         # Just call parent class with predefined model.

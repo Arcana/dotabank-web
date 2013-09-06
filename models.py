@@ -5,15 +5,29 @@ class User(db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True)
+    enabled = db.Column(db.Boolean)
 
     replay_ratings = db.relationship('ReplayRating', backref='user', lazy='dynamic')
 
-    def __init__(self, _id=None, name=None):
+    def __init__(self, _id=None, name=None, enabled=True):
         self.id = _id
         self.name = name
+        self.enabled = enabled
 
     def __repr__(self):
         return self.name
+
+    def get_id(self):
+        return unicode(self.id)
+
+    def is_active(self):
+        return self.enabled
+
+    def is_anonymous(self):
+        return False
+
+    def is_authenticated(self):
+        return True
 
 
 class Replay(db.Model):
