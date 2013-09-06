@@ -1,25 +1,9 @@
-from flask import Flask
-from flask.ext.cache import Cache
-from flask.ext.openid import OpenID
-from flask.ext.sqlalchemy import SQLAlchemy
-import steam
+from app import app, admin, db
 
-app = Flask(__name__)
+from views import UserAdmin, ReplayAdmin, ReplayRatingAdmin
 
-app.config.from_pyfile("settings.py")
-
-cache = Cache(app)
-oid = OpenID(app)
-
-db = SQLAlchemy(app)
-
-# Setup steamodd
-steam.api.key.set(app.config['STEAM_API_KEY'])
-steam.api.socket_timeout.set(10)
-
-
-# noinspection PyUnresolvedReferences
-from views import *
-
+admin.add_view(UserAdmin(db.session))
+admin.add_view(ReplayAdmin(db.session))
+admin.add_view(ReplayRatingAdmin(db.session))
 if __name__ == '__main__':
     app.run()

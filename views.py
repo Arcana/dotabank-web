@@ -1,7 +1,9 @@
-from flask import render_template, flash, redirect, request, session, g, url_for
+from flask import render_template, flash, redirect, session, g
 
-from dotabank import app, oid, steam, db
-from models import User
+from app import app, oid, steam, db
+from models import *
+
+from flask.ext.admin.contrib.sqlamodel import ModelView
 
 # User authentication
 @app.route('/login/')
@@ -44,9 +46,46 @@ def logout():
 # Routes
 @app.route('/')
 def index():
-    return render_template("dotabank.html")
+    latest_replays = Replay.query.limit(64).all()
+    return render_template("dotabank.html", latest_replays=latest_replays)
 
 
 @app.route("/user/<int:_id>")
 def user(_id):
     return "abc"
+
+
+@app.route("/replay/<int:_id>")
+def replay(_id):
+    return "abc"
+
+
+@app.route("/replay/<int:_id>/rate")
+def replay_rate(_id, methods=["POST"]):
+    return "abc"
+
+
+# Admin views
+
+class UserAdmin(ModelView):
+    column_display_pk = True
+    form_columns = ('id', 'name', 'replay_ratings')
+
+    def __init__(self, session):
+        # Just call parent class with predefined model.
+        super(UserAdmin, self).__init__(User, session)
+
+
+class ReplayAdmin(ModelView):
+    column_display_pk = True
+    form_columns = ("id", "ratings", "url", "state", "parsed")
+
+    def __init__(self, session):
+        # Just call parent class with predefined model.
+        super(ReplayAdmin, self).__init__(Replay, session)
+
+
+class ReplayRatingAdmin(ModelView):
+    def __init__(self, session):
+        # Just call parent class with predefined model.
+        super(ReplayRatingAdmin, self).__init__(ReplayRating, session)

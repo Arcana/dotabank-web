@@ -1,5 +1,30 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    Stuff
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Replay ID</td>
+                <td>Rating</td>
+                <td>URL</td>
+                <td>State</td>
+                <td>Parsed</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for replay in latest_replays %}
+                <tr>
+                    <td><a href="{{ url_for("replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                    <td>
+                        {% if replay.ratings|length > 0 %}
+                            {{ replay.ratings|map(attribute="rating")|sum / replay.ratings|length }} ({{ replay.ratings|length }} ratings)
+                        {% endif %}
+                    </td>
+                <td>{{ replay.url }}</td>
+                <td>{{ replay.state }}</td>
+                <td>{{ replay.parsed }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
