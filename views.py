@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, session, g
+from flask import render_template, flash, redirect, session, g, request, jsonify
 
 from app import app, oid, steam, db
 from models import *
@@ -47,6 +47,10 @@ def logout():
 @app.route('/')
 def index():
     latest_replays = Replay.query.limit(64).all()
+    user_id = g.user.id if g.user else 0
+    for replay in latest_replays:
+        replay.user_rating = next((rating for rating in replay.ratings if rating.user_id == user_id), None)
+
     return render_template("dotabank.html", latest_replays=latest_replays)
 
 
@@ -61,8 +65,24 @@ def replay(_id):
 
 
 @app.route("/replay/<int:_id>/rate")
-def replay_rate(_id, methods=["POST"]):
-    return "abc"
+def replay_rate(_id):
+    current_rating = ReplayRating.query.filter(ReplayRating.replay_id == _id, ReplayRating.user_id == g.user.id).first() or ReplayRating()
+    if "positive" in request.args:
+        try:
+            positive_arg = bool(int(request.args["positive"]))
+
+            current_rating.positive = positive_arg
+            current_rating.user_id = g.user.id
+            current_rating.replay_id = _id
+
+            db.session.add(current_rating)
+            db.session.commit()
+        except TypeError:
+            flash("There was a problem saving your rating!", "error")
+        return redirect(request.referrer)
+    else:
+        flash("There was a problem saving your rating!", "error")
+        return redirect(request.referrer)
 
 
 # Admin views

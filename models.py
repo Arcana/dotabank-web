@@ -42,12 +42,12 @@ class ReplayRating(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     replay_id = db.Column(db.Integer, db.ForeignKey("replays.id"))
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    rating = db.Column(db.Integer)
+    positive = db.Column(db.Boolean)
 
-    def __init__(self, replay_id=None, user_id=None, rating=None):
+    def __init__(self, replay_id=None, user_id=None, positive=None):
         self.replay_id = replay_id
         self.user_id = user_id
-        self.rating = rating
+        self.positive = positive
 
     def __repr__(self):
         return "<Rating {}/{}>".format(self.replay_id, self.user_id)
