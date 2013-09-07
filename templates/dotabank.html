@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
+    <h1>Latest replays</h1>
     <table class="table">
         <thead>
             <tr>
@@ -38,4 +39,10 @@
             {% endfor %}
         </tbody>
     </table>
+    <h1>All users evar</h1>
+    <ul>
+        {% for user in all_users %}
+            <li><a href="{{ url_for("user", _id=user.id) }}">{{ user.name }}</a></li>
+        {% endfor %}
+    </ul>
 {% endblock %}

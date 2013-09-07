@@ -56,8 +56,9 @@ def logout():
 @app.route('/')
 def index():
     latest_replays = Replay.query.limit(64).all()
+    all_users = User.query.all()
 
-    return render_template("dotabank.html", latest_replays=latest_replays)
+    return render_template("dotabank.html", latest_replays=latest_replays, all_users=all_users)
 
 
 @app.route("/user/<int:_id>")
