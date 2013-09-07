@@ -6,9 +6,9 @@
             <tr>
                 <td>Replay ID</td>
                 <td>Rating</td>
-                <td>URL</td>
                 <td>State</td>
-                <td>Parse state</td>
+                <td>Replay state</td>
+                <td>URL</td>
             </tr>
         </thead>
         <tbody>
@@ -24,9 +24,9 @@
                             <span class="rating {{"" if replay.user_rating and replay.user_rating.positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
                         </a>
                     </td>
-                    <td>{{ replay.url }}</td>
                     <td>{{ replay.state }}</td>
-                    <td>{{ replay.parse_state }}</td>
+                    <td>{{ replay.replay_state }}</td>
+                    <td>{{ replay.url }}</td>
                 </tr>
             {% endfor %}
         </tbody>

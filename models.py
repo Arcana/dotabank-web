@@ -5,7 +5,7 @@ class User(db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True)
-    enabled = db.Column(db.Boolean)
+    enabled = db.Column(db.Boolean, default=True)
 
     replay_ratings = db.relationship('ReplayRating', backref='user', lazy='dynamic')
 
@@ -35,13 +35,13 @@ class Replay(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(80))
-    state = db.Column(db.Enum(
+    replay_state = db.Column(db.Enum(
         "REPLAY_AVAILABLE",
         "REPLAY_NOT_RECORDED",
         "REPLAY_EXPIRED",
         "UNKNOWN"
-    ))
-    parse_state = db.Column(db.Enum(
+    ), default="UNKNOWN")
+    state = db.Column(db.Enum(
         "WAITING_GC",
         "WAITING_DOWNLOAD",
         "DOWNLOAD_IN_PROGRESS",
@@ -50,9 +50,9 @@ class Replay(db.Model):
         "PARSED",
         "GC_ERROR",
         "PARSE_ERROR"
-    ))
+    ), default="WAITING_GC")
 
-    ratings = db.relationship('ReplayRating', backref='replay', lazy='select')
+    ratings = db.relationship('ReplayRating', backref='replay', lazy='dynamic')
 
     def __init__(self, _id=None, url=None, state="UNKNOWN", parse_state="WAITING_GC"):
         self.id = _id

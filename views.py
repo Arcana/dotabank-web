@@ -35,8 +35,13 @@ def create_or_login(resp):
         db.session.add(user)
         db.session.commit()
 
-    login_user(user)
-    flash('You are logged in as %s' % user.name, "success")
+    login_attempt = login_user(user)
+    if login_attempt is True:
+        flash("You are logged in as {}".format(user.name), "success")
+    elif not user.is_active():
+        flash("Cannot log you in as {}, your account has been disabled.  If you believe this is in error, please contact {}.".format(user.name, app.config["CONTACT_EMAIL"]), "danger")
+    else:
+        flash("Error logging you in as {}, please try again later.".format(user.name), "danger")
     return redirect(oid.get_next_url())
 
 
@@ -108,7 +113,7 @@ class UserAdmin(AdminModelView):
 
 class ReplayAdmin(AdminModelView):
     column_display_pk = True
-    form_columns = ("id", "url", "state", "parse_state")
+    form_columns = ("id", "url", "state", "replay_state")
 
     def __init__(self, session):
         # Just call parent class with predefined model.
