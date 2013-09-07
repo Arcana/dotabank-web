@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, request
+from flask import render_template, flash, redirect, request, url_for
 
 from app import app, oid, steam, db, login_manager, admin
 from models import *
@@ -88,29 +88,31 @@ def replay_rate(_id):
             db.session.commit()
         except TypeError:
             flash("There was a problem saving your rating!", "error")
-        return redirect(request.referrer)
+        return redirect(request.referrer or url_for("index"))
     else:
         flash("There was a problem saving your rating!", "error")
-        return redirect(request.referrer)
+        return redirect(request.referrer or url_for("index"))
 
 
 @app.route("/replay/<int:_id>/favourite")
 @login_required
 def replay_favourite(_id):
-    favourite = ReplayFavourite.query.filter(ReplayFavourite.replay_id == _id, ReplayFavourite.user_id == current_user.id).first() or ReplayFavourite()
+    favourite = ReplayFavourite.query.filter(ReplayFavourite.replay_id == _id, ReplayFavourite.user_id == current_user.id).first()
     try:
         if "remove" not in request.args or not bool(int(request.args["remove"])):
+            if favourite is None:
+                favourite = ReplayFavourite()
             favourite.user_id = current_user.id
             favourite.replay_id = _id
 
             db.session.add(favourite)
             db.session.commit()
-        else:
+        elif favourite is not None:
             db.session.delete(favourite)
             db.session.commit()
     except TypeError:
         flash("There was a problem favouriting {}!".format(_id), "error")
-    return redirect(request.referrer)
+    return redirect(request.referrer or url_for("index"))
 
 
 # Admin views
