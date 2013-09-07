@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, session, g, request, jsonify
+from flask import render_template, flash, redirect, request
 
 from app import app, oid, steam, db, login_manager, admin
 from models import *
@@ -73,8 +73,8 @@ def replay(_id):
 @app.route("/replay/<int:_id>/rate")
 @login_required
 def replay_rate(_id):
-    current_rating = ReplayRating.query.filter(ReplayRating.replay_id == _id, ReplayRating.user_id == current_user.id).first() or ReplayRating()
     if "positive" in request.args:
+        current_rating = ReplayRating.query.filter(ReplayRating.replay_id == _id, ReplayRating.user_id == current_user.id).first() or ReplayRating()
         try:
             positive_arg = bool(int(request.args["positive"]))
 
@@ -90,6 +90,25 @@ def replay_rate(_id):
     else:
         flash("There was a problem saving your rating!", "error")
         return redirect(request.referrer)
+
+
+@app.route("/replay/<int:_id>/favourite")
+@login_required
+def replay_favourite(_id):
+    favourite = ReplayFavourite.query.filter(ReplayFavourite.replay_id == _id, ReplayFavourite.user_id == current_user.id).first() or ReplayFavourite()
+    try:
+        if "remove" not in request.args or not bool(int(request.args["remove"])):
+            favourite.user_id = current_user.id
+            favourite.replay_id = _id
+
+            db.session.add(favourite)
+            db.session.commit()
+        else:
+            db.session.delete(favourite)
+            db.session.commit()
+    except TypeError:
+        flash("There was a problem favouriting {}!".format(_id), "error")
+    return redirect(request.referrer)
 
 
 # Admin views
@@ -117,12 +136,7 @@ class ReplayAdmin(AdminModelView):
         super(ReplayAdmin, self).__init__(Replay, session)
 
 
-class ReplayRatingAdmin(AdminModelView):
-    def __init__(self, session):
-        # Just call parent class with predefined model.
-        super(ReplayRatingAdmin, self).__init__(ReplayRating, session)
-
-
 admin.add_view(UserAdmin(db.session))
 admin.add_view(ReplayAdmin(db.session))
-admin.add_view(ReplayRatingAdmin(db.session))
+admin.add_view(AdminModelView(ReplayRating, db.session))
+admin.add_view(AdminModelView(ReplayFavourite, db.session))

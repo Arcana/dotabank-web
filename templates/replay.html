@@ -2,15 +2,17 @@
 
 {% block content %}
     <h1>{{ replay.id }}</h1>
-    <p class="lead">
-        <a href="{{ url_for("replay_rate", _id=replay.id, positive=1) }}">
+    <ul class="list-unstyled">
+        <li><a href="{{ url_for("replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
+            <span class="favourite {{"" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"> ({{ replay.favourites|list|length }})</span>
+        </a></li>
+        <li><a href="{{ url_for("replay_rate", _id=replay.id, positive=1) }}">
             <span class="rating {{"" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"> ({{ replay.ratings|selectattr("positive")|list|length }})</span>
-        </a>
-        &nbsp;
-        <a href="{{ url_for("replay_rate", _id=replay.id, positive=0) }}">
+        </a></li>
+        <li><a href="{{ url_for("replay_rate", _id=replay.id, positive=0) }}">
             <span class="rating {{"" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
-        </a>
-    </p>
+        </a></li>
+    </ul>
 
     <dl class="dl-horizontal">
         <dt>id</dt>
