@@ -8,8 +8,8 @@ class User(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
     enabled = db.Column(db.Boolean, default=True, nullable=False)
 
-    replay_ratings = db.relationship('ReplayRating', backref='user', lazy='dynamic')
-    favourites = db.relationship('ReplayFavourite', backref='user', lazy='dynamic')
+    replay_ratings = db.relationship('ReplayRating', backref='user', lazy='select')
+    favourites = db.relationship('ReplayFavourite', backref='user', lazy='select')
 
     def __init__(self, _id=None, name=None, enabled=True):
         self.id = _id
@@ -54,8 +54,8 @@ class Replay(db.Model):
         "UNKNOWN"
     ), default="UNKNOWN")
 
-    ratings = db.relationship('ReplayRating', backref='replay', lazy='dynamic')
-    favourites = db.relationship('ReplayFavourite', backref='favourite', lazy='dynamic')
+    ratings = db.relationship('ReplayRating', backref='replay', lazy='joined')
+    favourites = db.relationship('ReplayFavourite', backref='favourite', lazy='joined')
 
     def __init__(self, _id=None, url=None, state="UNKNOWN", parse_state="WAITING_GC"):
         self.id = _id
