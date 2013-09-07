@@ -48,7 +48,10 @@
     </div>
     <hr>
     <div class="container">
-        <p class="text-muted">© <a href="http://rjackson.me">RJ</a>, PROBABLY. <a href="http://steampowered.com">Powered by Steam</a>.</p>
+        <p class="text-muted">
+            <span>© <a href="http://rjackson.me">RJ</a>, PROBABLY. <a href="http://steampowered.com">Powered by Steam</a>.</span>
+            <span class="pull-right"><a href="{{ url_for("about") }}">About Dotabank</a></span>
+        </p>
     </div>
     {% block scripts %}
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>

@@ -115,6 +115,11 @@ def replay_favourite(_id):
     return redirect(request.referrer or url_for("index"))
 
 
+@app.route("/about")
+def about():
+    return render_template("about.html", emule=app.config["CONTACT_EMAIL"])
+
+
 # Admin views
 
 class AdminModelView(ModelView):
