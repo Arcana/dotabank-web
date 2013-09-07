@@ -56,9 +56,6 @@ def logout():
 @app.route('/')
 def index():
     latest_replays = Replay.query.limit(64).all()
-    user_id = current_user.get_id() or 0
-    for replay in latest_replays:
-        replay.user_rating = next((rating for rating in replay.ratings if rating.user_id == int(user_id)), None)
 
     return render_template("dotabank.html", latest_replays=latest_replays)
 
@@ -70,8 +67,8 @@ def user(_id):
 
 @app.route("/replay/<int:_id>")
 def replay(_id):
-    return _id
-
+    replay = Replay.query.filter(Replay.id == _id).first_or_404()
+    return render_template("replay.html", replay=replay)
 
 @app.route("/replay/<int:_id>/rate")
 @login_required

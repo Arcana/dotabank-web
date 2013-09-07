@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h1>{{ replay.id }}</h1>
+    <p class="lead">
+        <a href="{{ url_for("replay_rate", _id=replay.id, positive=1) }}">
+            <span class="rating {{"" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"> ({{ replay.ratings|selectattr("positive")|list|length }})</span>
+        </a>
+        &nbsp;
+        <a href="{{ url_for("replay_rate", _id=replay.id, positive=0) }}">
+            <span class="rating {{"" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
+        </a>
+    </p>
+
+    <dl class="dl-horizontal">
+        <dt>id</dt>
+        <dd>{{ replay.id }}</dd>
+        <dt>url</dt>
+        <dd>{{ replay.url }}</dd>
+        <dt>state</dt>
+        <dd>{{ replay.state }}</dd>
+        <dt>replay_state</dt>
+        <dd>{{ replay.replay_state }}</dd>
+        <dt>ratings</dt>
+        <dd>{{ replay.ratings }}</dd>
+    </dl>
+{% endblock %}

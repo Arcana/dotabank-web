@@ -1,4 +1,5 @@
 from app import db
+from flask.ext.login import current_user
 
 
 class User(db.Model):
@@ -35,12 +36,6 @@ class Replay(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(80))
-    replay_state = db.Column(db.Enum(
-        "REPLAY_AVAILABLE",
-        "REPLAY_NOT_RECORDED",
-        "REPLAY_EXPIRED",
-        "UNKNOWN"
-    ), default="UNKNOWN")
     state = db.Column(db.Enum(
         "WAITING_GC",
         "WAITING_DOWNLOAD",
@@ -51,6 +46,12 @@ class Replay(db.Model):
         "GC_ERROR",
         "PARSE_ERROR"
     ), default="WAITING_GC")
+    replay_state = db.Column(db.Enum(
+        "REPLAY_AVAILABLE",
+        "REPLAY_NOT_RECORDED",
+        "REPLAY_EXPIRED",
+        "UNKNOWN"
+    ), default="UNKNOWN")
 
     ratings = db.relationship('ReplayRating', backref='replay', lazy='dynamic')
 
@@ -62,6 +63,12 @@ class Replay(db.Model):
 
     def __repr__(self):
         return "<Replay {}>".format(self.id)
+
+    def user_rating(self):
+        if current_user.is_authenticated():
+            return next((rating for rating in self.ratings if rating.user_id == int(current_user.id)), None)
+        else:
+            return None
 
 
 class ReplayRating(db.Model):
