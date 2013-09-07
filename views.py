@@ -62,7 +62,8 @@ def index():
 
 @app.route("/user/<int:_id>")
 def user(_id):
-    return _id
+    user = User.query.filter(User.id == _id).first_or_404()
+    return render_template("user.html", user=user)
 
 
 @app.route("/replay/<int:_id>")
