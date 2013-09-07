@@ -13,10 +13,9 @@ app = Flask(__name__)
 app.config.from_pyfile("settings.py")
 
 cache = Cache(app)
-oid = OpenID(app)
-login_manager = LoginManager(app)
-
 db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+oid = OpenID(app)
 toolbar = DebugToolbarExtension(app)
 
 # Setup steamodd
@@ -24,5 +23,3 @@ steam.api.key.set(app.config['STEAM_API_KEY'])
 steam.api.socket_timeout.set(10)
 
 admin = Admin(app, name="Dotabank")
-
-from models import *

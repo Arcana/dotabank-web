@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, session, g, request, jsonify
 
-from app import app, oid, steam, db, login_manager
+from app import app, oid, steam, db, login_manager, admin
 from models import *
 
 from flask.ext.admin.contrib.sqlamodel import ModelView
@@ -60,12 +60,12 @@ def index():
 
 @app.route("/user/<int:_id>")
 def user(_id):
-    return "abc"
+    return _id
 
 
 @app.route("/replay/<int:_id>")
 def replay(_id):
-    return "abc"
+    return _id
 
 
 @app.route("/replay/<int:_id>/rate")
@@ -92,7 +92,12 @@ def replay_rate(_id):
 
 # Admin views
 
-class UserAdmin(ModelView):
+class AdminModelView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated()
+
+
+class UserAdmin(AdminModelView):
     column_display_pk = True
     form_columns = ('id', 'name', 'enabled')
 
@@ -101,7 +106,7 @@ class UserAdmin(ModelView):
         super(UserAdmin, self).__init__(User, session)
 
 
-class ReplayAdmin(ModelView):
+class ReplayAdmin(AdminModelView):
     column_display_pk = True
     form_columns = ("id", "url", "state", "parse_state")
 
@@ -110,7 +115,12 @@ class ReplayAdmin(ModelView):
         super(ReplayAdmin, self).__init__(Replay, session)
 
 
-class ReplayRatingAdmin(ModelView):
+class ReplayRatingAdmin(AdminModelView):
     def __init__(self, session):
         # Just call parent class with predefined model.
         super(ReplayRatingAdmin, self).__init__(ReplayRating, session)
+
+
+admin.add_view(UserAdmin(db.session))
+admin.add_view(ReplayAdmin(db.session))
+admin.add_view(ReplayRatingAdmin(db.session))
