@@ -5,6 +5,7 @@
         <thead>
             <tr>
                 <td>Replay ID</td>
+                <td>Favourite</td>
                 <td>Rating</td>
                 <td>State</td>
                 <td>Replay state</td>
@@ -16,13 +17,19 @@
                 <tr>
                     <td><a href="{{ url_for("replay", _id=replay.id) }}">{{ replay.id }}</a></td>
                     <td>
-                        <a href="{{ url_for("replay_rate", _id=replay.id, positive=1) }}">
-                            <span class="rating {{"" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"> ({{ replay.ratings|selectattr("positive")|list|length }})</span>
+                        <a href="{{ url_for("replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
+                            <span class="{{"" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"> ({{ replay.favourites|list|length }})</span>
                         </a>
-                        &nbsp;
-                        <a href="{{ url_for("replay_rate", _id=replay.id, positive=0) }}">
-                            <span class="rating {{"" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
-                        </a>
+                    </td>
+                    <td>
+                        <ul class="list-inline">
+                            <li><a href="{{ url_for("replay_rate", _id=replay.id, positive=1) }}">
+                                <span class="{{"" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"> ({{ replay.ratings|selectattr("positive")|list|length }})</span>
+                            </a></li>
+                            <li><a href="{{ url_for("replay_rate", _id=replay.id, positive=0) }}">
+                                <span class="{{"" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
+                            </a></li>
+                        </ul>
                     </td>
                     <td>{{ replay.state }}</td>
                     <td>{{ replay.replay_state }}</td>
