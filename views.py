@@ -61,18 +61,18 @@ def index():
     return render_template("dotabank.html", latest_replays=latest_replays, all_users=all_users)
 
 
-@app.route("/user/<int:_id>")
+@app.route("/user/<int:_id>/")
 def user(_id):
     user = User.query.filter(User.id == _id).first_or_404()
     return render_template("user.html", user=user)
 
 
-@app.route("/replay/<int:_id>")
+@app.route("/replay/<int:_id>/")
 def replay(_id):
     replay = Replay.query.filter(Replay.id == _id).first_or_404()
     return render_template("replay.html", replay=replay)
 
-@app.route("/replay/<int:_id>/rate")
+@app.route("/replay/<int:_id>/rate/")
 @login_required
 def replay_rate(_id):
     if "positive" in request.args:
@@ -94,7 +94,7 @@ def replay_rate(_id):
         return redirect(request.referrer or url_for("index"))
 
 
-@app.route("/replay/<int:_id>/favourite")
+@app.route("/replay/<int:_id>/favourite/")
 @login_required
 def replay_favourite(_id):
     favourite = ReplayFavourite.query.filter(ReplayFavourite.replay_id == _id, ReplayFavourite.user_id == current_user.id).first()
@@ -115,7 +115,7 @@ def replay_favourite(_id):
     return redirect(request.referrer or url_for("index"))
 
 
-@app.route("/about")
+@app.route("/about/")
 def about():
     return render_template("about.html", emule=app.config["CONTACT_EMAIL"])
 
