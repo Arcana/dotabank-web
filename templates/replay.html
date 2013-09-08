@@ -3,18 +3,46 @@
 {% block content %}
     <div class="page-header">
         <h1>{{ replay.id }} <small></small></h1>
+
+        <ul class="list-unstyled">
+            <li><a href="{{ url_for("replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
+                <span class="{{"" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"> ({{ replay.favourites|list|length }})</span>
+            </a>
+            <a href="{{ url_for("replay_rate", _id=replay.id, positive=1) }}">
+                <span class="{{"" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"> ({{ replay.ratings|selectattr("positive")|list|length }})</span>
+            </a>
+            <a href="{{ url_for("replay_rate", _id=replay.id, positive=0) }}">
+                <span class="{{"" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
+            </a>
+        </ul>
     </div>
-    <ul class="list-unstyled">
-        <li><a href="{{ url_for("replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
-            <span class="{{"" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"> ({{ replay.favourites|list|length }})</span>
-        </a>
-        <a href="{{ url_for("replay_rate", _id=replay.id, positive=1) }}">
-            <span class="{{"" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"> ({{ replay.ratings|selectattr("positive")|list|length }})</span>
-        </a>
-        <a href="{{ url_for("replay_rate", _id=replay.id, positive=0) }}">
-            <span class="{{"" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
-        </a>
-    </ul>
+
+
+{#    state = db.Column(db.Enum(#}
+{#        "WAITING_GC",#}
+{#        "WAITING_DOWNLOAD",#}
+{#        "DOWNLOAD_IN_PROGRESS",#}
+{#        "WAITING_PARSE",#}
+{#        "PARSE_IN_PROGRESS",#}
+{#        "PARSED",#}
+{#        "GC_ERROR",#}
+{#        "PARSE_ERROR"#}
+{#    ), default="WAITING_GC")#}
+
+    {% if replay.state == "parsed" %}
+        <div class="alert alert-info">PARSED!</div>
+    {% elif replay.state in ["WAITING_GC", "WAITING_DOWNLOAD", "DOWNLOAD_IN_PROGRESS", "WAITING_PARSE", "PARSE_IN_PROGRESS"] %}
+        <div class="alert alert-warning"><strong>I'm not ready!</strong> The replay is in limbo ({{ replay.state }}), check back soon.</div>
+    {% elif replay.state in ["GC_ERROR", "PARSE_ERROR"] %}
+        <div class="alert alert-danger">
+            <strong>Sorry!</strong>
+            {% if replay.state == "GC_ERROR" %}
+                There was a problem retrieving match details, this could be because the match was private, requires a tournament pass to access, or the replay expired before we got to it.
+            {% else %}
+                There was a problem parsing this matches' replay; it has been reported to the site admins to investigate.
+            {% endif %}
+        </div>
+    {% endif %}
 
     <dl class="dl-horizontal">
         <dt>id</dt>
