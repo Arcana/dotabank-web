@@ -16,7 +16,7 @@
         <div class="container">
             <a class="navbar-brand" href="{{ url_for("index") }}">DOTABANK</a>
             <ul class="nav navbar-nav">
-                <li><a href="#">1</a></li>
+                <li class="{{ "active" if "replays" == request.endpoint  }}"><a href="{{ url_for("replays") }}">Replays</a></li>
                 <li><a href="#">2</a></li>
                 <li><a href="#">3</a></li>
             </ul>

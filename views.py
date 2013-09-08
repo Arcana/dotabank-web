@@ -55,7 +55,7 @@ def logout():
 # Routes
 @app.route('/')
 def index():
-    latest_replays = Replay.query.limit(64).all()
+    latest_replays = Replay.query.limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
     all_users = User.query.all()
 
     return render_template("dotabank.html", latest_replays=latest_replays, all_users=all_users)
@@ -65,6 +65,13 @@ def index():
 def user(_id):
     user = User.query.filter(User.id == _id).first_or_404()
     return render_template("user.html", user=user)
+
+
+@app.route("/replays/")
+@app.route("/replays/<int:page>/")
+def replays(page=1):
+    replays = Replay.query.paginate(page, app.config["REPLAYS_PER_PAGE"], False)
+    return render_template("replays.html", replays=replays)
 
 
 @app.route("/replay/<int:_id>/")

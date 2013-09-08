@@ -1,7 +1,10 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h1>Latest replays</h1>
+    <ul class="pager">
+        <li class="previous {{ "disabled" if not replays.has_prev }}"><a href="{{ url_for("replays", page=replays.prev_num) if replays.has_prev else "" }}">&larr; Older</a></li>
+        <li class="next {{ "disabled" if not replays.has_next }}"><a href="{{ url_for("replays", page=replays.next_num) if replays.has_next else "" }}">Newer &rarr;</a></li>
+    </ul>
     <table class="table table-condensed table-striped">
         <thead>
             <tr>
@@ -14,7 +17,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for replay in latest_replays %}
+            {% for replay in replays.items %}
                 <tr>
                     <td><a href="{{ url_for("replay", _id=replay.id) }}">{{ replay.id }}</a></td>
                     <td>
@@ -37,10 +40,4 @@
             {% endfor %}
         </tbody>
     </table>
-    <h1>All users evar</h1>
-    <ul>
-        {% for user in all_users %}
-            <li><a href="{{ url_for("user", _id=user.id) }}">{{ user.name }}</a></li>
-        {% endfor %}
-    </ul>
 {% endblock %}
