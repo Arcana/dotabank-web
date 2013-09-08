@@ -57,7 +57,6 @@ def logout():
 def index():
     latest_replays = Replay.query.limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
     all_users = User.query.all()
-
     return render_template("dotabank.html", latest_replays=latest_replays, all_users=all_users)
 
 

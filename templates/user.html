@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h1>{{ user.name }}</h1>
-    <p class="lead">{{ user.id }}</p>
-
+    <div class="page-header">
+        <h1>{{ user.name }} <small>{{ user.id }}</small></h1>
+    </div>
     <h2>Favourites</h2>
     <ul>
         {% for fav in user.favourites|list %}

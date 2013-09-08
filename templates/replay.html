@@ -1,17 +1,19 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h1>{{ replay.id }}</h1>
+    <div class="page-header">
+        <h1>{{ replay.id }} <small></small></h1>
+    </div>
     <ul class="list-unstyled">
         <li><a href="{{ url_for("replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
             <span class="{{"" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"> ({{ replay.favourites|list|length }})</span>
-        </a></li>
-        <li><a href="{{ url_for("replay_rate", _id=replay.id, positive=1) }}">
+        </a>
+        <a href="{{ url_for("replay_rate", _id=replay.id, positive=1) }}">
             <span class="{{"" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"> ({{ replay.ratings|selectattr("positive")|list|length }})</span>
-        </a></li>
-        <li><a href="{{ url_for("replay_rate", _id=replay.id, positive=0) }}">
+        </a>
+        <a href="{{ url_for("replay_rate", _id=replay.id, positive=0) }}">
             <span class="{{"" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
-        </a></li>
+        </a>
     </ul>
 
     <dl class="dl-horizontal">
