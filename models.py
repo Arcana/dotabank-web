@@ -57,11 +57,11 @@ class Replay(db.Model):
     ratings = db.relationship('ReplayRating', backref='replay', lazy='joined', cascade="all, delete-orphan")
     favourites = db.relationship('ReplayFavourite', backref='favourite', lazy='joined', cascade="all, delete-orphan")
 
-    def __init__(self, _id=None, url="", state="UNKNOWN", parse_state="WAITING_GC"):
+    def __init__(self, _id=None, url="", replay_state="UNKNOWN", state="WAITING_GC"):
         self.id = _id
         self.url = url
+        self.replay_state = replay_state
         self.state = state
-        self.parse_state = parse_state
 
     def __repr__(self):
         return "<Replay {}>".format(self.id)
