@@ -8,8 +8,8 @@ class User(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
     enabled = db.Column(db.Boolean, default=True, nullable=False)
 
-    replay_ratings = db.relationship('ReplayRating', backref='user', lazy='select')
-    favourites = db.relationship('ReplayFavourite', backref='user', lazy='select')
+    replay_ratings = db.relationship('ReplayRating', backref='user', lazy='select', cascade="all, delete-orphan")
+    favourites = db.relationship('ReplayFavourite', backref='user', lazy='select', cascade="all, delete-orphan")
 
     def __init__(self, _id=None, name=None, enabled=True):
         self.id = _id
@@ -54,10 +54,10 @@ class Replay(db.Model):
         "UNKNOWN"
     ), default="UNKNOWN")
 
-    ratings = db.relationship('ReplayRating', backref='replay', lazy='joined')
-    favourites = db.relationship('ReplayFavourite', backref='favourite', lazy='joined')
+    ratings = db.relationship('ReplayRating', backref='replay', lazy='joined', cascade="all, delete-orphan")
+    favourites = db.relationship('ReplayFavourite', backref='favourite', lazy='joined', cascade="all, delete-orphan")
 
-    def __init__(self, _id=None, url=None, state="UNKNOWN", parse_state="WAITING_GC"):
+    def __init__(self, _id=None, url="", state="UNKNOWN", parse_state="WAITING_GC"):
         self.id = _id
         self.url = url
         self.state = state
@@ -83,8 +83,8 @@ class ReplayRating(db.Model):
     __tablename__ = "replay_ratings"
 
     id = db.Column(db.Integer, primary_key=True)
-    replay_id = db.Column(db.Integer, db.ForeignKey("replays.id"), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     positive = db.Column(db.Boolean, default=False, nullable=False)
 
     def __init__(self, replay_id=None, user_id=None, positive=None):
@@ -100,8 +100,8 @@ class ReplayFavourite(db.Model):
     __tablename__ = "replay_favs"
 
     id = db.Column(db.Integer, primary_key=True)
-    replay_id = db.Column(db.Integer, db.ForeignKey("replays.id"), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     def __init__(self, replay_id=None, user_id=None):
         self.replay_id = replay_id
