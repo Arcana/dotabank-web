@@ -32,7 +32,9 @@
                     </td>
                     <td>{{ replay.state }}</td>
                     <td>{{ replay.replay_state }}</td>
-                    <td>{{ replay.url }}</td>
+                    <td>
+                        <a class="btn btn-default btn-xs {{ "disabled" if not replay.url else "" }}" href="{{ replay.url }}">Download</a>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
