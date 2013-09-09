@@ -60,7 +60,10 @@ def index():
 
 @app.route("/user/<int:_id>/")
 def user(_id):
-    user = User.query.filter(User.id == _id).first_or_404()
+    user = User.query.filter(User.id == _id).first()
+    if user is None:
+        flash("User {} not found.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
     return render_template("user.html", user=user)
 
 
@@ -73,7 +76,10 @@ def replays(page=1):
 
 @app.route("/replay/<int:_id>/")
 def replay(_id):
-    replay = Replay.query.filter(Replay.id == _id).first_or_404()
+    replay = Replay.query.filter(Replay.id == _id).first()
+    if replay is None:
+        flash("Replay {} not found.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
     return render_template("replay.html", replay=replay)
 
 @app.route("/replay/<int:_id>/rate/")
@@ -91,10 +97,10 @@ def replay_rate(_id):
             db.session.add(current_rating)
             db.session.commit()
         except TypeError:
-            flash("There was a problem saving your rating!", "error")
+            flash("There was a problem saving your rating!", "danger")
         return redirect(request.referrer or url_for("index"))
     else:
-        flash("There was a problem saving your rating!", "error")
+        flash("There was a problem saving your rating!", "danger")
         return redirect(request.referrer or url_for("index"))
 
 
@@ -122,6 +128,23 @@ def replay_favourite(_id):
 @app.route("/about/")
 def about():
     return render_template("about.html", emule=app.config["CONTACT_EMAIL"])
+
+
+@app.errorhandler(401)  # Unauthorized
+@app.errorhandler(403)  # Forbidden
+@app.errorhandler(404)  # > Missing middle!
+@app.errorhandler(500)  # Internal server error.
+def internalerror(error):
+    if error.code == 401:
+        error.description = "I'm sorry Dave, I'm afraid I can't do that.  Try logging in."
+    elif error.code == 403:
+        if current_user.is_authenticated():
+            error.description = "I'm sorry {{ current_user.name }}, I'm afraid I can't do that.  You do not have access to this resource.</p>"
+        else:
+            error.description = "Hacker."
+    elif error.code == 500:
+        db.session.rollback()
+    return render_template("error.html", error=error, title=error.name), error.code
 
 # Debug-only views
 if app.debug:
