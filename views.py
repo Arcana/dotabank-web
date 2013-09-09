@@ -1,9 +1,7 @@
 from flask import render_template, flash, redirect, request, url_for
 
-from app import app, oid, steam, db, login_manager, admin
+from app import app, oid, steam, db, login_manager
 from models import *
-
-from flask.ext.admin.contrib.sqlamodel import ModelView
 from flask.ext.login import login_user, logout_user, current_user, login_required
 
 
@@ -117,7 +115,7 @@ def replay_favourite(_id):
             db.session.delete(favourite)
             db.session.commit()
     except TypeError:
-        flash("There was a problem favouriting {}!".format(_id), "error")
+        flash("There was a problem favouriting {}!".format(_id), "danger")
     return redirect(request.referrer or url_for("index"))
 
 
@@ -125,33 +123,32 @@ def replay_favourite(_id):
 def about():
     return render_template("about.html", emule=app.config["CONTACT_EMAIL"])
 
+# Debug-only views
+if app.debug:
+    from app import admin
+    from flask.ext.admin.contrib.sqlamodel import ModelView
 
-# Admin views
+    class AdminModelView(ModelView):
+        def is_accessible(self):
+            return current_user.is_authenticated()
 
-class AdminModelView(ModelView):
-    def is_accessible(self):
-        return current_user.is_authenticated()
+    class UserAdmin(AdminModelView):
+        column_display_pk = True
+        form_columns = ('id', 'name', 'enabled')
 
+        def __init__(self, session):
+            # Just call parent class with predefined model.
+            super(UserAdmin, self).__init__(User, session)
 
-class UserAdmin(AdminModelView):
-    column_display_pk = True
-    form_columns = ('id', 'name', 'enabled')
+    class ReplayAdmin(AdminModelView):
+        column_display_pk = True
+        form_columns = ("id", "url", "state", "replay_state")
 
-    def __init__(self, session):
-        # Just call parent class with predefined model.
-        super(UserAdmin, self).__init__(User, session)
+        def __init__(self, session):
+            # Just call parent class with predefined model.
+            super(ReplayAdmin, self).__init__(Replay, session)
 
-
-class ReplayAdmin(AdminModelView):
-    column_display_pk = True
-    form_columns = ("id", "url", "state", "replay_state")
-
-    def __init__(self, session):
-        # Just call parent class with predefined model.
-        super(ReplayAdmin, self).__init__(Replay, session)
-
-
-admin.add_view(UserAdmin(db.session))
-admin.add_view(ReplayAdmin(db.session))
-admin.add_view(AdminModelView(ReplayRating, db.session))
-admin.add_view(AdminModelView(ReplayFavourite, db.session))
+    admin.add_view(UserAdmin(db.session))
+    admin.add_view(ReplayAdmin(db.session))
+    admin.add_view(AdminModelView(ReplayRating, db.session))
+    admin.add_view(AdminModelView(ReplayFavourite, db.session))
