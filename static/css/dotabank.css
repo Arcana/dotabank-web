@@ -1,0 +1,6 @@
+#user-nav,
+#replay-nav {
+    /* To ensure main nav dropdowns are drawn on top. */
+    z-index: 990;
+    position: static;
+}
