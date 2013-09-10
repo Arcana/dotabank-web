@@ -24,7 +24,7 @@ if app.debug:
     from flask.ext.debugtoolbar import DebugToolbarExtension
     from flask.ext.admin import Admin
     from flask.ext.admin.contrib.sqlamodel import ModelView
-    from models import User, Replay, ReplayRating, ReplayFavourite
+    from models import User, Replay, ReplayRating, ReplayFavourite, GCWorker, GCJob
 
     toolbar = DebugToolbarExtension(app)
     admin = Admin(name="Dotabank")
@@ -53,6 +53,8 @@ if app.debug:
     admin.add_view(ReplayAdmin(db.session))
     admin.add_view(AdminModelView(ReplayRating, db.session))
     admin.add_view(AdminModelView(ReplayFavourite, db.session))
+    admin.add_view(AdminModelView(GCWorker, db.session))
+    admin.add_view(AdminModelView(GCJob, db.session))
 
     admin.init_app(app)
 
