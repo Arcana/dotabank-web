@@ -145,33 +145,3 @@ def internalerror(error):
     elif error.code == 500:
         db.session.rollback()
     return render_template("error.html", error=error, title=error.name), error.code
-
-# Debug-only views
-if app.debug:
-    from app import admin
-    from flask.ext.admin.contrib.sqlamodel import ModelView
-
-    class AdminModelView(ModelView):
-        def is_accessible(self):
-            return current_user.is_authenticated()
-
-    class UserAdmin(AdminModelView):
-        column_display_pk = True
-        form_columns = ('id', 'name', 'enabled')
-
-        def __init__(self, session):
-            # Just call parent class with predefined model.
-            super(UserAdmin, self).__init__(User, session)
-
-    class ReplayAdmin(AdminModelView):
-        column_display_pk = True
-        form_columns = ("id", "url", "state", "replay_state")
-
-        def __init__(self, session):
-            # Just call parent class with predefined model.
-            super(ReplayAdmin, self).__init__(Replay, session)
-
-    admin.add_view(UserAdmin(db.session))
-    admin.add_view(ReplayAdmin(db.session))
-    admin.add_view(AdminModelView(ReplayRating, db.session))
-    admin.add_view(AdminModelView(ReplayFavourite, db.session))
