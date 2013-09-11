@@ -58,6 +58,13 @@ def index():
     return render_template("dotabank.html", latest_replays=latest_replays, all_users=all_users)
 
 
+@app.route("/users/")
+@app.route("/users/<int:page>/")
+def users(page=1):
+    users = User.query.paginate(page, app.config["USERS_PER_PAGE"], False)
+    return render_template("users.html", users=users)
+
+
 @app.route("/user/<int:_id>/")
 def user(_id):
     user = User.query.filter(User.id == _id).first()
