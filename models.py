@@ -8,14 +8,18 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     enabled = db.Column(db.Boolean, default=True, nullable=False)
+    first_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     replay_ratings = db.relationship('ReplayRating', backref='user', lazy='select', cascade="all, delete-orphan")
     favourites = db.relationship('ReplayFavourite', backref='user', lazy='select', cascade="all, delete-orphan")
 
-    def __init__(self, _id=None, name=None, enabled=True):
+    def __init__(self, _id=None, name=None, enabled=True, first_seen=datetime.datetime.utcnow(), last_seen=datetime.datetime.utcnow()):
         self.id = _id
         self.name = name
         self.enabled = enabled
+        self.first_seen = first_seen
+        self.last_seen = last_seen
 
     def __repr__(self):
         return self.name
@@ -31,6 +35,12 @@ class User(db.Model):
 
     def is_authenticated(self):
         return True
+
+    def update_last_seen(self):
+        # Called every page load for current_user
+        self.last_seen = datetime.datetime.utcnow()
+        db.session.add(self)
+        db.session.commit()
 
 
 class Replay(db.Model):

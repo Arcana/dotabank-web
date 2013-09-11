@@ -13,13 +13,17 @@
             <tr>
                 <td>User ID</td>
                 <td>Name</td>
+                <td>First seen</td>
+                <td>Last seen</td>
             </tr>
         </thead>
         <tbody>
             {% for user in users.items %}
                 <tr>
-                    <td><a href="{{ url_for("user", _id=user.id) }}">{{ user.id }}</a></td>
+                    <td>{{ user.id }}</td>
                     <td><a href="{{ url_for("user", _id=user.id) }}">{{ user.name }}</a></td>
+                    <td>{{ user.first_seen }} UTC</td>
+                    <td>{{ user.last_seen }} UTC</td>
                 </tr>
             {% endfor %}
         </tbody>
