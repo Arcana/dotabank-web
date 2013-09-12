@@ -44,12 +44,16 @@
     {% if replay.state == "parsed" %}
         <div class="alert alert-info">PARSED!</div>
     {% elif replay.state in ["WAITING_GC", "WAITING_DOWNLOAD", "DOWNLOAD_IN_PROGRESS", "WAITING_PARSE", "PARSE_IN_PROGRESS"] %}
-        <div class="alert alert-warning"><strong>I'm not ready!</strong> The replay is in limbo ({{ replay.state }}), check back soon.</div>
+        {% if replay.state == "WAITING_DOWNLOAD" and replay.replay_state != "REPLAY_AVAILABLE" %}
+            <div class="alert alert-danger"><strong>Welp.</strong> The replay is not available ({{ replay.replay_state }}), we can't do anything special with it. :(</div>
+        {% else %}
+            <div class="alert alert-warning"><strong>I'm not ready!</strong> The replay is in limbo ({{ replay.state }}), check back soon.</div>
+        {% endif %}
     {% elif replay.state in ["GC_ERROR", "PARSE_ERROR"] %}
         <div class="alert alert-danger">
             <strong>Sorry!</strong>
             {% if replay.state == "GC_ERROR" %}
-                There was a problem retrieving match details, this could be because the match was private, requires a tournament pass to access, or the replay expired before we got to it.
+                There was a problem retrieving match details, this could be because the match was private, requires a tournament pass to access, or the match id is invalid.
             {% else %}
                 There was a problem parsing this matches' replay; it has been reported to the site admins to investigate.
             {% endif %}
