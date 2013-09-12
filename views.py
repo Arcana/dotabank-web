@@ -139,6 +139,27 @@ def about():
     return render_template("about.html", emule=app.config["CONTACT_EMAIL"])
 
 
+@app.route("/search/")
+def search():
+    match_id = request.args.get("id")
+    if unicode.isdecimal(unicode(match_id)):
+        replay = Replay.query.filter(Replay.id == match_id).first()
+
+        # If we don't have match_id in database, check if it's a valid match via the WebAPI and if so add it to DB.
+        if not replay and "error" not in steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result").keys():
+            flash("Replay {} was not in our database, so we've added it to the job queue to be parsed! AINT WE NICE?".format(match_id), "info")
+            replay = Replay(match_id)
+            db.session.add(replay)
+            db.session.commit()
+
+        if replay:
+            return redirect(url_for("replay", _id=match_id))
+
+    # Only invalid matches make it this far!
+    flash("Invalid match id.  If this match id corresponds to a practice match it is also interpreted as invalid - Dotabank is unable to access practice lobby replays.", "danger")
+    return redirect(request.referrer or url_for("index"))
+
+
 @app.errorhandler(401)  # Unauthorized
 @app.errorhandler(403)  # Forbidden
 @app.errorhandler(404)  # > Missing middle!
