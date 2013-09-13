@@ -9,9 +9,9 @@ class GCWorkerAdmin(AdminModelView):
     form_excluded_columns = ('password', 'sentry')
     column_exclude_list = ('password', 'sentry')
 
-    def __init__(self, session):
+    def __init__(self, session, **kwargs):
         # Just call parent class with predefined model.
-        super(GCWorkerAdmin, self).__init__(GCWorker, session)
+        super(GCWorkerAdmin, self).__init__(GCWorker, session, **kwargs)
 
     def scaffold_form(self):
         form_class = super(GCWorkerAdmin, self).scaffold_form()

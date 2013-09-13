@@ -14,8 +14,8 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 oid = OpenID(app)
 
-from views import index, about, internalerror, AdminIndex, AdminModelView
-admin = Admin(app, name="Dotabank", index_view=AdminIndex(url='/admin', name='Admin Home'))
+admin = Admin(app, name="Dotabank")
+from views import index, about, internalerror, AdminModelView
 
 # Setup steamodd
 steam.api.key.set(app.config['STEAM_API_KEY'])
@@ -33,11 +33,11 @@ app.register_blueprint(usersModule)
 app.register_blueprint(replaysModule)
 
 admin.add_view(UserAdmin(db.session))
-admin.add_view(ReplayAdmin(db.session))
-admin.add_view(AdminModelView(ReplayRating, db.session))
-admin.add_view(AdminModelView(ReplayFavourite, db.session))
-admin.add_view(GCWorkerAdmin(db.session))
-admin.add_view(AdminModelView(GCJob, db.session))
+admin.add_view(ReplayAdmin(db.session, category='Replays'))
+admin.add_view(AdminModelView(ReplayRating, db.session, category='Replays'))
+admin.add_view(AdminModelView(ReplayFavourite, db.session, category='Replays'))
+admin.add_view(GCWorkerAdmin(db.session, category='GC'))
+admin.add_view(AdminModelView(GCJob, db.session, category='GC'))
 
 
 # # Have the views' code get a ran through - they register themselves, hence why no actual importing.

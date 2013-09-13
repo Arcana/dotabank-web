@@ -76,6 +76,6 @@ class UserAdmin(AdminModelView):
     column_display_pk = True
     form_columns = ('id', 'name', 'enabled')
 
-    def __init__(self, session):
+    def __init__(self, session, **kwargs):
         # Just call parent class with predefined model.
-        super(UserAdmin, self).__init__(User, session)
+        super(UserAdmin, self).__init__(User, session, **kwargs)
