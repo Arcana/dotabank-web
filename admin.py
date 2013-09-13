@@ -1,12 +1,9 @@
-from app import app, db
-from flask.ext.admin import Admin
+from app import app, db, admin
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from flask.ext.wtf import PasswordField
 from flask.ext.login import current_user
 from models import User, Replay, ReplayRating, ReplayFavourite, GCWorker, GCJob
 from aes import AESCipher
-
-admin = Admin(name="Dotabank")
 
 
 class AdminModelView(ModelView):
