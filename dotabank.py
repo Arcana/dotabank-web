@@ -2,7 +2,9 @@ from app import app, login_manager
 from models import AnonymousUser
 
 # Have the views' code get a ran through - they register themselves, hence why no actual importing.
-import admin
+from admin import admin
+admin.init_app(app)
+
 import views
 
 # Register our anonymous user object, for our custom methods that flask.ext.login.AnonymousUserMixin doesn't have.

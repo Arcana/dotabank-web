@@ -1,5 +1,4 @@
 from flask import Flask
-from flask.ext.admin import Admin
 from flask.ext.cache import Cache
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
@@ -10,7 +9,6 @@ import steam
 app = Flask(__name__)
 app.config.from_pyfile("settings.py")
 
-admin = Admin(app, name="Dotabank")
 cache = Cache(app)
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)

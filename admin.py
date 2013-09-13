@@ -1,4 +1,6 @@
-from app import app, db, admin
+from app import app, db
+from flask.ext.admin import Admin, expose
+from flask.ext.admin import AdminIndexView
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from flask.ext.wtf import PasswordField
 from flask.ext.login import current_user
@@ -6,9 +8,19 @@ from models import User, Replay, ReplayRating, ReplayFavourite, GCWorker, GCJob
 from aes import AESCipher
 
 
-class AdminModelView(ModelView):
+class AuthMixin(object):
     def is_accessible(self):
         return current_user.is_admin()
+
+
+class AdminModelView(AuthMixin, ModelView):
+    pass
+
+
+class AdminIndex(AuthMixin, AdminIndexView):
+    @expose("/")
+    def index(self):
+        return self.render('admin/index.html')
 
 
 class UserAdmin(AdminModelView):
@@ -48,6 +60,7 @@ class GCWorkerAdmin(AdminModelView):
             model.password = AESCipher(app.config["ENCRYPTION_KEY"]).encrypt(model.new_password)
 
 
+admin = Admin(name="Dotabank", index_view=AdminIndex(url='/admin', name='Admin Home'))
 admin.add_view(UserAdmin(db.session))
 admin.add_view(ReplayAdmin(db.session))
 admin.add_view(AdminModelView(ReplayRating, db.session))
