@@ -10,6 +10,7 @@ class User(db.Model):
     enabled = db.Column(db.Boolean, default=True, nullable=False)
     first_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    admin = db.Column(db.Boolean, default=False)
 
     replay_ratings = db.relationship('ReplayRating', backref='user', lazy='select', cascade="all, delete-orphan")
     favourites = db.relationship('ReplayFavourite', backref='user', lazy='select', cascade="all, delete-orphan")
@@ -35,6 +36,9 @@ class User(db.Model):
 
     def is_authenticated(self):
         return True
+
+    def is_admin(self):
+        return self.admin
 
     def update_last_seen(self):
         # Called every page load for current_user
