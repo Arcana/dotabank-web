@@ -3,7 +3,6 @@ from flask.ext.cache import Cache
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
 from flask.ext.sqlalchemy import SQLAlchemy
-
 import steam
 
 app = Flask(__name__)
@@ -19,13 +18,13 @@ oid = OpenID(app)
 steam.api.key.set(app.config['STEAM_API_KEY'])
 steam.api.socket_timeout.set(10)
 
+from admin import admin
+admin.init_app(app)
+
 # Debug environment
 if app.debug:
     from flask.ext.debugtoolbar import DebugToolbarExtension
-    from admin import admin
-    admin.init_app(app)
     toolbar = DebugToolbarExtension(app)
-
 
 # Production environment code
 else:

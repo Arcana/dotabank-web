@@ -4,3 +4,19 @@
     z-index: 990;
     position: static;
 }
+
+#admin-navbar {
+    margin-bottom: 0px;
+}
+
+.btn-inverse {
+    color: hsl(0, 100%, 100%);
+    background-color: hsl(0, 0%, 22%);
+    border-color: hsl(0, 0%, 15%);
+}
+
+.btn-inverse:hover, .btn-inverse:focus, .btn-inverse:active, .btn-inverse.active, .open .dropdown-toggle.btn-inverse {
+    color: hsl(0, 100%, 100%);
+    background-color: hsl(0, 0%, 15%);
+    border-color: hsl(0, 0%, 15%);
+}

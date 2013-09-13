@@ -12,6 +12,21 @@
 </head>
 
 <body>
+    {% if current_user.is_admin() %}
+    <div id="admin-navbar" class="navbar navbar-inverse navbar-static-top">
+        <div class="container">
+            <ul class="nav navbar-nav">
+            </ul>
+            <ul class="nav navbar-nav pull-right">
+                <li>
+                    <div class="form">
+                        <a class="btn btn-inverse navbar-btn" href="{{ url_for("admin.index") }}">Admin</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% endif %}
     <div class="navbar navbar-default navbar-static-top">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for("index") }}">DOTABANK</a>
