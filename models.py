@@ -1,6 +1,12 @@
 from app import db
-from flask.ext.login import current_user
+from flask.ext.login import current_user, AnonymousUserMixin
 import datetime
+
+
+class AnonymousUser(AnonymousUserMixin):
+
+    def is_admin(self):
+        return False
 
 
 class User(db.Model):
