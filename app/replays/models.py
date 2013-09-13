@@ -2,6 +2,7 @@ from app import db
 from flask.ext.login import current_user
 
 
+# noinspection PyShadowingBuiltins
 class Replay(db.Model):
     __tablename__ = "replays"
 
@@ -49,6 +50,7 @@ class Replay(db.Model):
             return False
 
 
+# noinspection PyShadowingBuiltins
 class ReplayRating(db.Model):
     __tablename__ = "replay_ratings"
 
@@ -66,6 +68,7 @@ class ReplayRating(db.Model):
         return "<Rating {}/{}>".format(self.replay_id, self.user_id)
 
 
+# noinspection PyShadowingBuiltins
 class ReplayFavourite(db.Model):
     __tablename__ = "replay_favs"
 

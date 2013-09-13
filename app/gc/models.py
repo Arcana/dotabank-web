@@ -2,6 +2,7 @@ from app import db
 import datetime
 
 
+# noinspection PyShadowingBuiltins
 class GCWorker(db.Model):
     __tablename__ = "gc_workers"
     id = db.Column(db.Integer, primary_key=True)
@@ -23,6 +24,7 @@ class GCWorker(db.Model):
         return "<GCWorker {}>".format(self.id)
 
 
+# noinspection PyShadowingBuiltins
 class GCJob(db.Model):
     __tablename__ = "gc_jobs"
     id = db.Column(db.Integer, primary_key=True)
