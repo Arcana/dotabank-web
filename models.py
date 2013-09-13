@@ -130,7 +130,7 @@ class GCWorker(db.Model):
     __tablename__ = "gc_workers"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), unique=True, nullable=False)
-    password = db.Column(db.String(32), nullable=False)
+    password = db.Column(db.BLOB, nullable=False)
     display_name = db.Column(db.String(32), nullable=False)
     auth_code = db.Column(db.String(32))
     sentry = db.Column(db.BLOB)
