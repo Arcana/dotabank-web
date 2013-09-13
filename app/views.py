@@ -1,14 +1,17 @@
-from flask import render_template
+from flask import render_template, g
 
-from app import app, db
+from app import app, db, admin
 from app.users.models import User
 from app.replays.models import Replay
 
 from flask.ext.login import current_user
-from flask.ext.admin import expose
-from flask.ext.admin import AdminIndexView
+from flask.ext.admin import expose, AdminIndexView
 from flask.ext.admin.contrib.sqlamodel import ModelView
 
+
+@app.before_request
+def before_request():
+    g.admin = admin
 
 # Routes
 @app.route('/')
