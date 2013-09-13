@@ -7,17 +7,17 @@
         </div>
         <ul class="nav navbar-nav">
             <li>
-                <a href="{{ url_for("replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
+                <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
                     <span class="{{"text-primary" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"> ({{ replay.favourites|list|length }})</span>
                 </a>
             </li>
             <li>
-                <a href="{{ url_for("replay_rate", _id=replay.id, positive=1) }}">
+                <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=1) }}">
                     <span class="{{"text-primary" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"> ({{ replay.ratings|selectattr("positive")|list|length }})</span>
                 </a>
             </li>
             <li>
-                <a href="{{ url_for("replay_rate", _id=replay.id, positive=0) }}">
+                <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=0) }}">
                     <span class="{{"text-primary" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
                 </a>
             </li>

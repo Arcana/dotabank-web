@@ -14,7 +14,7 @@
             <ul class="nav navbar-nav pull-right">
                 <li>
                     <div class="form">
-                        <a class="btn btn-default navbar-btn" href="{{ url_for("logout") }}">Logout</a>
+                        <a class="btn btn-default navbar-btn" href="{{ url_for("users.logout") }}">Logout</a>
                     </div>
                 </li>
                 <li>&nbsp;</li> <!-- Padding hack -->
@@ -32,21 +32,21 @@
     <h2>Favourites</h2>
     <ul>
         {% for fav in user.favourites|list %}
-            <li><a href="{{ url_for("replay", _id=fav.replay_id) }}">{{ fav.replay_id }}</a></li>
+            <li><a href="{{ url_for("replays.replay", _id=fav.replay_id) }}">{{ fav.replay_id }}</a></li>
         {% endfor %}
     </ul>
 
     <h2>Thumbed up</h2>
     <ul>
         {% for rating in user.replay_ratings|selectattr("positive")|list %}
-            <li><a href="{{ url_for("replay", _id=rating.replay_id) }}">{{ rating.replay_id }}</a></li>
+            <li><a href="{{ url_for("replays.replay", _id=rating.replay_id) }}">{{ rating.replay_id }}</a></li>
         {% endfor %}
     </ul>
 
     <h2>Thumbed down</h2>
     <ul>
         {% for rating in user.replay_ratings|rejectattr("positive")|list %}
-            <li><a href="{{ url_for("replay", _id=rating.replay_id) }}">{{ rating.replay_id }}</a></li>
+            <li><a href="{{ url_for("replays.replay", _id=rating.replay_id) }}">{{ rating.replay_id }}</a></li>
         {% endfor %}
     </ul>
 

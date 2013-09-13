@@ -31,12 +31,12 @@
         <div class="container">
             <a class="navbar-brand" href="{{ url_for("index") }}">DOTABANK</a>
             <ul class="nav navbar-nav">
-                <li class="{{ "active" if "replays" == request.endpoint  }}"><a href="{{ url_for("replays") }}">Replays</a></li>
-                <li class="{{ "active" if "users" == request.endpoint  }}"><a href="{{ url_for("users") }}">Users</a></li>
+                <li class="{{ "active" if "replays" == request.endpoint  }}"><a href="{{ url_for("replays.replays") }}">Replays</a></li>
+                <li class="{{ "active" if "users" == request.endpoint  }}"><a href="{{ url_for("users.users") }}">Users</a></li>
             </ul>
             <ul class="nav navbar-nav pull-right">
                 <li>
-                    <form class="navbar-form" action="{{ url_for("search") }}">
+                    <form class="navbar-form" action="{{ url_for("replays.search") }}">
                         <input name="id" class="form-control" type="text" placeholder="Match ID" style="width:100px;"/>
                         <button class="btn btn-default" type="submit">Search</button>
                     </form>
@@ -45,12 +45,12 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown"> {{ current_user.name }} <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for("user", _id=current_user.id) }}">Profile</a></li>
-                        <li><a href="{{ url_for("logout") }}">Logout</a></li>
+                        <li><a href="{{ url_for("users.user", _id=current_user.id) }}">Profile</a></li>
+                        <li><a href="{{ url_for("users.logout") }}">Logout</a></li>
                     </ul>
                 </li>
             {% else %}
-                <li><a href="{{ url_for("login") }}"><img src="{{ url_for('static', filename='images/sits_small.png') }}" alt="Sign in with Steam"/></a></li>
+                <li><a href="{{ url_for("users.login") }}"><img src="{{ url_for('static', filename='images/sits_small.png') }}" alt="Sign in with Steam"/></a></li>
             {% endif %}
             </ul>
 

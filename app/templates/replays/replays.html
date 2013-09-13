@@ -4,8 +4,8 @@
     <div class="page-header">
         <h1>Replays <small>page {{ replays.page }}</small></h1>
         <ul class="pager">
-            <li class="previous {{ "disabled" if not replays.has_prev }}"><a href="{{ url_for("replays", page=replays.prev_num) if replays.has_prev else "" }}">&larr; Older</a></li>
-            <li class="next {{ "disabled" if not replays.has_next }}"><a href="{{ url_for("replays", page=replays.next_num) if replays.has_next else "" }}">Newer &rarr;</a></li>
+            <li class="previous {{ "disabled" if not replays.has_prev }}"><a href="{{ url_for("replays.replays", page=replays.prev_num) if replays.has_prev else "" }}">&larr; Older</a></li>
+            <li class="next {{ "disabled" if not replays.has_next }}"><a href="{{ url_for("replays.replays", page=replays.next_num) if replays.has_next else "" }}">Newer &rarr;</a></li>
         </ul>
     </div>
     <table class="table table-condensed table-striped">
@@ -22,17 +22,17 @@
         <tbody>
             {% for replay in replays.items %}
                 <tr>
-                    <td><a href="{{ url_for("replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                    <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
                     <td>
-                        <a href="{{ url_for("replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
+                        <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
                             <span class="{{"" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"> ({{ replay.favourites|list|length }})</span>
                         </a>
                     </td>
                     <td>
-                        <a href="{{ url_for("replay_rate", _id=replay.id, positive=1) }}">
+                        <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=1) }}">
                             <span class="{{"" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"> ({{ replay.ratings|selectattr("positive")|list|length }})</span>
                         </a>
-                        <a href="{{ url_for("replay_rate", _id=replay.id, positive=0) }}">
+                        <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=0) }}">
                             <span class="{{"" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
                         </a>
                     </td>
