@@ -1,7 +1,7 @@
-from flask import Flask
+from flask import Flask, g
 from flask.ext.admin import Admin
 from flask.ext.cache import Cache
-from flask.ext.login import LoginManager
+from flask.ext.login import LoginManager, current_user
 from flask.ext.openid import OpenID
 from flask.ext.sqlalchemy import SQLAlchemy
 import steam
@@ -14,12 +14,20 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 oid = OpenID(app)
 
-admin = Admin(app, name="Dotabank")
-from views import index, about, internalerror, AdminModelView
-
 # Setup steamodd
 steam.api.key.set(app.config['STEAM_API_KEY'])
 steam.api.socket_timeout.set(10)
+
+
+from views import index, about, internalerror, AdminModelView, AdminIndex
+admin = Admin(app, name="Dotabank", index_view=AdminIndex())
+
+
+# Can't put in views.py because infinite import cycle
+@app.before_request
+def before_request():
+    if current_user.is_admin():
+        g.admin = admin  # Only utilized under is_admin condition
 
 from app.users.views import mod as usersModule
 from app.users.views import UserAdmin
@@ -38,6 +46,7 @@ admin.add_view(AdminModelView(ReplayRating, db.session, category='Replays'))
 admin.add_view(AdminModelView(ReplayFavourite, db.session, category='Replays'))
 admin.add_view(GCWorkerAdmin(db.session, category='GC'))
 admin.add_view(AdminModelView(GCJob, db.session, category='GC'))
+
 
 # Debug environment
 if app.debug:
