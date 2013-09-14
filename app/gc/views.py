@@ -1,5 +1,5 @@
 from app import app
-from app.views import AdminModelView
+from app.admin.views import AdminModelView
 from flask.ext.wtf import PasswordField
 from models import GCWorker
 from helpers import AESCipher

@@ -1,7 +1,6 @@
-from flask import Flask, g
-from flask.ext.admin import Admin
+from flask import Flask
 from flask.ext.cache import Cache
-from flask.ext.login import LoginManager, current_user
+from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
 from flask.ext.sqlalchemy import SQLAlchemy
 import steam
@@ -18,25 +17,22 @@ oid = OpenID(app)
 steam.api.key.set(app.config['STEAM_API_KEY'])
 steam.api.socket_timeout.set(10)
 
-
-from views import index, about, internalerror, AdminModelView, AdminIndex
-admin = Admin(app, name="Dotabank", index_view=AdminIndex())
+from views import index, about, internalerror
 
 
-# Can't put in views.py because infinite import cycle
-@app.before_request
-def before_request():
-    if current_user.is_admin():
-        g.admin = admin  # Only utilized under is_admin condition
-
+from app.admin.views import mod as adminModule
 from app.users.views import mod as usersModule
-from app.users.views import UserAdmin
 from app.replays.views import mod as replaysModule
+
+from app.admin.views import admin, AdminModelView
+from app.users.views import UserAdmin
 from app.replays.views import ReplayAdmin
 from app.replays.models import ReplayRating, ReplayFavourite
 from app.gc.views import GCWorkerAdmin
 from app.gc.models import GCJob
 
+
+app.register_blueprint(adminModule)
 app.register_blueprint(usersModule)
 app.register_blueprint(replaysModule)
 
@@ -47,6 +43,7 @@ admin.add_view(AdminModelView(ReplayFavourite, db.session, category='Replays'))
 admin.add_view(GCWorkerAdmin(db.session, category='GC'))
 admin.add_view(AdminModelView(GCJob, db.session, category='GC'))
 
+admin.init_app(app)
 
 # Debug environment
 if app.debug:

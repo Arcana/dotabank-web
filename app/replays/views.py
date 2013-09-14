@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, flash, redirect, request, url_for,
 from app import steam, db
 from models import Replay, ReplayRating, ReplayFavourite
 from flask.ext.login import current_user, login_required
-from app.views import AdminModelView
+from app.admin.views import AdminModelView
 
 mod = Blueprint("replays", __name__, url_prefix="/replays")
 

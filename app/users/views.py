@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, flash, redirect, request, url_for,
 from app import oid, steam, db, login_manager
 from models import User, AnonymousUser
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from app.views import AdminModelView
+from app.admin.views import AdminModelView
 
 mod = Blueprint("users", __name__, url_prefix="/users")
 

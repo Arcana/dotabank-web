@@ -1,12 +1,10 @@
-from flask import render_template, g
+from flask import render_template
 
 from app import app, db
 from app.users.models import User
 from app.replays.models import Replay
 
 from flask.ext.login import current_user
-from flask.ext.admin import expose, AdminIndexView
-from flask.ext.admin.contrib.sqlamodel import ModelView
 
 # Routes
 @app.route('/')
@@ -41,18 +39,3 @@ def internalerror(error):
         error.name = "Internal Server Error"
         error.description = "Whoops! Something went wrong server-side.  Details of the problem has been sent to the Dotabank team for investigation."
     return render_template("error.html", error=error, title=error.name), error.code
-
-
-class AuthMixin(object):
-    def is_accessible(self):
-        return current_user.is_admin()
-
-
-class AdminModelView(AuthMixin, ModelView):
-    pass
-
-
-class AdminIndex(AuthMixin, AdminIndexView):
-    @expose("/")
-    def index(self):
-        return self.render('admin/index.html', blorg="lblrlbleblorg")
