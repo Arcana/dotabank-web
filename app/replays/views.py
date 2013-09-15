@@ -80,7 +80,7 @@ def search():
             db.session.commit()
 
         if replay:
-            return redirect(url_for("replay", _id=match_id))
+            return redirect(url_for("replays.replay", _id=match_id))
 
     # Only invalid matches make it this far!
     flash("Invalid match id.  If this match id corresponds to a practice match it is also interpreted as invalid - Dotabank is unable to access practice lobby replays.", "danger")
