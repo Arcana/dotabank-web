@@ -9,6 +9,7 @@ class Replay(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(80))
+    local_uri = db.Column(db.String(128))
     state = db.Column(db.Enum(
         "WAITING_GC",
         "WAITING_DOWNLOAD",
