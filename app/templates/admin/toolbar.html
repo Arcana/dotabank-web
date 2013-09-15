@@ -1,0 +1,37 @@
+<div id="admin-navbar" class="navbar navbar-inverse navbar-static-top">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for("index") }}"><span class="glyphicon glyphicon-home"></span></a>
+        <ul class="nav navbar-nav">
+            {% for item in g.admin.menu() %}
+                {% if item.is_category() %}
+                {% set children = item.get_children() %}
+                {% if children %}
+                    {% if item.is_active(g.admin) %}<li class="active dropdown">{% else %}<li class="dropdown">{% endif %}
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">{{ item.name }}<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            {% for child in children %}
+                                {% if child.is_active(g.admin) %}<li class="active">{% else %}<li>{% endif %}
+                                    <a href="{{ child.get_url() }}">{{ child.name }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endif %}
+                {% else %}
+                    {% if item.is_accessible() and item.is_visible() %}
+                        {% if item.is_active(g.admin) %}<li class="active">{% else %}<li>{% endif %}
+                            <a href="{{ item.get_url() }}">{{ item.name }}</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <ul class="nav navbar-nav pull-right">
+            <li>
+{#                    <div class="form">#}
+{#                        <a class="btn btn-inverse navbar-btn" href="{{ url_for("admin.index") }}">Admin</a>#}
+{#                    </div>#}
+            </li>
+        </ul>
+    </div>
+</div>
