@@ -24,6 +24,7 @@ class Replay(db.Model):
         "REPLAY_EXPIRED",
         "UNKNOWN"
     ), default="UNKNOWN")
+    gc_fails = db.Column(db.Integer, default=0)
 
     ratings = db.relationship('ReplayRating', backref='replay', lazy='joined', cascade="all, delete-orphan")
     favourites = db.relationship('ReplayFavourite', backref='favourite', lazy='joined', cascade="all, delete-orphan")
