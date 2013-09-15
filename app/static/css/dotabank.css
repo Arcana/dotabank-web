@@ -19,3 +19,7 @@
     background-color: hsl(0, 0%, 15%);
     border-color: hsl(0, 0%, 15%);
 }
+
+#footer {
+    font-size: small;
+}

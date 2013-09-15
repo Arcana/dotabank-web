@@ -55,10 +55,18 @@
         {% endblock %}
     </div>
     <hr>
-    <div class="container">
+    <div id="footer" class="container text-muted">
+        <ul class="list-inline pull-left">
+            <li>© Dotabank. Powered by <a href="http://steampowered.com">Steam</a> and <a href="https://github.com/skadistats">SkadiStats</a>.</li>
+        </ul>
+        <ul class="list-inline pull-right">
+            <li><a href="{{ url_for("privacy") }}">Privacy Policy</a></li>
+            <li><a href="{{ url_for("tos") }}">Terms of Service</a></li>
+            <li><a href="{{ url_for("about") }}">About Dotabank</a></li>
+        </ul>
+        <div class="clearfix"></div>
         <p class="text-muted">
-            <span>© <a href="http://rjackson.me">RJ</a>, PROBABLY. <a href="http://steampowered.com">Powered by Steam</a>.</span>
-            <span class="pull-right"><a href="{{ url_for("about") }}">About Dotabank</a></span>
+            "Dota" is a registered trademark of <a href="http://valvesoftware.com">Valve Corporation</a>.  Dotabank is not affiliated with Valve Corporation.
         </p>
     </div>
     {% block scripts %}

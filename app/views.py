@@ -1,6 +1,6 @@
 from flask import render_template
 
-from app import app, db
+from app import app, db, cache
 from app.users.models import User
 from app.replays.models import Replay
 
@@ -12,6 +12,16 @@ def index():
     latest_replays = Replay.query.limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
     all_users = User.query.all()
     return render_template("dotabank.html", latest_replays=latest_replays, all_users=all_users)
+
+
+@app.route("/privacy/")
+def privacy():
+    return render_template("privacy.html")
+
+
+@app.route("/tos/")
+def tos():
+    return render_template("tos.html", emule=app.config["CONTACT_EMAIL"])
 
 
 @app.route("/about/")
