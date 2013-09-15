@@ -4,6 +4,7 @@ from flask.ext.login import current_user
 
 # noinspection PyShadowingBuiltins
 class Replay(db.Model):
+    # TODO: date_added for ordering by date added to site (latest repalys on index)
     __tablename__ = "replays"
 
     id = db.Column(db.Integer, primary_key=True)

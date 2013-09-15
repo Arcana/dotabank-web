@@ -28,3 +28,7 @@ admin = Admin(name="Dotabank", index_view=AdminIndex())
 def before_request():
     if current_user.is_admin():
         g.admin = admin  # Only utilized under is_admin condition
+
+
+# TODO: Toolbar stuffs
+# - DebugToolbar kinda things; cpu time, sql queries, cache speed (though we don't cache anything yet)

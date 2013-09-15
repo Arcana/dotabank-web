@@ -11,6 +11,7 @@ mod = Blueprint("replays", __name__, url_prefix="/replays")
 @mod.route("/")
 @mod.route("/page/<int:page>/")
 def replays(page=1):
+    # TODO: Filters & ordering
     replays = Replay.query.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("replays/replays.html", replays=replays)
 
@@ -27,6 +28,7 @@ def replay(_id):
 @mod.route("/<int:_id>/rate/")
 @login_required
 def replay_rate(_id):
+    # TODO: API-ify (ajax request & jsonify response)
     if "positive" in request.args:
         current_rating = ReplayRating.query.filter(ReplayRating.replay_id == _id, ReplayRating.user_id == current_user.id).first() or ReplayRating()
         try:
@@ -49,6 +51,7 @@ def replay_rate(_id):
 @mod.route("/<int:_id>/favourite/")
 @login_required
 def replay_favourite(_id):
+    # TODO: API-ify (ajax request & jsonify response)
     favourite = ReplayFavourite.query.filter(ReplayFavourite.replay_id == _id, ReplayFavourite.user_id == current_user.id).first()
     try:
         if "remove" not in request.args or not bool(int(request.args["remove"])):
