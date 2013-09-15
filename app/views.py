@@ -23,7 +23,7 @@ def about():
 @app.errorhandler(403)  # Forbidden
 @app.errorhandler(404)  # > Missing middle!
 @app.errorhandler(500)  # Internal server error.
-@app.errorhandler(Exception)  # Internal server error.
+# @app.errorhandler(Exception)  # Internal server error.
 def internalerror(error):
     try:
         if error.code == 401:
