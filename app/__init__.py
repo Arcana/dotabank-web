@@ -27,7 +27,7 @@ from app.replays.views import mod as replaysModule
 from app.admin.views import admin, AdminModelView
 from app.users.views import UserAdmin
 from app.replays.views import ReplayAdmin
-from app.replays.models import ReplayRating, ReplayFavourite
+from app.replays.models import ReplayRating, ReplayFavourite, CombatLogMessage
 from app.gc.views import GCWorkerAdmin
 from app.gc.models import GCJob
 
@@ -40,6 +40,7 @@ admin.add_view(UserAdmin(db.session))
 admin.add_view(ReplayAdmin(db.session, category='Replays'))
 admin.add_view(AdminModelView(ReplayRating, db.session, category='Replays'))
 admin.add_view(AdminModelView(ReplayFavourite, db.session, category='Replays'))
+admin.add_view(AdminModelView(CombatLogMessage, db.session, category='Replays'))
 admin.add_view(GCWorkerAdmin(db.session, category='GC'))
 admin.add_view(AdminModelView(GCJob, db.session, category='GC'))
 
