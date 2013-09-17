@@ -1,33 +1,10 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <nav id="replay-nav" class="navbar navbar-default">
-        <div class="navbar-header">
-            <span class="navbar-brand">Replay {{ replay.id }}</span>
-        </div>
-        <ul class="nav navbar-nav">
-            <li>
-                <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
-                    <span class="{{"text-primary" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"> ({{ replay.favourites|list|length }})</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=1) }}">
-                    <span class="{{"text-primary" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"> ({{ replay.ratings|selectattr("positive")|list|length }})</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=0) }}">
-                    <span class="{{"text-primary" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
-                </a>
-            </li>
-            <li>
-                <div class="form">
-                    <a class="btn btn-default navbar-btn {{ "disabled" if not replay.url else "" }}" href="{{ replay.url }}">Download</a>
-                </div>
-            </li>
-        </ul>
-    </nav>
+    <div class="page-header">
+        <h1>Replay <small>{{ replay.id }}</small></h1>
+        {% include "replays/replay_nav.html" %}
+    </div>
 
 
 {#    state = db.Column(db.Enum(#}
@@ -60,16 +37,18 @@
         </div>
     {% endif %}
 
-    <dl class="dl-horizontal">
-        <dt>id</dt>
-        <dd>{{ replay.id }}</dd>
-        <dt>url</dt>
-        <dd>{{ replay.url }}</dd>
-        <dt>state</dt>
-        <dd>{{ replay.state }}</dd>
-        <dt>replay_state</dt>
-        <dd>{{ replay.replay_state }}</dd>
-        <dt>ratings</dt>
-        <dd>{{ replay.ratings }}</dd>
-    </dl>
+    <div class="tab-pane active" id="overview">
+        <dl class="dl-horizontal">
+            <dt>id</dt>
+            <dd>{{ replay.id }}</dd>
+            <dt>url</dt>
+            <dd>{{ replay.url }}</dd>
+            <dt>state</dt>
+            <dd>{{ replay.state }}</dd>
+            <dt>replay_state</dt>
+            <dd>{{ replay.replay_state }}</dd>
+            <dt>ratings</dt>
+            <dd>{{ replay.ratings }}</dd>
+        </dl>
+    </div>
 {% endblock %}

@@ -29,7 +29,8 @@ class Replay(db.Model):
     gc_fails = db.Column(db.Integer, default=0)
 
     ratings = db.relationship('ReplayRating', backref='replay', lazy='joined', cascade="all, delete-orphan")
-    favourites = db.relationship('ReplayFavourite', backref='favourite', lazy='joined', cascade="all, delete-orphan")
+    favourites = db.relationship('ReplayFavourite', backref='replay', lazy='joined', cascade="all, delete-orphan")
+    combatlog = db.relationship('CombatLogMessage', order_by="asc(CombatLogMessage.timestamp)", backref='replay', lazy='dynamic', cascade="all, delete-orphan")
 
     def __init__(self, _id=None, url="", replay_state="UNKNOWN", state="WAITING_GC"):
         self.id = _id
@@ -85,3 +86,39 @@ class ReplayFavourite(db.Model):
 
     def __repr__(self):
         return "<Favourite {}/{}>".format(self.replay_id, self.user_id)
+
+
+class CombatLogMessage(db.Model):
+    __tablename__ = "combatlog_msgs"
+
+    id = db.Column(db.Integer, primary_key=True)
+    replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=False)
+
+    timestamp = db.Column(db.Float, nullable=False)
+    tick = db.Column(db.Integer, nullable=False)
+
+    type = db.Column(db.String(16), nullable=False)
+    source_name = db.Column(db.String(80), nullable=False)
+    target_name = db.Column(db.String(80), nullable=False)
+    attacker_name = db.Column(db.String(80), nullable=False)
+    inflictor_name = db.Column(db.String(80), nullable=False)
+    attacker_illusion = db.Column(db.Boolean, nullable=False)
+    target_illusion = db.Column(db.Boolean, nullable=False)
+    target_source_name = db.Column(db.String(80), nullable=False)
+    value = db.Column(db.Integer)
+    health = db.Column(db.Integer)
+
+    def __init__(self, replay_id, timestamp, tick, type, source_name, target_name, attacker_name, inflictor_name, attacker_illusion, target_illusion, value, health, target_source_name):
+        self.replay_id = replay_id
+        self.timestamp = timestamp
+        self.tick = tick
+        self.type = type
+        self.source_name = source_name
+        self.target_name = target_name
+        self.attacker_name = attacker_name
+        self.inflictor_name = inflictor_name
+        self.attacker_illusion = attacker_illusion
+        self.target_illusion = target_illusion
+        self.target_source_name = target_source_name
+        self.value = value
+        self.health = health

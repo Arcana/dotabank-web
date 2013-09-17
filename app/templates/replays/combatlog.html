@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Replay <small>{{ replay.id }}</small></h1>
+        {% include "replays/replay_nav.html" %}
+        <hr>
+        <div class="text-center">
+            <h3>Page {{ combatlog.page }} of {{ combatlog.pages }}</h3>
+            <p class="text-muted">Showing {{ combatlog.per_page * combatlog.page - (combatlog.per_page - 1) }} to {{ combatlog.per_page * combatlog.page }} of {{ combatlog.total }} total combat log entries.</p>
+        </div>
+        <ul class="pager">
+            <li class="previous {{ "disabled" if not combatlog.has_prev }}"><a href="{{ url_for("replays.combatlog", _id=replay.id, page=combatlog.prev_num) if combatlog.has_prev else "" }}">&larr; Older</a></li>
+            <li class="next {{ "disabled" if not combatlog.has_next }}"><a href="{{ url_for("replays.combatlog", _id=replay.id, page=combatlog.next_num) if combatlog.has_next else "" }}">Newer &rarr;</a></li>
+        </ul>
+    </div>
+
+    <table class="table table-condensed table-striped" id="combatlog_table">
+        <thead>
+            <tr>
+                <td>Timestamp</td>
+                <td>Tick</td>
+                <td>Message</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for message in combatlog.items %}
+            <tr id="combatlog_message">
+                <td id="timestamp" class="col-xs-1"><a id="combatlog_ts_{{ message.timestamp|int }}" href="#combatlog_ts_{{ message.timestamp|int }}">{{ message.timestamp|int }}</a></td>
+                <td id="tick" class="col-xs-1"><a id="combatlog_tk_{{ message.tick}}" href="#combatlog_tk_{{ message.tick}}">{{ message.tick }}</a></td>
+                <td id="message" class="col-xs-10">
+{#                    {% set attacker = message.attacker_name|get_hero_by_name|map(attribute="localized_name") + " (Illusion)" if message.attacker_illusion else message.attacker_name|get_hero_by_name|map(attribute="localized_name") %}#}
+{#                    {% set target = message.target_name|get_hero_by_name|map(attribute="localized_name") + " (Illusion)" if message.target_illusion else message.target_name|get_hero_by_name|map(attribute="localized_name") %}#}
+                    {% if message.type == "damage" %}
+                        {{ "{} hits {} for {} damage ({}->{}).".format(
+                            (message.attacker_name|get_hero_by_name)["localized_name"],
+                            (message.target_name|get_hero_by_name)["localized_name"],
+                            message.value,
+                            message.value + message.health,
+                            message.health
+                        ) }}
+                    {% elif message.type == "heal" %}
+                        {{ "{}'s {} heals {} for {} health ({}->{}).".format(
+                            (message.attacker_name|get_hero_by_name)["localized_name"],
+                            message.inflictor_name,
+                            target, message.value,
+                            message.value + message.health,
+                            message.health
+                        ) }}
+                    {% elif message.type == "modifier added" %}
+                        {{ "{} recieves {} {} from {}".format(
+                            (message.target_name|get_hero_by_name)["localized_name"],
+                            message.inflictor_name,
+                            "buff" if message.value == 0 else "debuff",
+                            (message.attacker_name|get_hero_by_name)["localized_name"]
+                        ) }}
+                    {% elif message.type == "modifier removed" %}
+                        {{ "{} loses {} {}".format(
+                            (message.target_name|get_hero_by_name)["localized_name"],
+                            message.inflictor_name,
+                            "buff" if message.value == 0 else "debuff"
+                        ) }}
+                    {% elif message.type == "death" %}
+                        {{ "{} is killed by {}!".format(
+                            (message.target_name|get_hero_by_name)["localized_name"],
+                            (message.attacker_name|get_hero_by_name)["localized_name"]
+                        ) }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

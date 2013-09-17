@@ -1,12 +1,15 @@
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
 
-from app import steam, db
-from models import Replay, ReplayRating, ReplayFavourite
+from app import steam, db, cache
+from models import Replay, ReplayRating, ReplayFavourite, CombatLogMessage
 from flask.ext.login import current_user, login_required
 from app.admin.views import AdminModelView
+from filters import get_hero_by_id, get_hero_by_name
 
 mod = Blueprint("replays", __name__, url_prefix="/replays")
 
+mod.add_app_template_filter(get_hero_by_id)
+mod.add_app_template_filter(get_hero_by_name)
 
 @mod.route("/")
 @mod.route("/page/<int:page>/")
@@ -22,7 +25,27 @@ def replay(_id):
     if replay is None:
         flash("Replay {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
+
     return render_template("replays/replay.html", replay=replay)
+
+
+@mod.route("/<int:_id>/combatlog/")
+@mod.route("/<int:_id>/combatlog/<int:page>/")
+@cache.cached(timeout=60 * 60)  # 1hr
+def combatlog(_id, page=1):
+    # TODO: Search for tick / timestamp and redirect to appropriate page.
+    replay = Replay.query.filter(Replay.id == _id).first()
+    if replay is None:
+        flash("Replay {} not found.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    combatlog = replay.combatlog.paginate(page, current_app.config["COMBATLOG_MSGS_PER_PAGE"], False)
+
+    if len(combatlog.items) == 0:
+        flash("Motherfucking fuckers fucking my fuckfactory.", "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    return render_template("replays/combatlog.html", replay=replay, combatlog=combatlog)
 
 
 @mod.route("/<int:_id>/rate/")
