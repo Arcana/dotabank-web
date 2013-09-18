@@ -31,6 +31,7 @@ class Replay(db.Model):
     ratings = db.relationship('ReplayRating', backref='replay', lazy='joined', cascade="all, delete-orphan")
     favourites = db.relationship('ReplayFavourite', backref='replay', lazy='joined', cascade="all, delete-orphan")
     combatlog = db.relationship('CombatLogMessage', order_by="asc(CombatLogMessage.timestamp)", backref='replay', lazy='dynamic', cascade="all, delete-orphan")
+    players = db.relationship('ReplayPlayer', backref="replay", lazy="dynamic", cascade="all, delete-orphan")
 
     def __init__(self, _id=None, url="", replay_state="UNKNOWN", state="WAITING_GC"):
         self.id = _id
@@ -123,6 +124,9 @@ class CombatLogMessage(db.Model):
         self.value = value
         self.health = health
 
+    def __repr__(self):
+        return "<CombatLogMessage {}>".format(self.id)
+
 
 class ReplayPlayer(db.Model):
     __tablename__ = "replay_players"
@@ -140,6 +144,9 @@ class ReplayPlayer(db.Model):
         self.replay_id = replay_id
         self.steam_id = steam_id
         self.team = team
+
+    def __repr__(self):
+        return "<ReplayPlayer {}>".format(self.id)
 
 
 class PlayerSnapshot(db.Model):
@@ -290,3 +297,6 @@ class PlayerSnapshot(db.Model):
         self.respawn_time = respawn_time
         self.spawned_at = spawned_at
         self.xp = xp
+
+    def __repr__(self):
+        return "<ReplaySnapshotData {}>".format(self.id)

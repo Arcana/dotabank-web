@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
+from itertools import groupby, izip
+import operator
 
 from app import steam, db, cache
 from models import Replay, ReplayRating, ReplayFavourite, CombatLogMessage
@@ -26,7 +28,26 @@ def replay(_id):
         flash("Replay {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
 
-    return render_template("replays/replay.html", replay=replay)
+    graph_data = replay.players.all()
+    if graph_data:
+        graph_data = sorted(graph_data, key=operator.attrgetter("team"))
+        graph_labels = [int(y.tick) for y in max(graph_data, key=lambda x: len(x.player_snapshots)).player_snapshots]
+    else:
+        graph_labels = None
+
+    teams = {}
+    for key, vals in groupby(graph_data, key=operator.attrgetter("team")):
+        players = list(vals)
+        teams[key] = list(izip(*[x.player_snapshots for x in players]))
+        for i, tick in enumerate(teams[key]):
+            teams[key][i] = {
+                "gold": sum(x.earned_gold for x in tick),
+                "exp": sum(x.xp for x in tick),
+                "lh": sum(x.last_hits for x in tick),
+                "dn": sum(x.denies for x in tick)
+            }
+
+    return render_template("replays/replay.html", replay=replay, graph_data=graph_data, graph_labels=graph_labels, graph_teams=teams)
 
 
 @mod.route("/<int:_id>/combatlog/")
@@ -44,7 +65,6 @@ def combatlog(_id, page=1):
     if len(combatlog.items) == 0:
         flash("Motherfucking fuckers fucking my fuckfactory.", "danger")
         return redirect(request.referrer or url_for("index"))
-
     return render_template("replays/combatlog.html", replay=replay, combatlog=combatlog)
 
 
