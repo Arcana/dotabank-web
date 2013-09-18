@@ -41,10 +41,10 @@ def replay(_id):
         teams[key] = list(izip(*[x.player_snapshots for x in players]))
         for i, tick in enumerate(teams[key]):
             teams[key][i] = {
-                "gold": sum(x.earned_gold for x in tick),
-                "exp": sum(x.xp for x in tick),
-                "lh": sum(x.last_hits for x in tick),
-                "dn": sum(x.denies for x in tick)
+                "gold": sum(x.earned_gold for x in tick if x.earned_gold is not None),
+                "exp": sum(x.xp for x in tick if x.xp is not None),
+                "lh": sum(x.last_hits for x in tick if x.last_hits is not None),
+                "dn": sum(x.denies for x in tick if x.denies is not None)
             }
 
     return render_template("replays/replay.html", replay=replay, graph_data=graph_data, graph_labels=graph_labels, graph_teams=teams)

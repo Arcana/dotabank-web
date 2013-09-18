@@ -35,6 +35,9 @@
         {% set dire_stroke_colour = "rgba(255, 0, 0, 1)" %}
         {% if graph_data %}
 
+        var options = {
+            animation: false
+        };
 
         new Chart(
             $("#graph-gold-canvas").get(0).getContext("2d")).Line(
@@ -52,7 +55,8 @@
                     },
                     {% endfor %}
                 ]
-            }
+            },
+            options
         );
         {% for player in graph_data %}
         new Chart(
@@ -68,7 +72,8 @@
                     data: [{% for item in player.player_snapshots|map(attribute="earned_gold") %}{{ item|int }},{% endfor %}]
                     },
                 ]
-            }
+            },
+            options
         );
         {% endfor %}
 
@@ -88,7 +93,8 @@
                     },
                     {% endfor %}
                 ]
-            }
+            },
+            options
         );
         {% for player in graph_data %}
         new Chart(
@@ -104,7 +110,8 @@
                     data: [{% for item in player.player_snapshots|map(attribute="xp") %}{{ item|int }},{% endfor %}]
                     },
                 ]
-            }
+            },
+            options
         );
         {% endfor %}
 
@@ -124,7 +131,8 @@
                     },
                     {% endfor %}
                 ]
-            }
+            },
+            options
         );
         {% for player in graph_data %}
         new Chart(
@@ -140,7 +148,8 @@
                     data: [{% for item in player.player_snapshots|map(attribute="last_hits") %}{{ item|int }},{% endfor %}]
                     },
                 ]
-            }
+            },
+            options
         );
         {% endfor %}
 
@@ -160,7 +169,8 @@
                     },
                     {% endfor %}
                 ]
-            }
+            },
+            options
         );
         {% for player in graph_data %}
         new Chart(
@@ -176,7 +186,8 @@
                     data: [{% for item in player.player_snapshots|map(attribute="denies") %}{{ item|int }},{% endfor %}]
                     },
                 ]
-            }
+            },
+            options
         );
         {% endfor %}
         {% endif %}
@@ -254,6 +265,7 @@
             {% endfor %}
         </div>
         <div class="tab-pane" id="graph-exp">
+            <h3>Total</h3>
             <canvas id="graph-exp-canvas" width="1140" height="400"></canvas>
             {% for player in graph_data %}
                 <h3>{{ player.player_snapshots[-1].hero_name }}</h3>
@@ -261,6 +273,7 @@
             {% endfor %}
         </div>
         <div class="tab-pane" id="graph-lh">
+            <h3>Total</h3>
             <canvas id="graph-lh-canvas" width="1140" height="400"></canvas>
             {% for player in graph_data %}
                 <h3>{{ player.player_snapshots[-1].hero_name }}</h3>
@@ -268,6 +281,7 @@
             {% endfor %}
         </div>
         <div class="tab-pane" id="graph-dn">
+            <h3>Total</h3>
             <canvas id="graph-dn-canvas" width="1140" height="400"></canvas>
             {% for player in graph_data %}
                 <h3>{{ player.player_snapshots[-1].hero_name }}</h3>
