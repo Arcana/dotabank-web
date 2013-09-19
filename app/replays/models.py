@@ -137,13 +137,15 @@ class ReplayPlayer(db.Model):
     # name = Column(String()) # Player name, we don't need to store this.
     steam_id = db.Column(db.BigInteger)
     team = db.Column(db.Enum("radiant", "dire", "spectator"))
+    index = db.Column(db.Integer)
 
     player_snapshots = db.relationship('PlayerSnapshot', backref='player', lazy='joined', cascade="all, delete-orphan")
 
-    def __init__(self, replay_id, steam_id, team):
+    def __init__(self, replay_id, steam_id, team, index):
         self.replay_id = replay_id
         self.steam_id = steam_id
         self.team = team
+        self.index = index
 
     def __repr__(self):
         return "<ReplayPlayer {}>".format(self.id)
@@ -155,7 +157,6 @@ class PlayerSnapshot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     player_id = db.Column(db.Integer, db.ForeignKey("replay_players.id", ondelete="CASCADE"), nullable=False)
 
-    index = db.Column(db.Integer)
     tick = db.Column(db.Integer)
 
     kills = db.Column(db.Integer)
@@ -218,7 +219,6 @@ class PlayerSnapshot(db.Model):
     def __init__(self,
                  player_id,
                  tick,
-                 index,
                  kills,
                  deaths,
                  assists,
@@ -259,7 +259,6 @@ class PlayerSnapshot(db.Model):
                  ):
         self.player_id = player_id
         self.tick = tick
-        self.index = index
         self.kills = kills
         self.deaths = deaths
         self.assists = assists
