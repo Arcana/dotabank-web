@@ -52,7 +52,7 @@ def replay(_id):
                 }
 
                 if i >= len(teams_delta):
-                    teams_delta.append({"gold": 0, "exp": 0, "lh": 0, "dn": 0})
+                    teams_delta.append({"tick": 0, "gold": 0, "exp": 0, "lh": 0, "dn": 0})
                 teams_delta[i]["tick"] = _tick
                 if key == "radiant":
                     teams_delta[i]["gold"] += teams[key][i]["gold"]

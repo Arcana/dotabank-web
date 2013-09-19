@@ -9,25 +9,28 @@
     <script src="{{ url_for("static", filename="js/nv.d3.js") }}" charset="utf-8"></script>
     <script>
         {% set graph_stroke_colours = [
-            "rgba( 64, 100, 255, .5)",
-            "rgba( 64, 222, 142, .5)",
-            "rgba(144,   8, 185, .5)",
-            "rgba(243, 240,  11, .5)",
-            "rgba(255, 107,   0, .5)",
-            "rgba(254, 134, 197, .5)",
-            "rgba(179, 181, 191, .5)",
-            "rgba(101, 217, 247, .5)",
-            "rgba( 96, 243,  11, .5)",
-            "rgba(120,  77,   0, .5)"
+            "rgba( 64, 100, 255, 1)",
+            "rgba( 64, 222, 142, 1)",
+            "rgba(144,   8, 185, 1)",
+            "rgba(243, 240,  11, 1)",
+            "rgba(255, 107,   0, 1)",
+            "rgba(254, 134, 197, 1)",
+            "rgba(179, 181, 191, 1)",
+            "rgba(101, 217, 247, 1)",
+            "rgba( 96, 243,  11, 1)",
+            "rgba(120,  77,   0, 1)"
         ] %}
-        {% set graph_radiant_colour = "rgba(0, 100, 0, .5)" %}
-        {% set graph_dire_colour = "rgba(255, 0, 0, .5)" %}
+        {% set graph_radiant_colour = "rgba(0, 100, 0, 1)" %}
+        {% set graph_dire_colour = "rgba(255, 0, 0, 1)" %}
 
         {% if graph_data %}
         var charts = [];
-        var options = {
-            animation: false,
-            pointDot: false
+
+        var ticksToTime = function(tick) {
+            var total_secs = tick/30;
+            var secs = Math.floor(total_secs % 60);
+            var mins = Math.floor(total_secs / 60);
+            return mins + ":" + secs;
         };
 
         {% for id, attr, fancy in [
@@ -39,7 +42,6 @@
                 var chart = nv.models.lineChart()
                     .options({
                         margin: {left: 100, bottom: 100},
-                        x: function(d,i) { return i},
                         showXAxis: true,
                         showYAxis: true,
                         transitionDuration: 250
@@ -47,7 +49,8 @@
                     ;
 
                 chart.xAxis
-                    .axisLabel('Ticks');
+                    .axisLabel('Ticks')
+                    .tickFormat(ticksToTime);
 
                 chart.yAxis
                     .axisLabel("{{ fancy }}");
@@ -85,7 +88,6 @@
                     var chart = nv.models.lineChart()
                         .options({
                             margin: {left: 100, bottom: 100},
-                            x: function(d,i) { return i},
                             showXAxis: true,
                             showYAxis: true,
                             transitionDuration: 250
@@ -93,7 +95,8 @@
                         ;
 
                     chart.xAxis
-                        .axisLabel('Ticks');
+                        .axisLabel('Ticks')
+                        .tickFormat(ticksToTime);
 
                     chart.yAxis
                         .axisLabel("{{ fancy }}");
