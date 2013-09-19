@@ -59,6 +59,8 @@ def logout():
 @mod.route("/")
 @mod.route("/page/<int:page>/")
 def users(page=1):
+    if not current_user.is_admin():
+        flash("User list is admin only atm.", "danger")
     users = User.query.paginate(page, current_app.config["USERS_PER_PAGE"], False)
     return render_template("users/users.html", users=users)
 
