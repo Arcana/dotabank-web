@@ -1,21 +1,13 @@
 {% extends "layout.html" %}
-
+{% block style %}
+    {{ super() }}
+    <link href="{{ url_for("static", filename="css/nv.d3.css") }}" rel="stylesheet" type="text/css">
+{% endblock %}
 {% block scripts %}
     {{ super() }}
-    <script src="{{ url_for("static", filename="js/Chart.js") }}" charset="utf-8"></script>
+    <script src="{{ url_for("static", filename="js/d3.v3.js") }}" charset="utf-8"></script>
+    <script src="{{ url_for("static", filename="js/nv.d3.js") }}" charset="utf-8"></script>
     <script>
-        {% set graph_fill_colours = [
-            "rgba( 64, 100, 255, .1)",
-            "rgba( 64, 222, 142, .1)",
-            "rgba(144,   8, 185, .1)",
-            "rgba(243, 240,  11, .1)",
-            "rgba(255, 107,   0, .1)",
-            "rgba(254, 134, 197, .1)",
-            "rgba(179, 181, 191, .1)",
-            "rgba(101, 217, 247, .1)",
-            "rgba( 96, 243,  11, .1)",
-            "rgba(120,  77,   0, .1)"
-        ] %}
         {% set graph_stroke_colours = [
             "rgba( 64, 100, 255, .5)",
             "rgba( 64, 222, 142, .5)",
@@ -28,168 +20,113 @@
             "rgba( 96, 243,  11, .5)",
             "rgba(120,  77,   0, .5)"
         ] %}
+        {% set graph_radiant_colour = "rgba(0, 100, 0, .5)" %}
+        {% set graph_dire_colour = "rgba(255, 0, 0, .5)" %}
 
-        {% set radiant_fill_colour = "rgba(0, 100, 0, 0.5)" %}
-        {% set radiant_stroke_colour = "rgba(0, 100, 0, 1)" %}
-        {% set dire_fill_colour = "rgba(255, 0, 0, 0.25)" %}
-        {% set dire_stroke_colour = "rgba(255, 0, 0, 1)" %}
         {% if graph_data %}
-
+        var charts = [];
         var options = {
-            animation: false
+            animation: false,
+            pointDot: false
         };
 
-        new Chart(
-            $("#graph-gold-canvas").get(0).getContext("2d")).Line(
-            {
-                labels: {{ graph_labels }},
+        {% for id, attr, fancy in [
+            ("gold", "earned_gold", "Gold"),
+            ("exp", "xp", "Experience"),
+            ("lh", "last_hits", "Last hits"),
+            ("dn", "denies", "Denies")] %}
+            nv.addGraph(function() {
+                var chart = nv.models.lineChart()
+                    .options({
+                        margin: {left: 100, bottom: 100},
+                        x: function(d,i) { return i},
+                        showXAxis: true,
+                        showYAxis: true,
+                        transitionDuration: 250
+                    })
+                    ;
 
-                datasets: [
-                    {% for team in graph_teams %}
-                    {
-                    fillColor : "{{ radiant_fill_colour if team == "radiant" else dire_fill_colour }}",
-                    strokeColor : "{{ radiant_stroke_colour if team == "radiant" else dire_stroke_colour }}",
-                    pointColor : "{{ radiant_stroke_colour if team == "radiant" else dire_stroke_colour }}",
-                    pointStrokeColor : "#fff",
-                    data: [{% for item in graph_teams[team]|map(attribute="gold") %}{{ item|int }},{% endfor %}]
-                    },
-                    {% endfor %}
-                ]
-            },
-            options
-        );
-        {% for player in graph_data %}
-        new Chart(
-            $("#graph-gold-canvas-{{ player.id }}").get(0).getContext("2d")).Line(
-            {
-                labels: {{ graph_labels }},
-                datasets: [
-                    {
-                    fillColor : "{{ graph_fill_colours[player.index] }}",
-                    strokeColor : "{{ graph_stroke_colours[player.index] }}",
-                    pointColor : "{{ graph_stroke_colours[player.index] }}",
-                    pointStrokeColor : "#fff",
-                    data: [{% for item in player.player_snapshots|map(attribute="earned_gold") %}{{ item|int }},{% endfor %}]
-                    },
-                ]
-            },
-            options
-        );
+                chart.xAxis
+                    .axisLabel('Ticks');
+
+                chart.yAxis
+                    .axisLabel("{{ fancy }}");
+
+                d3.select('#graph-{{ id }}-total svg')
+                    .datum([
+                            {
+                                values: [{% for item in graph_teams_delta %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|int) }},{% endfor %}],
+                                key: "Delta",
+                                area: true,
+                                color: "#000"
+                            },
+                            {
+                                values: [{% for item in graph_teams["radiant"] %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|int) }},{% endfor %}],
+                                key: "Radiant",
+                                color: "{{ graph_radiant_colour }}"
+                            },
+                            {
+                                values: [{% for item in graph_teams["dire"] %}{{ "{{x: {}, y: -{}}}".format(item["tick"], item[id]|int) }},{% endfor %}],
+                                key: "Dire",
+                                color: "{{ graph_dire_colour }}"
+                            },
+                        ])
+                    .transition().duration(500)
+                    .call(chart);
+
+                nv.utils.windowResize(chart.update);
+                chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+
+                charts.push(chart);
+                return chart;
+            });
+            {% for team in graph_data|groupby(attribute="team") %}
+                nv.addGraph(function() {
+                    var chart = nv.models.lineChart()
+                        .options({
+                            margin: {left: 100, bottom: 100},
+                            x: function(d,i) { return i},
+                            showXAxis: true,
+                            showYAxis: true,
+                            transitionDuration: 250
+                        })
+                        ;
+
+                    chart.xAxis
+                        .axisLabel('Ticks');
+
+                    chart.yAxis
+                        .axisLabel("{{ fancy }}");
+
+                    d3.select('#graph-{{ id }}-{{ team.grouper }} svg')
+                        .datum([
+                                {% for player in team.list %}
+                                {
+                                    values: [{% for item in player.player_snapshots %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[attr]|int) }},{% endfor %}],
+                                    key: "{{ player.player_snapshots[-1].hero_name }}",
+                                    color: "{{ graph_stroke_colours[player.index] }}"
+                                },
+                                {% endfor %}
+                            ])
+                        .transition().duration(500)
+                        .call(chart);
+
+                    nv.utils.windowResize(chart.update);
+                    chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
+
+                    charts.push(chart);
+                    return chart;
+                });
+            {% endfor %}
         {% endfor %}
 
-        new Chart(
-            $("#graph-exp-canvas").get(0).getContext("2d")).Line(
-            {
-                labels: {{ graph_labels }},
 
-                datasets: [
-                    {% for team in graph_teams %}
-                    {
-                    fillColor : "{{ radiant_fill_colour if team == "radiant" else dire_fill_colour }}",
-                    strokeColor : "{{ radiant_stroke_colour if team == "radiant" else dire_stroke_colour }}",
-                    pointColor : "{{ radiant_stroke_colour if team == "radiant" else dire_stroke_colour }}",
-                    pointStrokeColor : "#fff",
-                    data: [{% for item in graph_teams[team]|map(attribute="exp") %}{{ item|int }},{% endfor %}]
-                    },
-                    {% endfor %}
-                ]
-            },
-            options
-        );
-        {% for player in graph_data %}
-        new Chart(
-            $("#graph-exp-canvas-{{ player.id }}").get(0).getContext("2d")).Line(
-            {
-                labels: {{ graph_labels }},
-                datasets: [
-                    {
-                    fillColor : "{{ graph_fill_colours[player.index] }}",
-                    strokeColor : "{{ graph_stroke_colours[player.index] }}",
-                    pointColor : "{{ graph_stroke_colours[player.index] }}",
-                    pointStrokeColor : "#fff",
-                    data: [{% for item in player.player_snapshots|map(attribute="xp") %}{{ item|int }},{% endfor %}]
-                    },
-                ]
-            },
-            options
-        );
-        {% endfor %}
-
-        new Chart(
-            $("#graph-lh-canvas").get(0).getContext("2d")).Line(
-            {
-                labels: {{ graph_labels }},
-
-                datasets: [
-                    {% for team in graph_teams %}
-                    {
-                    fillColor : "{{ radiant_fill_colour if team == "radiant" else dire_fill_colour }}",
-                    strokeColor : "{{ radiant_stroke_colour if team == "radiant" else dire_stroke_colour }}",
-                    pointColor : "{{ radiant_stroke_colour if team == "radiant" else dire_stroke_colour }}",
-                    pointStrokeColor : "#fff",
-                    data: [{% for item in graph_teams[team]|map(attribute="lh") %}{{ item|int }},{% endfor %}]
-                    },
-                    {% endfor %}
-                ]
-            },
-            options
-        );
-        {% for player in graph_data %}
-        new Chart(
-            $("#graph-lh-canvas-{{ player.id }}").get(0).getContext("2d")).Line(
-            {
-                labels: {{ graph_labels }},
-                datasets: [
-                    {
-                    fillColor : "{{ graph_fill_colours[player..index] }}",
-                    strokeColor : "{{ graph_stroke_colours[player.index] }}",
-                    pointColor : "{{ graph_stroke_colours[player.index] }}",
-                    pointStrokeColor : "#fff",
-                    data: [{% for item in player.player_snapshots|map(attribute="last_hits") %}{{ item|int }},{% endfor %}]
-                    },
-                ]
-            },
-            options
-        );
-        {% endfor %}
-
-        new Chart(
-            $("#graph-dn-canvas").get(0).getContext("2d")).Line(
-            {
-                labels: {{ graph_labels }},
-
-                datasets: [
-                    {% for team in graph_teams %}
-                    {
-                    fillColor : "{{ radiant_fill_colour if team == "radiant" else dire_fill_colour }}",
-                    strokeColor : "{{ radiant_stroke_colour if team == "radiant" else dire_stroke_colour }}",
-                    pointColor : "{{ radiant_stroke_colour if team == "radiant" else dire_stroke_colour }}",
-                    pointStrokeColor : "#fff",
-                    data: [{% for item in graph_teams[team]|map(attribute="dn") %}{{ item|int }},{% endfor %}]
-                    },
-                    {% endfor %}
-                ]
-            },
-            options
-        );
-        {% for player in graph_data %}
-        new Chart(
-            $("#graph-dn-canvas-{{ player.id }}").get(0).getContext("2d")).Line(
-            {
-                labels: {{ graph_labels }},
-                datasets: [
-                    {
-                    fillColor : "{{ graph_fill_colours[player.index] }}",
-                    strokeColor : "{{ graph_stroke_colours[player.index] }}",
-                    pointColor : "{{ graph_stroke_colours[player.index] }}",
-                    pointStrokeColor : "#fff",
-                    data: [{% for item in player.player_snapshots|map(attribute="denies") %}{{ item|int }},{% endfor %}]
-                    },
-                ]
-            },
-            options
-        );
-        {% endfor %}
+        // Update on bootstrap tab change
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            for (var i = 0; i < charts.length; i++) {
+                charts[i].update();
+            }
+        });
         {% endif %}
     </script>
 {% endblock %}
@@ -256,38 +193,22 @@
         <li><a href="#graph-dn" data-toggle="tab">Denies</a></li>
     </ul>
     <div class="tab-content">
-        <div class="tab-pane active" id="graph-gold">
+        {% for item in ["gold", "exp", "lh", "dn"] %}
+        <div class="tab-pane {{ "active" if item == "gold" else "" }}" id="graph-{{ item }}">
             <h3>Total</h3>
-            <canvas id="graph-gold-canvas" width="1140" height="400"></canvas>
-            {% for player in graph_data %}
-                <h3>{{ player.player_snapshots[-1].hero_name }}</h3>
-                <canvas id="graph-gold-canvas-{{ player.id }}" width="1140" height="400"></canvas>
-            {% endfor %}
+            <div id="graph-{{ item }}-total">
+                <svg height="400"></svg>
+            </div>
+            <h3>Radiant</h3>
+            <div id="graph-{{ item }}-radiant">
+                <svg height="400"></svg>
+            </div>
+            <h3>Dire</h3>
+            <div id="graph-{{ item }}-dire">
+                <svg height="400"></svg>
+            </div>
         </div>
-        <div class="tab-pane" id="graph-exp">
-            <h3>Total</h3>
-            <canvas id="graph-exp-canvas" width="1140" height="400"></canvas>
-            {% for player in graph_data %}
-                <h3>{{ player.player_snapshots[-1].hero_name }}</h3>
-                <canvas id="graph-exp-canvas-{{ player.id }}" width="1140" height="400"></canvas>
-            {% endfor %}
-        </div>
-        <div class="tab-pane" id="graph-lh">
-            <h3>Total</h3>
-            <canvas id="graph-lh-canvas" width="1140" height="400"></canvas>
-            {% for player in graph_data %}
-                <h3>{{ player.player_snapshots[-1].hero_name }}</h3>
-                <canvas id="graph-lh-canvas-{{ player.id }}" width="1140" height="400"></canvas>
-            {% endfor %}
-        </div>
-        <div class="tab-pane" id="graph-dn">
-            <h3>Total</h3>
-            <canvas id="graph-dn-canvas" width="1140" height="400"></canvas>
-            {% for player in graph_data %}
-                <h3>{{ player.player_snapshots[-1].hero_name }}</h3>
-                <canvas id="graph-dn-canvas-{{ player.id }}" width="1140" height="400"></canvas>
-            {% endfor %}
-        </div>
+        {% endfor %}
     </div>
     {% endif %}
 {% endblock %}
