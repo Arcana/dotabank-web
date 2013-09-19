@@ -47,10 +47,10 @@
             {% endfor %}
         </tbody>
     </table>
-    <h1>All users evar</h1>
+{#    <h1>All users evar</h1>
     <ul>
         {% for user in all_users %}
             <li><a href="{{ url_for("users.user", _id=user.id) }}">{{ user.name }}</a></li>
         {% endfor %}
-    </ul>
+    </ul> #}
 {% endblock %}
