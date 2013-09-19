@@ -61,6 +61,7 @@ def logout():
 def users(page=1):
     if not current_user.is_admin():
         flash("User list is admin only atm.", "danger")
+        return redirect(request.referrer or url_for("index"))
     users = User.query.paginate(page, current_app.config["USERS_PER_PAGE"], False)
     return render_template("users/users.html", users=users)
 
