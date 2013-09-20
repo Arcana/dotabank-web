@@ -11,7 +11,7 @@
                 <td>State</td>
                 <td>Replay state</td>
                 <td>Combat log?</td>
-                <td>URL</td>
+{#                <td>URL</td>#}
             </tr>
         </thead>
         <tbody>
@@ -40,9 +40,9 @@
                             <span class="glyphicon glyphicon-remove"></span>
                         {% endif %}
                     </td>
-                    <td>
-                        <a class="btn btn-default btn-xs {{ "disabled" if not replay.url else "" }}" href="{{ replay.url }}">Download</a>
-                    </td>
+{#                    <td>#}
+{#                        <a class="btn btn-default btn-xs {{ "disabled" if not replay.url else "" }}" href="{{ replay.url }}">Download</a>#}
+{#                    </td>#}
                 </tr>
             {% endfor %}
         </tbody>

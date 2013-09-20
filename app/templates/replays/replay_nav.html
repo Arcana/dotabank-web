@@ -25,11 +25,11 @@
                 <span class="{{"text-primary" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
             </a>
         </li>
-        <li>
-            <div class="form">
-                <a class="btn btn-default navbar-btn {{ "disabled" if not replay.url else "" }}" href="{{ replay.url }}">Download</a>
-            </div>
-        </li>
+{#        <li>#}
+{#            <div class="form">#}
+{#                <a class="btn btn-default navbar-btn {{ "disabled" if not replay.url else "" }}" href="{{ replay.url }}">Download</a>#}
+{#            </div>#}
+{#        </li>#}
         <li>&nbsp;</li> {# Hack for button padding #}
     </ul>
 </nav>
