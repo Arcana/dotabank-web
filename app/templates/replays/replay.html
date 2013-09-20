@@ -138,8 +138,20 @@
     <div class="page-header">
         <h1>Replay <small>{{ replay.id }}</small></h1>
         {% include "replays/replay_nav.html" %}
-    </div>
 
+        <div class="row progress-tracker">
+            <span class="col-xs-3 progress-tracker-{{ "done" if replay.added_to_site_time else "todo" }}">Added to site</span>
+            <span class="col-xs-3 progress-tracker-{{ "done" if replay.gc_done_time else "todo" }}">Get match details</span>
+            <span class="col-xs-3 progress-tracker-{{ "done" if replay.dl_done_time else "todo" }}">Download replay</span>
+            <span class="col-xs-3 progress-tracker-{{ "done" if replay.parse_done_time else "todo" }}">Parse replay</span>
+        </div>
+        <div class="row text-muted text-center">
+            <span class="col-xs-3">{{ replay.added_to_site_time }}</span>
+            <span class="col-xs-3">{{ replay.gc_done_time }}</span>
+            <span class="col-xs-3">{{ replay.dl_done_time }}</span>
+            <span class="col-xs-3">{{ replay.parse_done_time }}</span>
+        </div>
+    </div>
 
 {#    state = db.Column(db.Enum(#}
 {#        "WAITING_GC",#}

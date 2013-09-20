@@ -1,5 +1,6 @@
 from app import db
 from flask.ext.login import current_user
+import datetime
 
 
 # noinspection PyShadowingBuiltins
@@ -27,6 +28,12 @@ class Replay(db.Model):
         "UNKNOWN"
     ), default="UNKNOWN")
     gc_fails = db.Column(db.Integer, default=0)
+
+    # Timestamps for progress tracker
+    added_to_site_time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    gc_done_time = db.Column(db.DateTime)
+    dl_done_time = db.Column(db.DateTime)
+    parse_done_time = db.Column(db.DateTime)
 
     ratings = db.relationship('ReplayRating', backref='replay', lazy='joined', cascade="all, delete-orphan")
     favourites = db.relationship('ReplayFavourite', backref='replay', lazy='joined', cascade="all, delete-orphan")

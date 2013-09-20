@@ -23,3 +23,55 @@
 #footer {
     font-size: small;
 }
+
+.progress-tracker {
+    padding-bottom: 20px;
+}
+
+.progress-tracker .progress-tracker-done,
+.progress-tracker .progress-tracker-todo {
+
+    display: inline-block;
+    text-align: center;
+    line-height: 3em;
+}
+
+.progress-tracker .progress-tracker-done:before,
+.progress-tracker .progress-tracker-todo:before {
+    position: relative;
+    bottom: -2.5em;
+    float: left;
+    left: 50%;
+    line-height: 1em;
+}
+
+.progress-tracker .progress-tracker-done:after,
+.progress-tracker .progress-tracker-todo:after {
+    content: "\00a0\00a0";
+}
+
+.progress-tracker .progress-tracker-done {
+    color: black;
+    border-bottom: 4px solid yellowgreen;
+}
+.progress-tracker .progress-tracker-todo {
+    color: silver;
+    border-bottom: 4px solid silver;
+}
+.progress-tracker .progress-tracker-done:before {
+    content: "\2713";
+    color: white;
+    background-color: yellowgreen;
+    height: 1.2em;
+    width: 1.2em;
+    line-height: 1.2em;
+    border: none;
+    border-radius: 1.2em;
+}
+.progress-tracker .progress-tracker-todo:before {
+    content: "\039F";
+    color: silver;
+    background-color: white;
+    font-size: 1.5em;
+    bottom: -1.6em;
+}
