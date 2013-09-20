@@ -70,7 +70,6 @@ def replay(_id):
 
 @mod.route("/<int:_id>/combatlog/")
 @mod.route("/<int:_id>/combatlog/<int:page>/")
-@cache.cached(timeout=60 * 60)  # 1hr
 def combatlog(_id, page=1):
     # TODO: Search for tick / timestamp and redirect to appropriate page.
     replay = Replay.query.filter(Replay.id == _id).first()
