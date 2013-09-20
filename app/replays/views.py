@@ -17,7 +17,7 @@ mod.add_app_template_filter(get_hero_by_name)
 @mod.route("/page/<int:page>/")
 def replays(page=1):
     # TODO: Filters & ordering
-    replays = Replay.query.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
+    replays = Replay.query.order_by(Replay.added_to_site_time.desc()).paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("replays/replays.html", replays=replays)
 
 
