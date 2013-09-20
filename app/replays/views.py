@@ -36,34 +36,33 @@ def replay(_id):
         graph_labels = None
 
     teams = {}
-    teams_delta = []
+    teams_delta = {}  # Key: Tick
     for key, vals in groupby(graph_data, key=operator.attrgetter("team")):
         players = list(vals)
-        teams[key] = list(izip(*[x.player_snapshots for x in players]))
-        for i, tick in enumerate(teams[key]):
-            _tick = max(tick, key=operator.attrgetter("tick")).tick  # Get largest tick (in case some are 0, else should be same)
-            if _tick:
-                teams[key][i] = {
-                    "tick": _tick,
-                    "gold": sum(x.earned_gold for x in tick if x.earned_gold is not None),
-                    "exp": sum(x.xp for x in tick if x.xp is not None),
-                    "lh": sum(x.last_hits for x in tick if x.last_hits is not None),
-                    "dn": sum(x.denies for x in tick if x.denies is not None)
-                }
 
-                if i >= len(teams_delta):
-                    teams_delta.append({"tick": 0, "gold": 0, "exp": 0, "lh": 0, "dn": 0})
-                teams_delta[i]["tick"] = _tick
+        teams[key] = {}  # Key: tick
+        for player in players:
+            for snapshot in player.player_snapshots:
+                if teams[key].get(snapshot.tick) is None:
+                    teams[key][snapshot.tick] = {"tick": snapshot.tick, "gold": 0, "exp": 0, "lh": 0, "dn": 0}
+                if teams_delta.get(snapshot.tick) is None:
+                    teams_delta[snapshot.tick] = {"tick": snapshot.tick, "gold": 0, "exp": 0, "lh": 0, "dn": 0}
+
+                teams[key][snapshot.tick]["gold"] += snapshot.earned_gold
+                teams[key][snapshot.tick]["exp"] += snapshot.xp
+                teams[key][snapshot.tick]["lh"] += snapshot.last_hits
+                teams[key][snapshot.tick]["dn"] += snapshot.denies
+
                 if key == "radiant":
-                    teams_delta[i]["gold"] += teams[key][i]["gold"]
-                    teams_delta[i]["exp"] += teams[key][i]["exp"]
-                    teams_delta[i]["lh"] += teams[key][i]["lh"]
-                    teams_delta[i]["dn"] += teams[key][i]["dn"]
+                    teams_delta[snapshot.tick]["gold"] += snapshot.earned_gold
+                    teams_delta[snapshot.tick]["exp"] += snapshot.xp
+                    teams_delta[snapshot.tick]["lh"] += snapshot.last_hits
+                    teams_delta[snapshot.tick]["dn"] += snapshot.denies
                 elif key == "dire":
-                    teams_delta[i]["gold"] -= teams[key][i]["gold"]
-                    teams_delta[i]["exp"] -= teams[key][i]["exp"]
-                    teams_delta[i]["lh"] -= teams[key][i]["lh"]
-                    teams_delta[i]["dn"] -= teams[key][i]["dn"]
+                    teams_delta[snapshot.tick]["gold"] -= snapshot.earned_gold
+                    teams_delta[snapshot.tick]["exp"] -= snapshot.xp
+                    teams_delta[snapshot.tick]["lh"] -= snapshot.last_hits
+                    teams_delta[snapshot.tick]["dn"] -= snapshot.denies
 
     return render_template("replays/replay.html", replay=replay, graph_data=graph_data, graph_labels=graph_labels, graph_teams=teams, graph_teams_delta=teams_delta)
 

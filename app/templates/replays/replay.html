@@ -58,18 +58,18 @@
                 d3.select('#graph-{{ id }}-total svg')
                     .datum([
                             {
-                                values: [{% for item in graph_teams_delta %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|int) }},{% endfor %}],
+                                values: [{% for k, item in graph_teams_delta|dictsort %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|int) }},{% endfor %}],
                                 key: "Delta",
                                 area: true,
                                 color: "#000"
                             },
                             {
-                                values: [{% for item in graph_teams["radiant"] %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|int) }},{% endfor %}],
+                                values: [{% for k, item in graph_teams["radiant"]|dictsort %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|int) }},{% endfor %}],
                                 key: "Radiant",
                                 color: "{{ graph_radiant_colour }}"
                             },
                             {
-                                values: [{% for item in graph_teams["dire"] %}{{ "{{x: {}, y: -{}}}".format(item["tick"], item[id]|int) }},{% endfor %}],
+                                values: [{% for k, item in graph_teams["dire"]|dictsort %}{{ "{{x: {}, y: -{}}}".format(item["tick"], item[id]|int) }},{% endfor %}],
                                 key: "Dire",
                                 color: "{{ graph_dire_colour }}"
                             },
