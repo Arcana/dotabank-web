@@ -37,14 +37,25 @@
             ("gold", "earned_gold", "Gold"),
             ("exp", "xp", "Experience"),
             ("lh", "last_hits", "Last hits"),
-            ("dn", "denies", "Denies")] %}
+            ("dn", "denies", "Denies"),
+            ("kills", "kills", "Kills"),
+            ("deaths", "deaths", "Deaths"),
+            ("assists", "assists", "Assists"),
+            ("max_hp", "max_health", "Max HP"),
+            ("max_mana", "max_mana", "Max Mana"),
+            ("str", "strength", "Strength"),
+            ("int", "intelligence", "Intelligence"),
+            ("agi", "agility", "Agility"),
+            ] %}
             nv.addGraph(function() {
-                var chart = nv.models.lineChart()
+                var chart = nv.models.stackedAreaChart()
                     .options({
                         margin: {left: 100, bottom: 100},
                         showXAxis: true,
                         showYAxis: true,
-                        transitionDuration: 250
+                        transitionDuration: 250,
+                        useInteractiveGuideline: true,
+                        style: "stream"
                     })
                     ;
 
@@ -58,20 +69,20 @@
                 d3.select('#graph-{{ id }}-total svg')
                     .datum([
                             {
-                                values: [{% for k, item in graph_teams_delta|dictsort %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|int) }},{% endfor %}],
+                                values: [{% for k, item in graph_teams_delta|dictsort %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|float) }},{% endfor %}],
                                 key: "Delta",
                                 area: true,
                                 color: "#000"
                             },
                             {
-                                values: [{% for k, item in graph_teams["radiant"]|dictsort %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|int) }},{% endfor %}],
-                                key: "Radiant",
-                                color: "{{ graph_radiant_colour }}"
-                            },
-                            {
-                                values: [{% for k, item in graph_teams["dire"]|dictsort %}{{ "{{x: {}, y: -{}}}".format(item["tick"], item[id]|int) }},{% endfor %}],
+                                values: [{% for k, item in graph_teams["dire"]|dictsort %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|float) }},{% endfor %}],
                                 key: "Dire",
                                 color: "{{ graph_dire_colour }}"
+                            },
+                            {
+                                values: [{% for k, item in graph_teams["radiant"]|dictsort %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|float) }},{% endfor %}],
+                                key: "Radiant",
+                                color: "{{ graph_radiant_colour }}"
                             },
                         ])
                     .transition().duration(500)
@@ -90,7 +101,8 @@
                             margin: {left: 100, bottom: 100},
                             showXAxis: true,
                             showYAxis: true,
-                            transitionDuration: 250
+                            transitionDuration: 250,
+                            useInteractiveGuideline: true
                         })
                         ;
 
@@ -105,7 +117,7 @@
                         .datum([
                                 {% for player in team.list %}
                                 {
-                                    values: [{% for item in player.player_snapshots %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[attr]|int) }},{% endfor %}],
+                                    values: [{% for item in player.player_snapshots %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[attr]|float) }},{% endfor %}],
                                     key: "{{ player.player_snapshots[-1].hero_name }}",
                                     color: "{{ graph_stroke_colours[player.index] }}"
                                 },
@@ -122,6 +134,36 @@
                 });
             {% endfor %}
         {% endfor %}
+
+
+        nv.addGraph(function() {
+            var chart = nv.models.scatterChart()
+                .showDistX(true)
+                .showDistY(true)
+                .color(d3.scale.category10().range());
+
+{#            chart.xAxis.tickFormat(d3.format('.02f'))#}
+{#            chart.yAxis.tickFormat(d3.format('.02f'))#}
+
+            d3.select('#graph-positions-chart svg')
+                .datum([{% for team in graph_data|groupby(attribute="team") %}
+                    {
+                        key: "{{ team.grouper }}",
+                        values: [{% for player in team.list %}
+                            {% for item in player.player_snapshots %}
+                                {{ "{{x: {}, y: {} }}".format(item["position_x"]|float, item["position_y"]|float) }},
+                            {% endfor %}
+                        {% endfor %}]
+                    },
+                {% endfor %}])
+                .transition().duration(500)
+                .call(chart);
+
+            nv.utils.windowResize(chart.update);
+
+            charts.push(chart);
+            return chart;
+        });
 
 
         // Update on bootstrap tab change
@@ -206,9 +248,30 @@
         <li><a href="#graph-exp" data-toggle="tab">Experience</a></li>
         <li><a href="#graph-lh" data-toggle="tab">Last hits</a></li>
         <li><a href="#graph-dn" data-toggle="tab">Denies</a></li>
+        <li><a href="#graph-kills" data-toggle="tab">Kills</a></li>
+        <li><a href="#graph-deaths" data-toggle="tab">Deaths</a></li>
+        <li><a href="#graph-assists" data-toggle="tab">Assists</a></li>
+        <li><a href="#graph-max_hp" data-toggle="tab">Max hp</a></li>
+        <li><a href="#graph-max_mana" data-toggle="tab">Max mana</a></li>
+        <li><a href="#graph-str" data-toggle="tab">Strength</a></li>
+        <li><a href="#graph-int" data-toggle="tab">Intelligence</a></li>
+        <li><a href="#graph-agi" data-toggle="tab">Agility</a></li>
+        <li><a href="#graph-positions" data-toggle="tab">Positions</a></li>
     </ul>
     <div class="tab-content">
-        {% for item in ["gold", "exp", "lh", "dn"] %}
+        {% for item in [
+            "gold",
+            "exp",
+            "lh",
+            "dn",
+            "kills",
+            "deaths",
+            "assists",
+            "max_hp",
+            "max_mana",
+            "str",
+            "int",
+            "agi"] %}
         <div class="tab-pane {{ "active" if item == "gold" else "" }}" id="graph-{{ item }}">
             <h3>Total</h3>
             <div id="graph-{{ item }}-total">
@@ -224,6 +287,11 @@
             </div>
         </div>
         {% endfor %}
+        <div class="tab-pane" id="graph-positions">
+            <p>Each point is a hero position roughly every 30 seconds.  Points are ofc not aligned to the map background, because that would require effort.</p>
+            <div id="graph-positions-chart">
+                <svg style="background-image:url('{{ url_for("static", filename="images/dota_map_1140.jpg") }}')" height="1140"></svg>
+        </div>
     </div>
     {% endif %}
 {% endblock %}

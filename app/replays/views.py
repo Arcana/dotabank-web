@@ -44,25 +44,77 @@ def replay(_id):
         for player in players:
             for snapshot in player.player_snapshots:
                 if teams[key].get(snapshot.tick) is None:
-                    teams[key][snapshot.tick] = {"tick": snapshot.tick, "gold": 0, "exp": 0, "lh": 0, "dn": 0}
+                    teams[key][snapshot.tick] = {
+                        "tick": snapshot.tick,
+                        "gold": 0,
+                        "exp": 0,
+                        "lh": 0,
+                        "dn": 0,
+                        "kills": 0,
+                        "deaths": 0,
+                        "assists": 0,
+                        "max_hp": 0,
+                        "max_mana": 0,
+                        "str": 0,
+                        "int": 0,
+                        "agi": 0
+                    }
                 if teams_delta.get(snapshot.tick) is None:
-                    teams_delta[snapshot.tick] = {"tick": snapshot.tick, "gold": 0, "exp": 0, "lh": 0, "dn": 0}
+                    teams_delta[snapshot.tick] = {
+                        "tick": snapshot.tick,
+                        "gold": 0,
+                        "exp": 0,
+                        "lh": 0,
+                        "dn": 0,
+                        "kills": 0,
+                        "deaths": 0,
+                        "assists": 0,
+                        "max_hp": 0,
+                        "max_mana": 0,
+                        "str": 0,
+                        "int": 0,
+                        "agi": 0
+                    }
 
                 teams[key][snapshot.tick]["gold"] += snapshot.earned_gold
                 teams[key][snapshot.tick]["exp"] += snapshot.xp
                 teams[key][snapshot.tick]["lh"] += snapshot.last_hits
                 teams[key][snapshot.tick]["dn"] += snapshot.denies
+                teams[key][snapshot.tick]["kills"] += snapshot.kills
+                teams[key][snapshot.tick]["deaths"] += snapshot.deaths
+                teams[key][snapshot.tick]["assists"] += snapshot.assists
+                teams[key][snapshot.tick]["max_hp"] += snapshot.max_health
+                teams[key][snapshot.tick]["max_mana"] += snapshot.max_mana
+                teams[key][snapshot.tick]["str"] += snapshot.strength
+                teams[key][snapshot.tick]["int"] += snapshot.intelligence
+                teams[key][snapshot.tick]["agi"] += snapshot.agility
 
                 if key == "radiant":
                     teams_delta[snapshot.tick]["gold"] += snapshot.earned_gold
                     teams_delta[snapshot.tick]["exp"] += snapshot.xp
                     teams_delta[snapshot.tick]["lh"] += snapshot.last_hits
                     teams_delta[snapshot.tick]["dn"] += snapshot.denies
+                    teams_delta[snapshot.tick]["kills"] += snapshot.kills
+                    teams_delta[snapshot.tick]["deaths"] += snapshot.deaths
+                    teams_delta[snapshot.tick]["assists"] += snapshot.assists
+                    teams_delta[snapshot.tick]["max_hp"] += snapshot.max_health
+                    teams_delta[snapshot.tick]["max_mana"] += snapshot.max_mana
+                    teams_delta[snapshot.tick]["str"] += snapshot.strength
+                    teams_delta[snapshot.tick]["int"] += snapshot.intelligence
+                    teams_delta[snapshot.tick]["agi"] += snapshot.agility
                 elif key == "dire":
                     teams_delta[snapshot.tick]["gold"] -= snapshot.earned_gold
                     teams_delta[snapshot.tick]["exp"] -= snapshot.xp
                     teams_delta[snapshot.tick]["lh"] -= snapshot.last_hits
                     teams_delta[snapshot.tick]["dn"] -= snapshot.denies
+                    teams_delta[snapshot.tick]["kills"] -= snapshot.kills
+                    teams_delta[snapshot.tick]["deaths"] -= snapshot.deaths
+                    teams_delta[snapshot.tick]["assists"] -= snapshot.assists
+                    teams_delta[snapshot.tick]["max_hp"] -= snapshot.max_health
+                    teams_delta[snapshot.tick]["max_mana"] -= snapshot.max_mana
+                    teams_delta[snapshot.tick]["str"] -= snapshot.strength
+                    teams_delta[snapshot.tick]["int"] -= snapshot.intelligence
+                    teams_delta[snapshot.tick]["agi"] -= snapshot.agility
 
     return render_template("replays/replay.html", replay=replay, graph_data=graph_data, graph_labels=graph_labels, graph_teams=teams, graph_teams_delta=teams_delta)
 
