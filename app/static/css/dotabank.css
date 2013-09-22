@@ -75,3 +75,11 @@
     font-size: 1.5em;
     bottom: -1.6em;
 }
+
+.jumbotron dt {
+    width: 240px;
+}
+
+.jumbotron dd {
+    margin-left: 260px;
+}

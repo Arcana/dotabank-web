@@ -1,56 +1,75 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h1>Latest replays</h1>
-    <table class="table table-condensed table-striped">
-        <thead>
-            <tr>
-                <td>Replay ID</td>
-                <td>Favourite</td>
-                <td>Rating</td>
-                <td>State</td>
-                <td>Replay state</td>
-                <td>Combat log?</td>
-{#                <td>URL</td>#}
-            </tr>
-        </thead>
-        <tbody>
-            {% for replay in latest_replays %}
-                <tr>
-                    <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
-                    <td>
-                        <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
-                            <span class="{{"" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"> ({{ replay.favourites|list|length }})</span>
-                        </a>
-                    </td>
-                    <td>
-                        <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=1) }}">
-                            <span class="{{"" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"> ({{ replay.ratings|selectattr("positive")|list|length }})</span>
-                        </a>
-                        <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=0) }}">
-                            <span class="{{"" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
-                        </a>
-                    </td>
-                    <td>{{ replay.state }}</td>
-                    <td>{{ replay.replay_state }}</td>
-                    <td>
-                        {% if replay.combatlog.first() %}
-                            <a href="{{ url_for("replays.combatlog", _id=replay.id) }}"><span class="glyphicon glyphicon-ok"></span></a>
-                        {% else %}
-                            <span class="glyphicon glyphicon-remove"></span>
-                        {% endif %}
-                    </td>
-{#                    <td>#}
-{#                        <a class="btn btn-default btn-xs {{ "disabled" if not replay.url else "" }}" href="{{ replay.url }}">Download</a>#}
-{#                    </td>#}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{#    <h1>All users evar</h1>
-    <ul>
-        {% for user in all_users %}
-            <li><a href="{{ url_for("users.user", _id=user.id) }}">{{ user.name }}</a></li>
-        {% endfor %}
-    </ul> #}
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Dotabank <small>I even called the database 'dotabase'.</small></h1>
+            <div class="row">
+                <div class="col-sm-6">
+                    <dl class="dl-horizontal">
+                        <dt>Replays in database</dt>
+                        <dd>{{ total_replays }}</dd>
+                        <dt>...of which parsed</dt>
+                        <dd>{{ total_parsed }}</dd>
+                        <dt>Unique players seen</dt>
+                        <dd>{{ total_players_seen }}</dd>
+                    </dl>
+                </div>
+                <div class="col-sm-6">
+                    <dl class="dl-horizontal">
+                        <dt>Combat Log Events</dt>
+                        <dd>{{ total_combat_log_entries }}</dd>
+                        <dt>Replay snapshots</dt>
+                        <dd>{{ total_replay_snapshots }}</dd>
+                        <dt>Total users</dt>
+                        <dd>{{ total_users }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <h1>Latest added</h1>
+            <table class="table table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <td>Replay ID</td>
+                        <td>State</td>
+                        <td>Time</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for replay in last_added_replays %}
+                        <tr>
+                            <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                            <td>{{ replay.state }}</td>
+                            <td>{{ replay.added_to_site_time }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-6">
+            <h1>Latest parsed</h1>
+            <table class="table table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <td>Replay ID</td>
+                        <td>State</td>
+                        <td>Time</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for replay in last_parsed_replays %}
+                        <tr>
+                            <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                            <td>{{ replay.state }}</td>
+                            <td>{{ replay.parse_done_time }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}
