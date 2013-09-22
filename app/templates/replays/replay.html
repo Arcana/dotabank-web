@@ -24,7 +24,7 @@
         {% set graph_dire_colour = "rgba(255, 0, 0, 1)" %}
 
         {% if graph_data %}
-        var charts = [];
+        var charts = {};
 
         var ticksToTime = function(tick) {
             var total_secs = tick/30;
@@ -91,7 +91,8 @@
                 nv.utils.windowResize(chart.update);
                 chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
-                charts.push(chart);
+                if (!charts["{{ id }}"]) charts["{{ id }}"] = []
+                charts["{{ id }}"].push(chart);
                 return chart;
             });
             {% for team in graph_data|groupby(attribute="team") %}
@@ -129,7 +130,9 @@
                     nv.utils.windowResize(chart.update);
                     chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
-                    charts.push(chart);
+
+                    if (!charts["{{ id }}"]) charts["{{ id }}"] = []
+                    charts["{{ id }}"].push(chart);
                     return chart;
                 });
             {% endfor %}
@@ -161,15 +164,17 @@
 
             nv.utils.windowResize(chart.update);
 
-            charts.push(chart);
+            if (!charts["positions"]) charts["positions"] = []
+            charts["positions"].push(chart);
             return chart;
         });
 
 
         // Update on bootstrap tab change
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-            for (var i = 0; i < charts.length; i++) {
-                charts[i].update();
+            var tab_id = e.target.hash.replace("#graph-", "");
+            for (var i = 0; i < charts[tab_id].length; i++) {
+                charts[tab_id][i].update();
             }
         });
         {% endif %}
