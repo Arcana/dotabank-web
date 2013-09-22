@@ -48,14 +48,13 @@
             ("agi", "agility", "Agility"),
             ] %}
             nv.addGraph(function() {
-                var chart = nv.models.stackedAreaChart()
+                var chart = nv.models.lineChart()
                     .options({
                         margin: {left: 100, bottom: 100},
                         showXAxis: true,
                         showYAxis: true,
                         transitionDuration: 250,
-                        useInteractiveGuideline: true,
-                        style: "stream"
+                        useInteractiveGuideline: true
                     })
                     ;
 
@@ -75,14 +74,14 @@
                                 color: "#000"
                             },
                             {
-                                values: [{% for k, item in graph_teams["dire"]|dictsort %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|float) }},{% endfor %}],
-                                key: "Dire",
-                                color: "{{ graph_dire_colour }}"
-                            },
-                            {
                                 values: [{% for k, item in graph_teams["radiant"]|dictsort %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|float) }},{% endfor %}],
                                 key: "Radiant",
                                 color: "{{ graph_radiant_colour }}"
+                            },
+                            {
+                                values: [{% for k, item in graph_teams["dire"]|dictsort %}{{ "{{x: {}, y: - {}}}".format(item["tick"], item[id]|float) }},{% endfor %}],
+                                key: "Dire",
+                                color: "{{ graph_dire_colour }}"
                             },
                         ])
                     .transition().duration(500)
@@ -97,7 +96,7 @@
             });
             {% for team in graph_data|groupby(attribute="team") %}
                 nv.addGraph(function() {
-                    var chart = nv.models.lineChart()
+                    var chart = nv.models.stackedAreaChart()
                         .options({
                             margin: {left: 100, bottom: 100},
                             showXAxis: true,
