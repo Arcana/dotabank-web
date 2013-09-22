@@ -45,6 +45,19 @@
         </div>
     </div>
     <div class="container">
+        <div id="ad_large_top" class="text-center">
+            {% if current_user.allows_ads %}
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- Dotabank large top -->
+            <ins class="adsbygoogle"
+                 style="display:inline-block;width:970px;height:90px"
+                 data-ad-client="ca-pub-0889116873012495"
+                 data-ad-slot="4488841842"></ins>
+            <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+            {% endif %}
+        </div>
         {% for category, message in get_flashed_messages(with_categories=true) %}
             <div class="flash alert {{ "alert-" + category if category != "message" else "warning"}}">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -53,6 +66,19 @@
         {% endfor %}
         {% block content %}
         {% endblock %}
+        <div id="ad_large_tottom" class="text-center">
+            {% if current_user.allows_ads %}
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- Dotabank large bottom -->
+            <ins class="adsbygoogle"
+                 style="display:inline-block;width:970px;height:90px"
+                 data-ad-client="ca-pub-0889116873012495"
+                 data-ad-slot="1395774647"></ins>
+            <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+            {% endif %}
+        </div>
     </div>
     <hr>
     <div id="footer" class="container text-muted">

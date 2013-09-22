@@ -7,6 +7,9 @@ class AnonymousUser(AnonymousUserMixin):
     def is_admin(self):
         return False
 
+    def allows_ads(self):
+        return True
+
 
 # noinspection PyShadowingBuiltins
 class User(db.Model):
@@ -17,6 +20,7 @@ class User(db.Model):
     first_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     admin = db.Column(db.Boolean, default=False)
+    show_ads = db.Column(db.Boolean, default=True)
 
     replay_ratings = db.relationship('ReplayRating', backref='user', lazy='select', cascade="all, delete-orphan")
     favourites = db.relationship('ReplayFavourite', backref='user', lazy='select', cascade="all, delete-orphan")
@@ -51,3 +55,6 @@ class User(db.Model):
         self.last_seen = datetime.datetime.utcnow()
         db.session.add(self)
         db.session.commit()
+
+    def allows_ads(self):
+        return self.show_ads
