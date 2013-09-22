@@ -187,7 +187,7 @@ class PlayerSnapshot(db.Model):
     level = db.Column(db.Integer)
     life_state = db.Column(db.Enum(
         "alive",
-        "dying"
+        "dying",
         "dead",
         "respawnable",
         "discardbody"
