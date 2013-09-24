@@ -4,6 +4,7 @@ from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
 from flask.ext.sqlalchemy import SQLAlchemy
 import steam
+from boto import sqs
 
 app = Flask(__name__)
 app.config.from_object("settings")
@@ -16,6 +17,15 @@ oid = OpenID(app)
 # Setup steamodd
 steam.api.key.set(app.config['STEAM_API_KEY'])
 steam.api.socket_timeout.set(10)
+
+# Setup boto
+sqs_connection = sqs.connect_to_region(
+    app.config["AWS_REGION"],
+    aws_access_key_id=app.config["AWS_ACCESS_KEY_ID"],
+    aws_secret_access_key=app.config["AWS_SECRET_ACCESS_KEY"]
+)
+
+sqs_gc_queue = sqs_connection.create_queue("dotabank-gc")
 
 from views import index, about, internalerror
 

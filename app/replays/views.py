@@ -2,11 +2,12 @@ from flask import Blueprint, render_template, flash, redirect, request, url_for,
 from itertools import groupby, izip
 import operator
 
-from app import steam, db, cache
+from app import steam, db, cache, sqs_gc_queue
 from models import Replay, ReplayRating, ReplayFavourite, CombatLogMessage
 from flask.ext.login import current_user, login_required
 from app.admin.views import AdminModelView
 from filters import get_hero_by_id, get_hero_by_name
+from boto.sqs.message import RawMessage as sqsMessage
 
 mod = Blueprint("replays", __name__, url_prefix="/replays")
 
@@ -191,7 +192,18 @@ def search():
             flash("Replay {} was not in our database, so we've added it to the job queue to be parsed! AINT WE NICE?".format(match_id), "info")
             replay = Replay(match_id)
             db.session.add(replay)
-            db.session.commit()
+
+            # Write to SQS
+            msg = sqsMessage()
+            msg.set_body(match_id)
+            queued = sqs_gc_queue.write(msg)
+
+            if queued:
+                db.session.commit()
+            else:
+                db.rollback()
+                replay = None
+                flash("Replay {} was not on our database, and we encountered errors trying to add it.  Please try again later.".format(match_id), "warning")
 
         if replay:
             return redirect(url_for("replays.replay", _id=match_id))
