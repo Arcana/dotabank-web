@@ -56,6 +56,7 @@
             <script>
             (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
+            <hr>
             {% endif %}
         </div>
         {% for category, message in get_flashed_messages(with_categories=true) %}
@@ -66,8 +67,9 @@
         {% endfor %}
         {% block content %}
         {% endblock %}
-        <div id="ad_large_tottom" class="text-center">
+        <div id="ad_large_bottom" class="text-center">
             {% if current_user.allows_ads %}
+            <hr>
             <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
             <!-- Dotabank large bottom -->
             <ins class="adsbygoogle"
