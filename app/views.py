@@ -13,7 +13,7 @@ from flask.ext.login import current_user
 @app.route('/')
 def index():
     last_added_replays = Replay.query.order_by(Replay.added_to_site_time.desc()).limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
-    last_parsed_replays = Replay.query.order_by(Replay.parse_done_time.desc()).limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
+    last_parsed_replays = Replay.query.filter(Replay.state == "PARSED").order_by(Replay.parse_done_time.desc()).limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
 
     # Random facts to brag about, even though they're somewhat meaningless.
     total_replays = Replay.query.count()
