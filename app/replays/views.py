@@ -185,6 +185,7 @@ def replay_favourite(_id):
 
 
 @mod.route("/<int:_id>/download/", methods=['GET', 'POST'])
+@login_required
 def download(_id):
     replay = Replay.query.filter(Replay.id == _id).first()
     if replay is None:
