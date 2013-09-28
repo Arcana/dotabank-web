@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Replay <small>{{ replay.id }}</small></h1>
+        {% include "replays/replay_nav.html" %}
+    </div>
+
+    <div class="row text-center">
+        <div class="col-sm-6">
+            <h2>Aw yea, you're a human!</h2>
+            <p>You can download this replay via the button below.</p>
+            <a href="{{ url }}" class="btn btn-lg btn-primary">Download replay.</a>
+        </div>
+        <div class="col-sm-6">
+            <dl class="text-muted">
+                <dt>Name</dt>
+                <dd>{{ name }}</dd>
+                <dt>File size</dt>
+                <dd>{{ filesize|filesizeformat }}</dd>
+                <dt>MD5 Checksum</dt>
+                <dd>{{ md5 }}</dd>
+                <dt>Expires at</dt>
+                <dd>{{ expires_at }} UTC</dd>
+            </dl>
+        </div>
+    </div>
+
+{% endblock %}

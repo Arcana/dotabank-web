@@ -5,6 +5,7 @@ from flask.ext.openid import OpenID
 from flask.ext.sqlalchemy import SQLAlchemy
 import steam
 from boto import sqs
+from boto.s3.connection import S3Connection
 
 app = Flask(__name__)
 app.config.from_object("settings")
@@ -26,6 +27,13 @@ sqs_connection = sqs.connect_to_region(
 )
 
 sqs_gc_queue = sqs_connection.create_queue("dotabank-gc")
+
+s3_connection = S3Connection(
+    aws_access_key_id=app.config["AWS_ACCESS_KEY_ID"],
+    aws_secret_access_key=app.config["AWS_SECRET_ACCESS_KEY"]
+)
+
+dotabank_bucket = s3_connection.get_bucket(app.config["AWS_BUCKET"])
 
 from views import index, about, internalerror
 

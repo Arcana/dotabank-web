@@ -1,12 +1,14 @@
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
 from itertools import groupby, izip
 import operator
+from datetime import datetime, timedelta
 
-from app import steam, db, cache, sqs_gc_queue
+from app import steam, db, cache, sqs_gc_queue, dotabank_bucket
 from models import Replay, ReplayRating, ReplayFavourite, CombatLogMessage
 from flask.ext.login import current_user, login_required
 from app.admin.views import AdminModelView
 from filters import get_hero_by_id, get_hero_by_name
+from forms import DownloadForm
 from boto.sqs.message import RawMessage as sqsMessage
 
 mod = Blueprint("replays", __name__, url_prefix="/replays")
@@ -180,6 +182,39 @@ def replay_favourite(_id):
     except TypeError:
         flash("There was a problem favouriting {}!".format(_id), "danger")
     return redirect(request.referrer or url_for("index"))
+
+
+@mod.route("/<int:_id>/download/", methods=['GET', 'POST'])
+def download(_id):
+    replay = Replay.query.filter(Replay.id == _id).first()
+    if replay is None:
+        flash("Replay {} not found.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    form = DownloadForm()
+    key = dotabank_bucket.get_key(replay.local_uri)
+
+    expires_at = (datetime.utcnow() + timedelta(seconds=current_app.config["REPLAY_DOWNLOAD_TIMEOUT"])).ctime()
+    name = key.name
+    md5 = key.etag
+    filesize = key.size
+    if form.validate_on_submit():
+        url = key.generate_url(current_app.config["REPLAY_DOWNLOAD_TIMEOUT"])
+        return render_template("replays/download_granted.html",
+                               replay=replay,
+                               expires_at=expires_at,
+                               name=name,
+                               md5=md5,
+                               filesize=filesize,
+                               url=url)
+
+    return render_template("replays/download.html",
+                           replay=replay,
+                           name=name,
+                           md5=md5,
+                           filesize=filesize,
+                           form=form)
+
 
 @mod.route("/search/")
 def search():
