@@ -217,13 +217,15 @@
         {% else %}
             <div class="alert alert-warning"><strong>I'm not ready!</strong> The replay is in limbo ({{ replay.state }}), check back soon.</div>
         {% endif %}
-    {% elif replay.state in ["GC_ERROR", "PARSE_ERROR"] %}
+    {% elif replay.state in ["GC_ERROR", "DOWNLOAD_ERROR", "PARSE_ERROR"] %}
         <div class="alert alert-danger">
             <strong>Sorry!</strong>
             {% if replay.state == "GC_ERROR" %}
                 There was a problem retrieving match details, this could be because the match was private, requires a tournament pass to access, or the match id is invalid.
-            {% else %}
-                There was a problem parsing this matches' replay; it has been reported to the site admins to investigate.
+            {% elif replay.state == "DOWNLOAD_ERROR" %}
+                There was a problem downloading this matches replay; it has been reported to the site admins to investigate.
+            {% elif replay.state == "PARSE_ERROR" %}
+                There was a problem parsing this matches replay; it has been reported to the site admins to investigate.
             {% endif %}
         </div>
     {% endif %}
