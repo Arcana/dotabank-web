@@ -1,6 +1,6 @@
 from flask import render_template
 
-from app import app, db, cache
+from app import app, db
 from app.users.models import User
 from app.replays.models import Replay
 from app.replays.models import ReplayPlayer

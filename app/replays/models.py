@@ -118,11 +118,11 @@ class CombatLogMessage(db.Model):
     value = db.Column(db.Integer)
     health = db.Column(db.Integer)
 
-    def __init__(self, replay_id, timestamp, tick, type, source_name, target_name, attacker_name, inflictor_name, attacker_illusion, target_illusion, value, health, target_source_name):
+    def __init__(self, replay_id, timestamp, tick, _type, source_name, target_name, attacker_name, inflictor_name, attacker_illusion, target_illusion, value, health, target_source_name):
         self.replay_id = replay_id
         self.timestamp = timestamp
         self.tick = tick
-        self.type = type
+        self.type = _type
         self.source_name = source_name
         self.target_name = target_name
         self.attacker_name = attacker_name

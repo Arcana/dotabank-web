@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% block style %}
     {{ super() }}
+    <!--suppress ALL -->
+
     <link href="{{ url_for("static", filename="css/nv.d3.css") }}" rel="stylesheet" type="text/css">
 {% endblock %}
 {% block scripts %}
@@ -81,7 +83,7 @@
                                 values: [{% for k, item in graph_teams["dire"]|dictsort %}{{ "{{x: {}, y: - {}}}".format(item["tick"], item[id]|float) }},{% endfor %}],
                                 key: "Dire",
                                 color: "{{ graph_dire_colour }}"
-                            },
+                            }
                         ])
                     .transition().duration(500)
                     .call(chart);
@@ -89,7 +91,7 @@
                 nv.utils.windowResize(chart.update);
                 chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
-                if (!charts["{{ id }}"]) charts["{{ id }}"] = []
+                if (!charts["{{ id }}"]) charts["{{ id }}"] = [];
                 charts["{{ id }}"].push(chart);
                 return chart;
             });
@@ -129,7 +131,7 @@
                     chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
 
 
-                    if (!charts["{{ id }}"]) charts["{{ id }}"] = []
+                    if (!charts["{{ id }}"]) charts["{{ id }}"] = [];
                     charts["{{ id }}"].push(chart);
                     return chart;
                 });
@@ -162,7 +164,7 @@
 
             nv.utils.windowResize(chart.update);
 
-            if (!charts["positions"]) charts["positions"] = []
+            if (!charts["positions"]) charts["positions"] = [];
             charts["positions"].push(chart);
             return chart;
         });
@@ -296,6 +298,7 @@
             <p>Each point is a hero position roughly every 30 seconds.  Points are ofc not aligned to the map background, because that would require effort.</p>
             <div id="graph-positions-chart">
                 <svg style="background-image:url('{{ url_for("static", filename="images/dota_map_1140.jpg") }}')" height="1140"></svg>
+            </div>
         </div>
     </div>
     {% endif %}

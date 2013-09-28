@@ -3,6 +3,7 @@ from flask.ext.login import AnonymousUserMixin
 import datetime
 
 
+# noinspection PyMethodMayBeStatic
 class AnonymousUser(AnonymousUserMixin):
     def is_admin(self):
         return False
@@ -12,6 +13,7 @@ class AnonymousUser(AnonymousUserMixin):
 
 
 # noinspection PyShadowingBuiltins
+# noinspection PyMethodMayBeStatic
 class User(db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)

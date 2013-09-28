@@ -1,3 +1,4 @@
+Crypto
 Flask==0.10.1
 Flask-Admin==1.0.6
 Flask-Cache==0.12

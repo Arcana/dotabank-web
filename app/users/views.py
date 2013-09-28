@@ -13,10 +13,10 @@ login_manager.anonymous_user = AnonymousUser
 
 @login_manager.user_loader
 def load_user(user_id):
-    user = User.query.get(user_id)
-    if user:
-        user.update_last_seen()
-    return user
+    _user = User.query.get(user_id)
+    if _user:
+        _user.update_last_seen()
+    return _user
 
 
 @mod.route('/login/')
@@ -31,21 +31,21 @@ def login():
 def create_or_login(resp):
     steam_id = long(resp.identity_url.replace("http://steamcommunity.com/openid/id/", ""))
     account_id = int(steam_id & 0xFFFFFFFF)
-    user = User.query.filter(User.id == int(account_id & 0xFFFFFFFF)).first()
+    _user = User.query.filter(User.id == int(account_id & 0xFFFFFFFF)).first()
 
-    if not user:
-        user = User(int(account_id & 0xFFFFFFFF), steam.user.profile(steam_id).persona or account_id)
+    if not _user:
+        _user = User(int(account_id & 0xFFFFFFFF), steam.user.profile(steam_id).persona or account_id)
 
-        db.session.add(user)
+        db.session.add(_user)
         db.session.commit()
 
-    login_attempt = login_user(user)
+    login_attempt = login_user(_user)
     if login_attempt is True:
-        flash("You are logged in as {}".format(user.name), "success")
-    elif not user.is_active():
-        flash("Cannot log you in as {}, your account has been disabled.  If you believe this is in error, please contact {}.".format(user.name, current_app.config["CONTACT_EMAIL"]), "danger")
+        flash("You are logged in as {}".format(_user.name), "success")
+    elif not _user.is_active():
+        flash("Cannot log you in as {}, your account has been disabled.  If you believe this is in error, please contact {}.".format(_user.name, current_app.config["CONTACT_EMAIL"]), "danger")
     else:
-        flash("Error logging you in as {}, please try again later.".format(user.name), "danger")
+        flash("Error logging you in as {}, please try again later.".format(_user.name), "danger")
     return redirect(oid.get_next_url())
 
 
@@ -62,17 +62,17 @@ def users(page=1):
     if not current_user.is_admin():
         flash("User list is admin only atm.", "danger")
         return redirect(request.referrer or url_for("index"))
-    users = User.query.paginate(page, current_app.config["USERS_PER_PAGE"], False)
-    return render_template("users/users.html", users=users)
+    _users = User.query.paginate(page, current_app.config["USERS_PER_PAGE"], False)
+    return render_template("users/users.html", users=_users)
 
 
 @mod.route("/<int:_id>/")
 def user(_id):
-    user = User.query.filter(User.id == _id).first()
-    if user is None:
+    _user = User.query.filter(User.id == _id).first()
+    if _user is None:
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
-    return render_template("users/user.html", user=user)
+    return render_template("users/user.html", user=_user)
 
 
 class UserAdmin(AdminModelView):

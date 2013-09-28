@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
-from itertools import groupby, izip
+from itertools import groupby
 import operator
 from datetime import datetime, timedelta
 
-from app import steam, db, cache, sqs_gc_queue, dotabank_bucket
-from models import Replay, ReplayRating, ReplayFavourite, CombatLogMessage
+from app import steam, db, sqs_gc_queue, dotabank_bucket
+from models import Replay, ReplayRating, ReplayFavourite
 from flask.ext.login import current_user, login_required
 from app.admin.views import AdminModelView
 from filters import get_hero_by_id, get_hero_by_name
@@ -20,18 +20,18 @@ mod.add_app_template_filter(get_hero_by_name)
 @mod.route("/page/<int:page>/")
 def replays(page=1):
     # TODO: Filters & ordering
-    replays = Replay.query.order_by(Replay.added_to_site_time.desc()).paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
-    return render_template("replays/replays.html", replays=replays)
+    _replays = Replay.query.order_by(Replay.added_to_site_time.desc()).paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
+    return render_template("replays/replays.html", replays=_replays)
 
 
 @mod.route("/<int:_id>/")
 def replay(_id):
-    replay = Replay.query.filter(Replay.id == _id).first()
-    if replay is None:
+    _replay = Replay.query.filter(Replay.id == _id).first()
+    if _replay is None:
         flash("Replay {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
 
-    graph_data = replay.players.all()
+    graph_data = _replay.players.all()
     if graph_data:
         graph_data = sorted(graph_data, key=operator.attrgetter("team"))
         graph_labels = [int(y.tick) for y in max(graph_data, key=lambda x: len(x.player_snapshots)).player_snapshots]
@@ -119,24 +119,24 @@ def replay(_id):
                     teams_delta[snapshot.tick]["int"] -= snapshot.intelligence
                     teams_delta[snapshot.tick]["agi"] -= snapshot.agility
 
-    return render_template("replays/replay.html", replay=replay, graph_data=graph_data, graph_labels=graph_labels, graph_teams=teams, graph_teams_delta=teams_delta)
+    return render_template("replays/replay.html", replay=_replay, graph_data=graph_data, graph_labels=graph_labels, graph_teams=teams, graph_teams_delta=teams_delta)
 
 
 @mod.route("/<int:_id>/combatlog/")
 @mod.route("/<int:_id>/combatlog/<int:page>/")
 def combatlog(_id, page=1):
     # TODO: Search for tick / timestamp and redirect to appropriate page.
-    replay = Replay.query.filter(Replay.id == _id).first()
-    if replay is None:
+    _replay = Replay.query.filter(Replay.id == _id).first()
+    if _replay is None:
         flash("Replay {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
 
-    combatlog = replay.combatlog.paginate(page, current_app.config["COMBATLOG_MSGS_PER_PAGE"], False)
+    _combatlog = _replay.combatlog.paginate(page, current_app.config["COMBATLOG_MSGS_PER_PAGE"], False)
 
-    if len(combatlog.items) == 0:
+    if len(_combatlog.items) == 0:
         flash("Motherfucking fuckers fucking my fuckfactory.", "danger")
         return redirect(request.referrer or url_for("index"))
-    return render_template("replays/combatlog.html", replay=replay, combatlog=combatlog)
+    return render_template("replays/combatlog.html", replay=_replay, combatlog=_combatlog)
 
 
 @mod.route("/<int:_id>/rate/")
@@ -187,13 +187,13 @@ def replay_favourite(_id):
 @mod.route("/<int:_id>/download/", methods=['GET', 'POST'])
 @login_required
 def download(_id):
-    replay = Replay.query.filter(Replay.id == _id).first()
-    if replay is None:
+    _replay = Replay.query.filter(Replay.id == _id).first()
+    if _replay is None:
         flash("Replay {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
 
     form = DownloadForm()
-    key = dotabank_bucket.get_key(replay.local_uri)
+    key = dotabank_bucket.get_key(_replay.local_uri)
 
     expires_at = (datetime.utcnow() + timedelta(seconds=current_app.config["REPLAY_DOWNLOAD_TIMEOUT"])).ctime()
     name = key.name
@@ -202,7 +202,7 @@ def download(_id):
     if form.validate_on_submit():
         url = key.generate_url(current_app.config["REPLAY_DOWNLOAD_TIMEOUT"])
         return render_template("replays/download_granted.html",
-                               replay=replay,
+                               replay=_replay,
                                expires_at=expires_at,
                                name=name,
                                md5=md5,
@@ -210,7 +210,7 @@ def download(_id):
                                url=url)
 
     return render_template("replays/download.html",
-                           replay=replay,
+                           replay=_replay,
                            name=name,
                            md5=md5,
                            filesize=filesize,
@@ -221,13 +221,13 @@ def download(_id):
 def search():
     match_id = request.args.get("id")
     if unicode.isdecimal(unicode(match_id)):
-        replay = Replay.query.filter(Replay.id == match_id).first()
+        _replay = Replay.query.filter(Replay.id == match_id).first()
 
         # If we don't have match_id in database, check if it's a valid match via the WebAPI and if so add it to DB.
-        if not replay and "error" not in steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result").keys():
+        if not _replay and "error" not in steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result").keys():
             flash("Replay {} was not in our database, so we've added it to the job queue to be parsed! AINT WE NICE?".format(match_id), "info")
-            replay = Replay(match_id)
-            db.session.add(replay)
+            _replay = Replay(match_id)
+            db.session.add(_replay)
 
             # Write to SQS
             msg = sqsMessage()
@@ -238,10 +238,10 @@ def search():
                 db.session.commit()
             else:
                 db.rollback()
-                replay = None
+                _replay = None
                 flash("Replay {} was not on our database, and we encountered errors trying to add it.  Please try again later.".format(match_id), "warning")
 
-        if replay:
+        if _replay:
             return redirect(url_for("replays.replay", _id=match_id))
 
     # Only invalid matches make it this far!

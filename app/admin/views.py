@@ -6,6 +6,7 @@ from flask.ext.login import current_user
 mod = Blueprint("dotabank_admin", __name__)
 
 
+#noinspection PyMethodMayBeStatic
 class AuthMixin(object):
     def is_accessible(self):
         return current_user.is_admin()
