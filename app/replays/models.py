@@ -19,6 +19,7 @@ class Replay(db.Model):
         "PARSE_IN_PROGRESS",
         "PARSED",
         "GC_ERROR",
+        "DOWNLOAD_ERROR",
         "PARSE_ERROR"
     ), default="WAITING_GC")
     replay_state = db.Column(db.Enum(
@@ -28,6 +29,7 @@ class Replay(db.Model):
         "UNKNOWN"
     ), default="UNKNOWN")
     gc_fails = db.Column(db.Integer, default=0)
+    dl_fails = db.Column(db.Integer, default=0)
 
     # Timestamps for progress tracker
     added_to_site_time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
