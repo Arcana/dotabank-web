@@ -27,7 +27,7 @@
         </li>
         <li>
             <div class="form">
-                <a class="btn btn-default navbar-btn {{ "disabled" if not replay.url else "" }}" href="{{ url_for("replays.download", _id=replay.id) }}">Download</a>
+                <a class="btn btn-default navbar-btn {{ "disabled" if not replay.local_uri else "" }}" href="{{ url_for("replays.download", _id=replay.id) }}">Download</a>
             </div>
         </li>
         <li>&nbsp;</li> {# Hack for button padding #}

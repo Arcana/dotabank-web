@@ -192,6 +192,10 @@ def download(_id):
         flash("Replay {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
 
+    if _replay.local_uri is None:
+        flash("Replay {} not yet stored in Dotabank.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
+
     form = DownloadForm()
     key = dotabank_bucket.get_key(_replay.local_uri)
 
