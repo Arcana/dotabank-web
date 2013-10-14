@@ -255,7 +255,6 @@ def search():
 
 class ReplayAdmin(AdminModelView):
     column_display_pk = True
-    form_columns = ("id", "url", "state", "replay_state")
 
     def __init__(self, session, **kwargs):
         # Just call parent class with predefined model.

@@ -38,29 +38,23 @@ dotabank_bucket = s3_connection.get_bucket(app.config["AWS_BUCKET"])
 from views import index, about, internalerror
 
 
-from app.admin.views import mod as adminModule
-from app.users.views import mod as usersModule
-from app.replays.views import mod as replaysModule
+from app.admin.views import mod as admin_module
+from app.users.views import mod as users_module
+from app.replays.views import mod as replays_module
 
 from app.admin.views import admin, AdminModelView
 from app.users.views import UserAdmin
 from app.replays.views import ReplayAdmin
-from app.replays.models import ReplayRating, ReplayFavourite, CombatLogMessage
 from app.gc.views import GCWorkerAdmin
-from app.gc.models import GCJob
 
 
-app.register_blueprint(adminModule)
-app.register_blueprint(usersModule)
-app.register_blueprint(replaysModule)
+app.register_blueprint(admin_module)
+app.register_blueprint(users_module)
+app.register_blueprint(replays_module)
 
-admin.add_view(UserAdmin(db.session))
-admin.add_view(ReplayAdmin(db.session, category='Replays'))
-admin.add_view(AdminModelView(ReplayRating, db.session, category='Replays'))
-admin.add_view(AdminModelView(ReplayFavourite, db.session, category='Replays'))
-admin.add_view(AdminModelView(CombatLogMessage, db.session, category='Replays'))
-admin.add_view(GCWorkerAdmin(db.session, category='GC'))
-admin.add_view(AdminModelView(GCJob, db.session, category='GC'))
+admin.add_view(UserAdmin(db.session, category="Models"))
+admin.add_view(ReplayAdmin(db.session, category="Models"))
+admin.add_view(GCWorkerAdmin(db.session, category="Models"))
 
 admin.init_app(app)
 

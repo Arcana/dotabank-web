@@ -40,6 +40,7 @@
         </li>
         {% endif %}
     </ul>
+    <div class="tab-content">&nbsp;</div>
     {% endblock %}
 
     {% if filter_groups %}
@@ -53,12 +54,12 @@
             <tr>
                 {% block list_header scoped %}
                     {% if actions %}
-                    <th class="span1">
+                    <th class="col-sm-1">
                         <input type="checkbox" name="rowtoggle" class="action-rowtoggle" />
                     </th>
                     {% endif %}
                     {% block list_row_actions_header %}
-                    <th class="span1">&nbsp;</th>
+                    <th class="col-sm-1">&nbsp;</th>
                     {% endblock %}
                     {% set column = 0 %}
                     {% for c, name in list_columns %}
@@ -80,10 +81,11 @@
                             {{ name }}
                         {% endif %}
                         {% if admin_view.column_descriptions.get(c) %}
-                            <a class="icon-question-sign"
-                               title="{{ admin_view.column_descriptions[c] }}"
+                            <a title="{{ admin_view.column_descriptions[c] }}"
                                href="javascript:void(0)" data-role="tooltip"
-                            ></a>
+                            >
+                            <span class="glyphicon glyphicon-question-sign"></span>
+                            </a>
                         {% endif %}
                     </th>
                     {% set column = column + 1 %}
@@ -108,7 +110,7 @@
                         {%- endif -%}
                         {%- if admin_view.can_delete -%}
                         <form class="icon" method="POST" action="{{ url_for('.delete_view', id=get_pk_value(row), url=return_url) }}">
-                            <button onclick="return confirm('{{ _gettext('You sure you want to delete this item?') }}');">
+                            <a onclick="return confirm('{{ _gettext('You sure you want to delete this item?') }}');">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </button>
                         </form>

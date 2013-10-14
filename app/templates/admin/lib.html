@@ -77,7 +77,7 @@
 {# ---------------------- Forms -------------------------- #}
 {% macro render_field(form, field, set_focus=False, kwargs={}) %}
   <div class="form-group{{ ' error' if field.errors else '' }}">
-    <label class="control-label">
+    <label class="col-sm-2 control-label">
       {{ field.label.text }}
       {% if h.is_required_form_field(field) %}
         <strong style="color: red">&#42;</strong>
@@ -85,24 +85,31 @@
         &nbsp;
       {% endif %}
     </label>
-    <div class="controls">
-    <div>
-      {% if set_focus %}
-      {{ field(autofocus='autofocus', **kwargs)|safe }}
+    <div class="col-sm-10">
+      {% if field.type != "BooleanField" %}
+        {% if set_focus %}
+          {{ field(class="form-control", placeholder=field.label.text, autofocus='autofocus', **kwargs)|safe }}
+        {% else %}
+          {{ field(class="form-control", placeholder=field.label.text, **kwargs)|safe }}
+        {% endif %}
       {% else %}
-      {{ field(**kwargs)|safe }}
+        {% if set_focus %}
+          {{ field(placeholder=field.label.text, autofocus='autofocus', **kwargs)|safe }}
+        {% else %}
+          {{ field(placeholder=field.label.text, **kwargs)|safe }}
+        {% endif %}
       {% endif %}
-    </div>
-    {% if field.description %}
-    <p class="help-block">{{ field.description }}</p>
-    {% endif %}
-    {% if field.errors %}
-      <ul class="input-errors">
-      {% for e in field.errors if e is string %}
-        <li>{{ e }}</li>
-      {% endfor %}
-      </ul>
-    {% endif %}
+
+      {% if field.description %}
+      <p class="help-block">{{ field.description }}</p>
+      {% endif %}
+      {% if field.errors %}
+        <ul class="input-errors">
+        {% for e in field.errors if e is string %}
+          <li>{{ e }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
     </div>
   </div>
 {% endmacro %}
@@ -125,8 +132,8 @@
 {% endmacro %}
 
 {% macro render_form_buttons(cancel_url, extra=None) %}
-    <div class="control-group">
-      <div class="controls">
+<div class="form-group">
+      <div class="col-sm-offset-2">
         <input type="submit" class="btn btn-primary btn-large" value="{{ _gettext('Submit') }}" />
         {% if extra %}
         {{ extra }}
