@@ -18,6 +18,7 @@ class User(db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(64), unique=False, nullable=True)
     enabled = db.Column(db.Boolean, default=True, nullable=False)
     first_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)

@@ -1,0 +1,46 @@
+{%- macro field_label(field) -%}
+    <label for="{{ field.id }}">{{ field.label.text }}</label>
+{% endmacro %}
+
+
+{%- macro field_description(field) -%}
+    {% if field.description %}
+        <span class="help-block">{{ field.description|safe }}</span>
+    {% endif %}
+{%- endmacro -%}
+
+
+{%- macro field_errors(field) -%}
+    {% if field.errors %}
+        {%- for error in field.errors -%}
+        <span class="help-block">{{error}}</span>
+        {%- endfor -%}
+    {% endif %}
+{%- endmacro -%}
+
+{%- macro horizontal_field(field) -%}
+<div class="form-group row{%- if field.errors %} has-error{%- endif %}">
+
+    {{ field.label(class="col-sm-2 control-label") }}
+    <div class="col-sm-10">
+
+    {%- if field.flags.required -%}
+        {{ field(class='form-control', placeholder=field.label.text, required="required", **kwargs) }}
+    {%- else -%}
+        {{ field(class='form-control', placeholder=field.label.text, **kwargs) }}
+    {%- endif -%}
+
+    {{ field_description(field) }}
+    {{ field_errors(field) }}
+    </div>
+</div>
+{% endmacro %}
+
+
+{%- macro horizontal_submit(label="Submit") -%}
+<div class="form-group row">
+    <div class="col-sm-10 col-sm-offset-2">
+        <button type="submit" class="btn btn-primary">{{ label }}</button>
+    </div>
+</div>
+{% endmacro %}

@@ -1,0 +1,16 @@
+{% import "macros.html" as wtf %}
+
+{% extends "layout.html" %}
+
+{% block content %}
+    {% include "users/user_nav.html" %}
+
+    <form class="form-horizontal" role="form" method="POST">
+        {{ form.hidden_tag() }}
+        {{ wtf.horizontal_field(form.name) }}
+        {{ wtf.horizontal_field(form.email) }}
+
+        {{ wtf.horizontal_submit() }}
+    </form>
+
+{% endblock %}

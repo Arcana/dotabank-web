@@ -1,26 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <nav id="user-nav" class="navbar navbar-default">
-        <div class="navbar-header">
-            <span class="navbar-brand"><abbr title="{{ user.id }}">{{ user.name }}</abbr></span>
-        </div>
-        <ul class="nav navbar-nav">
-            <li>
-                <a href="">Something idk</a>
-            </li>
-        </ul>
-        {% if current_user.id == user.id %}
-            <ul class="nav navbar-nav pull-right">
-                <li>
-                    <div class="form">
-                        <a class="btn btn-default navbar-btn" href="{{ url_for("users.logout") }}">Logout</a>
-                    </div>
-                </li>
-                <li>&nbsp;</li> <!-- Padding hack -->
-            </ul>
-        {% endif %}
-    </nav>
+    {% include "users/user_nav.html" %}
 
     <dl class="dl-horizontal">
         <dt>First seen</dt>
