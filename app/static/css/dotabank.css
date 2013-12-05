@@ -4,6 +4,9 @@
     position: static;
 }
 
+#site-nav {
+    border-top: 5px solid #6FB04A;  /* RJME Green */
+}
 #admin-navbar {
     margin-bottom: 0;
 }
