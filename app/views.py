@@ -3,9 +3,7 @@ from flask import render_template
 from app import app, db
 from app.users.models import User
 from app.replays.models import Replay
-from app.replays.models import ReplayPlayer
-from app.replays.models import PlayerSnapshot
-from app.replays.models import CombatLogMessage
+from app.replays.models import ReplayDownload
 
 from flask.ext.login import current_user
 
@@ -17,21 +15,17 @@ def index():
 
     # Random facts to brag about, even though they're somewhat meaningless.
     total_replays = Replay.query.count()
-    total_parsed = Replay.query.filter(Replay.state == "PARSED").count()
-    total_players_seen = ReplayPlayer.query.group_by(ReplayPlayer.steam_id).count()
-    total_replay_snapshots = PlayerSnapshot.query.count()
-    total_combat_log_entries = CombatLogMessage.query.count()
-
     total_users = User.query.count()
+    total_replays_downloadable = Replay.query.filter(Replay.local_uri != None).count()  # Have to use != instead of 'is not' here, because sqlalchemy.
+    total_downloads_processed = ReplayDownload.query.count()
+
     return render_template("dotabank.html",
                            last_added_replays=last_added_replays,
                            last_parsed_replays=last_parsed_replays,
                            total_replays=total_replays,
-                           total_parsed=total_parsed,
-                           total_players_seen=total_players_seen,
-                           total_replay_snapshots=total_replay_snapshots,
-                           total_combat_log_entries=total_combat_log_entries,
-                           total_users=total_users
+                           total_users=total_users,
+                           total_replays_downloadable=total_replays_downloadable,
+                           total_downloads_processed=total_downloads_processed
                            )
 
 
