@@ -5,7 +5,6 @@ import datetime
 
 # noinspection PyShadowingBuiltins
 class Replay(db.Model):
-    # TODO: date_added for ordering by date added to site (latest repalys on index)
     __tablename__ = "replays"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -35,12 +34,17 @@ class Replay(db.Model):
     added_to_site_time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     gc_done_time = db.Column(db.DateTime)
     dl_done_time = db.Column(db.DateTime)
-    parse_done_time = db.Column(db.DateTime)
+    parse_done_time = db.Column(db.DateTime)  # TODO: Remove parsing from system; we'll partner with Skadistats for that.
 
     ratings = db.relationship('ReplayRating', backref='replay', lazy='joined', cascade="all, delete-orphan")
     favourites = db.relationship('ReplayFavourite', backref='replay', lazy='joined', cascade="all, delete-orphan")
     combatlog = db.relationship('CombatLogMessage', order_by="asc(CombatLogMessage.timestamp)", backref='replay', lazy='dynamic', cascade="all, delete-orphan")
     players = db.relationship('ReplayPlayer', backref="replay", lazy="dynamic", cascade="all, delete-orphan")
+
+    # Set default order by
+    __mapper_args__ = {
+        "order_by": [db.desc(added_to_site_time)]
+    }
 
     def __init__(self, _id=None, url="", replay_state="UNKNOWN", state="WAITING_GC"):
         self.id = _id
@@ -98,6 +102,23 @@ class ReplayFavourite(db.Model):
         return "<Favourite {}/{}>".format(self.replay_id, self.user_id)
 
 
+# noinspection PyShadowingBuiltins
+class ReplayDownload(db.Model):
+    __tablename__ = "replay_downloads"
+
+    id = db.Column(db.Integer, primary_key=True)
+    replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
+
+    def __init__(self, replay_id=None, user_id=None):
+        self.replay_id = replay_id
+        self.user_id = user_id
+
+    def __repr__(self):
+        return "<Download {}/{}>".format(self.replay_id, self.user_id)
+
+
+# TODO: Remove parsing from system; we'll partner with Skadistats for that.
 class CombatLogMessage(db.Model):
     __tablename__ = "combatlog_msgs"
 
@@ -137,6 +158,7 @@ class CombatLogMessage(db.Model):
         return "<CombatLogMessage {}>".format(self.id)
 
 
+# TODO: Remove parsing from system; we'll partner with Skadistats for that.
 class ReplayPlayer(db.Model):
     __tablename__ = "replay_players"
 
@@ -160,6 +182,7 @@ class ReplayPlayer(db.Model):
         return "<ReplayPlayer {}>".format(self.id)
 
 
+# TODO: Remove parsing from system; we'll partner with Skadistats for that.
 class PlayerSnapshot(db.Model):
     __tablename__ = "replay_player_snapshots"
 

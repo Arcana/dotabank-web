@@ -4,7 +4,7 @@ import operator
 from datetime import datetime, timedelta
 
 from app import steam, db, sqs_gc_queue, dotabank_bucket
-from models import Replay, ReplayRating, ReplayFavourite
+from models import Replay, ReplayRating, ReplayFavourite, ReplayDownload
 from flask.ext.login import current_user, login_required
 from app.admin.views import AdminModelView
 from filters import get_hero_by_id, get_hero_by_name
@@ -201,10 +201,18 @@ def download(_id):
 
     expires_at = (datetime.utcnow() + timedelta(seconds=current_app.config["REPLAY_DOWNLOAD_TIMEOUT"])).ctime()
     name = key.name
-    md5 = key.etag
+    md5 = key.etag.replace("\"", "")
     filesize = key.size
     if form.validate_on_submit():
         url = key.generate_url(current_app.config["REPLAY_DOWNLOAD_TIMEOUT"])
+
+        download_log_entry = ReplayDownload(
+            _replay.id,
+            current_user.id if current_user else None
+        )
+        db.session.add(download_log_entry)
+        db.session.commit()
+
         return render_template("replays/download_granted.html",
                                replay=_replay,
                                expires_at=expires_at,

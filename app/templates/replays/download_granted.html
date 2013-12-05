@@ -9,8 +9,9 @@
     <div class="row text-center">
         <div class="col-sm-6">
             <h2>Aw yea, you're a human!</h2>
-            <p>You can download this replay via the button below.</p>
-            <a href="{{ url }}" class="btn btn-lg btn-primary">Download replay.</a>
+            <p>Your replay should start dowloading within a few seconds.</p>
+            <p>If it doesn't, mash the green button.</p>
+            <a href="{{ url|safe }}" class="btn btn-lg btn-success">Download replay</a>
         </div>
         <div class="col-sm-6">
             <dl class="text-muted">
@@ -20,10 +21,19 @@
                 <dd>{{ filesize|filesizeformat }}</dd>
                 <dt>MD5 Checksum</dt>
                 <dd>{{ md5 }}</dd>
-                <dt>Expires at</dt>
+                <dt>Download link expires at</dt>
                 <dd>{{ expires_at }} UTC</dd>
             </dl>
         </div>
     </div>
 
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+    /* Start download; is this the most efficient method? Idfk :3 */
+    $(document).ready(function(){
+        window.location = '{{ url|safe }}';
+    });
+    </script>
 {% endblock %}
