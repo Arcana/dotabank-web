@@ -96,6 +96,7 @@ def settings(_id):
     if form.validate_on_submit():
         _user.name = form.name.data
         _user.email = form.email.data
+        _user.show_ads = form.show_ads.data
         db.session.add(_user)
         db.session.commit()
         return redirect(request.args.get("next") or url_for("index"))

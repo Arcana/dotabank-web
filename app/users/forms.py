@@ -1,7 +1,7 @@
 from flask.ext.wtf import Form
 from flask.ext.login import current_user
 
-from wtforms import TextField
+from wtforms import TextField, BooleanField
 from wtforms.validators import Required, Email, Optional, ValidationError
 
 from app.users.models import User
@@ -12,6 +12,7 @@ class SettingsForm(Form):
     email = TextField("E-mail address",
                       validators=[Optional(), Email()],
                       description="Used to notify you when your matches have been parsed.")
+    show_ads = BooleanField("Show ads", description="Uncheck to hide advertisements on Dotabank.")
 
     def validate_name(self, field):
         user = User.query.filter_by(name=field.data).first()

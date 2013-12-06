@@ -19,7 +19,7 @@
 
     <div class="container">
         <div id="ad_large_top" class="text-center">
-            {% if current_user.allows_ads %}
+            {% if current_user.allows_ads() %}
             <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
             <!-- Dotabank large top -->
             <ins class="adsbygoogle"
@@ -41,7 +41,7 @@
         {% block content %}
         {% endblock %}
         <div id="ad_large_bottom" class="text-center">
-            {% if current_user.allows_ads %}
+            {% if current_user.allows_ads() %}
             <hr>
             <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
             <!-- Dotabank large bottom -->

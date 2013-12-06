@@ -9,6 +9,7 @@
         {{ form.hidden_tag() }}
         {{ wtf.horizontal_field(form.name) }}
         {{ wtf.horizontal_field(form.email) }}
+        {{ wtf.horizontal_checkbox(form.show_ads) }}
 
         {{ wtf.horizontal_submit() }}
     </form>
