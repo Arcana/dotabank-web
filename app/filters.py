@@ -8,7 +8,14 @@ def escape_every_character(text):
     return "".join("&#{};".format(ord(x)) for x in text)
 
 
-# API-related filters
+# Generic API filters
+@cache.memoize(timeout=60 * 60)
+def get_account_by_id(account_id):
+    steam_id = account_id + 76561197960265728
+    res = steam.user.profile(steam_id)
+    return res
+
+# Dota 2 API filters
 @cache.cached(timeout=60 * 60, key_prefix="heroes")
 def fetch_heroes():
     res = steam.api.interface("IEconDOTA2_570").GetHeroes(language="en_US").get("result")

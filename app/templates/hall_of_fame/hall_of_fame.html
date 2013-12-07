@@ -15,7 +15,7 @@
         <div class="col-md-8 col-sm-8 text-center  hall-of-fame-entry">
             <div class="well" style="background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((entry.farmer.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
                 <span>
-                    <a href="{{ url_for("users.user", _id=entry.farmer.user_id) }}">{{ entry.farmer.user_id }}</a>
+                    {{ (entry.farmer.user_id|get_account_by_id)['persona'] }}
                     ({{ entry.farmer.gold_per_min }} GPM)
 
                     <div class="btn-group">
@@ -30,7 +30,7 @@
             {% for player in [featured_players.pop()] %}
                 <div class="well" style="background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((player.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
                     <span>
-                        <a href="{{ url_for("users.user", _id=player.user_id) }}">{{ player.user_id }}</a>
+                        {{ (player.user_id|get_account_by_id)['persona'] }}
                         ({{ player.num_games }} games)
                     </span>
                 </div>
@@ -43,7 +43,7 @@
                 {% for player in column %}
                     <div class="well" style="background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((player.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
                         <span>
-                            <a href="{{ url_for("users.user", _id=player.user_id) }}">{{ player.user_id }}</a>
+                            {{ (player.user_id|get_account_by_id)['persona'] }}
                             ({{ player.num_games }} games)
                         </span>
                     </div>

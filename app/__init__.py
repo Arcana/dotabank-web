@@ -17,7 +17,7 @@ oid = OpenID(app)
 
 # Setup steamodd
 steam.api.key.set(app.config['STEAM_API_KEY'])
-steam.api.socket_timeout.set(10)
+steam.api.socket_timeout.set(5)
 
 # Setup boto
 sqs_connection = sqs.connect_to_region(
@@ -35,8 +35,9 @@ s3_connection = S3Connection(
 
 dotabank_bucket = s3_connection.get_bucket(app.config["AWS_BUCKET"])
 
-from filters import escape_every_character
+from filters import escape_every_character, get_account_by_id
 app.add_template_filter(escape_every_character)
+app.add_template_filter(get_account_by_id)
 
 from views import index, about, internalerror
 
