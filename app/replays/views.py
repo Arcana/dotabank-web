@@ -18,6 +18,7 @@ mod = Blueprint("replays", __name__, url_prefix="/replays")
 mod.add_app_template_filter(get_hero_by_id)
 mod.add_app_template_filter(get_hero_by_name)
 
+
 @mod.route("/")
 @mod.route("/page/<int:page>/")
 def replays(page=1):
@@ -30,8 +31,7 @@ def replays(page=1):
 def replay(_id):
     _replay = Replay.query.filter(Replay.id == _id).first()
     if _replay is None:
-        flash("Replay {} not found.".format(_id), "danger")
-        return redirect(request.referrer or url_for("index"))
+        return redirect(url_for("replays.search", id=_id))
 
     return render_template("replays/replay.html", replay=_replay)
 
