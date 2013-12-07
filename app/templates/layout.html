@@ -18,20 +18,6 @@
     {% include "site_nav.html" %}
 
     <div class="container">
-        <div id="ad_large_top" class="text-center">
-            {% if current_user.allows_ads() %}
-            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-            <!-- Dotabank large top -->
-            <ins class="adsbygoogle"
-                 style="display:inline-block;width:970px;height:90px"
-                 data-ad-client="ca-pub-0889116873012495"
-                 data-ad-slot="4488841842"></ins>
-            <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-            <hr>
-            {% endif %}
-        </div>
         {% for category, message in get_flashed_messages(with_categories=true) %}
             <div class="flash alert {{ "alert-" + category if category != "message" else "warning"}}">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -58,7 +44,7 @@
     <hr>
     <div id="footer" class="container text-muted">
         <ul class="list-inline pull-left">
-            <li>© Dotabank. Powered by <a href="http://steampowered.com">Steam</a> and <a href="https://github.com/skadistats">SkadiStats</a>.</li>
+            <li>© <a href="https://rjackson.me">Rob Jackson</a>. Powered by <a href="http://steampowered.com">Steam</a>.</li>
         </ul>
         <ul class="list-inline pull-right">
             <li><a href="{{ url_for("privacy") }}">Privacy Policy</a></li>
