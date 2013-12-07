@@ -1,185 +1,4 @@
 {% extends "layout.html" %}
-{% block style %}
-    {{ super() }}
-    <!--suppress ALL -->
-
-    <link href="{{ url_for("static", filename="css/nv.d3.css") }}" rel="stylesheet" type="text/css">
-{% endblock %}
-{% block scripts %}
-    {{ super() }}
-    <script src="{{ url_for("static", filename="js/d3.v3.js") }}" charset="utf-8"></script>
-    <script src="{{ url_for("static", filename="js/nv.d3.js") }}" charset="utf-8"></script>
-    <script>
-        {% set graph_stroke_colours = [
-            "rgba( 64, 100, 255, 1)",
-            "rgba( 64, 222, 142, 1)",
-            "rgba(144,   8, 185, 1)",
-            "rgba(243, 240,  11, 1)",
-            "rgba(255, 107,   0, 1)",
-            "rgba(254, 134, 197, 1)",
-            "rgba(179, 181, 191, 1)",
-            "rgba(101, 217, 247, 1)",
-            "rgba( 96, 243,  11, 1)",
-            "rgba(120,  77,   0, 1)"
-        ] %}
-        {% set graph_radiant_colour = "rgba(0, 100, 0, 1)" %}
-        {% set graph_dire_colour = "rgba(255, 0, 0, 1)" %}
-
-        {% if graph_data %}
-        var charts = {};
-
-        var ticksToTime = function(tick) {
-            var total_secs = tick/30;
-            var secs = Math.floor(total_secs % 60);
-            var mins = Math.floor(total_secs / 60);
-            return mins + ":" + secs;
-        };
-
-        {% for id, attr, fancy in [
-            ("gold", "earned_gold", "Gold"),
-            ("exp", "xp", "Experience"),
-            ("lh", "last_hits", "Last hits"),
-            ("dn", "denies", "Denies"),
-            ("kills", "kills", "Kills"),
-            ("deaths", "deaths", "Deaths"),
-            ("assists", "assists", "Assists"),
-            ("max_hp", "max_health", "Max HP"),
-            ("max_mana", "max_mana", "Max Mana"),
-            ("str", "strength", "Strength"),
-            ("int", "intelligence", "Intelligence"),
-            ("agi", "agility", "Agility"),
-            ] %}
-            nv.addGraph(function() {
-                var chart = nv.models.lineChart()
-                    .options({
-                        margin: {left: 100, bottom: 100},
-                        showXAxis: true,
-                        showYAxis: true,
-                        transitionDuration: 250,
-                        useInteractiveGuideline: true
-                    });
-
-                chart.xAxis
-                    .axisLabel('Time')
-                    .tickFormat(ticksToTime);
-
-                chart.yAxis
-                    .axisLabel("{{ fancy }}");
-
-                d3.select('#graph-{{ id }}-total svg')
-                    .datum([
-                            {
-                                values: [{% for k, item in graph_teams_delta|dictsort %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|float) }},{% endfor %}],
-                                key: "Delta",
-                                area: true,
-                                color: "#000"
-                            },
-                            {
-                                values: [{% for k, item in graph_teams["radiant"]|dictsort %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[id]|float) }},{% endfor %}],
-                                key: "Radiant",
-                                color: "{{ graph_radiant_colour }}"
-                            },
-                            {
-                                values: [{% for k, item in graph_teams["dire"]|dictsort %}{{ "{{x: {}, y: - {}}}".format(item["tick"], item[id]|float) }},{% endfor %}],
-                                key: "Dire",
-                                color: "{{ graph_dire_colour }}"
-                            }
-                        ])
-                    .transition().duration(500)
-                    .call(chart);
-
-                nv.utils.windowResize(chart.update);
-                chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
-
-                if (!charts["{{ id }}"]) charts["{{ id }}"] = [];
-                charts["{{ id }}"].push(chart);
-                return chart;
-            });
-            {% for team in graph_data|groupby(attribute="team") %}
-                nv.addGraph(function() {
-                    var chart = nv.models.stackedAreaChart()
-                        .options({
-                            margin: {left: 100, bottom: 100},
-                            showXAxis: true,
-                            showYAxis: true,
-                            transitionDuration: 250,
-                            useInteractiveGuideline: true
-                        })
-                        ;
-
-                    chart.xAxis
-                        .axisLabel('Time')
-                        .tickFormat(ticksToTime);
-
-                    chart.yAxis
-                        .axisLabel("{{ fancy }}");
-
-                    d3.select('#graph-{{ id }}-{{ team.grouper }} svg')
-                        .datum([
-                                {% for player in team.list %}
-                                {
-                                    values: [{% for item in player.player_snapshots %}{{ "{{x: {}, y: {}}}".format(item["tick"], item[attr]|float) }},{% endfor %}],
-                                    key: "{{ player.player_snapshots[-1].hero_name }}",
-                                    color: "{{ graph_stroke_colours[player.index] }}"
-                                },
-                                {% endfor %}
-                            ])
-                        .transition().duration(500)
-                        .call(chart);
-
-                    nv.utils.windowResize(chart.update);
-                    chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
-
-
-                    if (!charts["{{ id }}"]) charts["{{ id }}"] = [];
-                    charts["{{ id }}"].push(chart);
-                    return chart;
-                });
-            {% endfor %}
-        {% endfor %}
-
-
-        nv.addGraph(function() {
-            var chart = nv.models.scatterChart()
-                .showDistX(true)
-                .showDistY(true)
-                .color(d3.scale.category10().range());
-
-{#            chart.xAxis.tickFormat(d3.format('.02f'))#}
-{#            chart.yAxis.tickFormat(d3.format('.02f'))#}
-
-            d3.select('#graph-positions-chart svg')
-                .datum([{% for team in graph_data|groupby(attribute="team") %}
-                    {
-                        key: "{{ team.grouper }}",
-                        values: [{% for player in team.list %}
-                            {% for item in player.player_snapshots %}
-                                {{ "{{x: {}, y: {} }}".format(item["position_x"]|float, item["position_y"]|float) }},
-                            {% endfor %}
-                        {% endfor %}]
-                    },
-                {% endfor %}])
-                .transition().duration(500)
-                .call(chart);
-
-            nv.utils.windowResize(chart.update);
-
-            if (!charts["positions"]) charts["positions"] = [];
-            charts["positions"].push(chart);
-            return chart;
-        });
-
-
-        // Update on bootstrap tab change
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-            var tab_id = e.target.hash.replace("#graph-", "");
-            for (var i = 0; i < charts[tab_id].length; i++) {
-                charts[tab_id][i].update();
-            }
-        });
-        {% endif %}
-    </script>
-{% endblock %}
 
 {% block content %}
     <div class="page-header">
@@ -187,47 +6,31 @@
         {% include "replays/replay_nav.html" %}
 
         <div class="row progress-tracker">
-            <span class="col-xs-3 progress-tracker-{{ "done" if replay.added_to_site_time else "todo" }}">Added to site</span>
-            <span class="col-xs-3 progress-tracker-{{ "done" if replay.gc_done_time else "todo" }}">Get match details</span>
-            <span class="col-xs-3 progress-tracker-{{ "done" if replay.dl_done_time else "todo" }}">Download replay</span>
-            <span class="col-xs-3 progress-tracker-{{ "done" if replay.parse_done_time else "todo" }}">Parse replay</span>
+            <span class="col-xs-4 progress-tracker-{{ "done" if replay.added_to_site_time else "todo" }}">Added to site</span>
+            <span class="col-xs-4 progress-tracker-{{ "done" if replay.gc_done_time else "todo" }}">Get match details</span>
+            <span class="col-xs-4 progress-tracker-{{ "done" if replay.dl_done_time else "todo" }}">Archive replay</span>
         </div>
         <div class="row text-muted text-center">
-            <span class="col-xs-3">{{ replay.added_to_site_time }}</span>
-            <span class="col-xs-3">{{ replay.gc_done_time }}</span>
-            <span class="col-xs-3">{{ replay.dl_done_time }}</span>
-            <span class="col-xs-3">{{ replay.parse_done_time }}</span>
+            <span class="col-xs-4">{{ replay.added_to_site_time }}</span>
+            <span class="col-xs-4">{{ replay.gc_done_time }}</span>
+            <span class="col-xs-4">{{ replay.dl_done_time }}</span>
         </div>
     </div>
 
-{#    state = db.Column(db.Enum(#}
-{#        "WAITING_GC",#}
-{#        "WAITING_DOWNLOAD",#}
-{#        "DOWNLOAD_IN_PROGRESS",#}
-{#        "WAITING_PARSE",#}
-{#        "PARSE_IN_PROGRESS",#}
-{#        "PARSED",#}
-{#        "GC_ERROR",#}
-{#        "PARSE_ERROR"#}
-{#    ), default="WAITING_GC")#}
-
-    {% if replay.state == "parsed" %}
-        <div class="alert alert-info">PARSED!</div>
-    {% elif replay.state in ["WAITING_GC", "WAITING_DOWNLOAD", "DOWNLOAD_IN_PROGRESS", "WAITING_PARSE", "PARSE_IN_PROGRESS"] %}
+    {% if replay.state == "ARCHIVED" %}
+    {% elif replay.state in ["WAITING_GC", "WAITING_DOWNLOAD", "DOWNLOAD_IN_PROGRESS"] %}
         {% if replay.state == "WAITING_DOWNLOAD" and replay.replay_state != "REPLAY_AVAILABLE" %}
-            <div class="alert alert-danger"><strong>Welp.</strong> The replay is not available ({{ replay.replay_state }}), we can't do anything special with it. :(</div>
+            <div class="alert alert-danger"><strong>Sorry.</strong> The replay was not available ({{ replay.replay_state }}) when we attempted to archive it.</div>
         {% else %}
             <div class="alert alert-warning"><strong>I'm not ready!</strong> The replay is in limbo ({{ replay.state }}), check back soon.</div>
         {% endif %}
-    {% elif replay.state in ["GC_ERROR", "DOWNLOAD_ERROR", "PARSE_ERROR"] %}
+    {% elif replay.state in ["GC_ERROR", "DOWNLOAD_ERROR"] %}
         <div class="alert alert-danger">
             <strong>Sorry!</strong>
             {% if replay.state == "GC_ERROR" %}
                 There was a problem retrieving match details, this could be because the match was private, requires a tournament pass to access, or the match id is invalid.
             {% elif replay.state == "DOWNLOAD_ERROR" %}
                 There was a problem downloading this matches replay; it has been reported to the site admins to investigate.
-            {% elif replay.state == "PARSE_ERROR" %}
-                There was a problem parsing this matches replay; it has been reported to the site admins to investigate.
             {% endif %}
         </div>
     {% endif %}
@@ -236,8 +39,6 @@
         <dl class="dl-horizontal">
             <dt>id</dt>
             <dd>{{ replay.id }}</dd>
-{#            <dt>url</dt>#}
-{#            <dd>{{ replay.url }}</dd>#}
             <dt>state</dt>
             <dd>{{ replay.state }}</dd>
             <dt>replay_state</dt>
@@ -246,60 +47,4 @@
             <dd>{{ replay.ratings }}</dd>
         </dl>
     </div>
-
-
-    {% if graph_data %}
-    <h2>Charts</h2>
-    <ul class="nav nav-tabs">
-        <li class="active"><a href="#graph-gold" data-toggle="tab">Gold</a></li>
-        <li><a href="#graph-exp" data-toggle="tab">Experience</a></li>
-        <li><a href="#graph-lh" data-toggle="tab">Last hits</a></li>
-        <li><a href="#graph-dn" data-toggle="tab">Denies</a></li>
-        <li><a href="#graph-kills" data-toggle="tab">Kills</a></li>
-        <li><a href="#graph-deaths" data-toggle="tab">Deaths</a></li>
-        <li><a href="#graph-assists" data-toggle="tab">Assists</a></li>
-        <li><a href="#graph-max_hp" data-toggle="tab">Max hp</a></li>
-        <li><a href="#graph-max_mana" data-toggle="tab">Max mana</a></li>
-        <li><a href="#graph-str" data-toggle="tab">Strength</a></li>
-        <li><a href="#graph-int" data-toggle="tab">Intelligence</a></li>
-        <li><a href="#graph-agi" data-toggle="tab">Agility</a></li>
-        <li><a href="#graph-positions" data-toggle="tab">Positions</a></li>
-    </ul>
-    <div class="tab-content">
-        {% for item in [
-            "gold",
-            "exp",
-            "lh",
-            "dn",
-            "kills",
-            "deaths",
-            "assists",
-            "max_hp",
-            "max_mana",
-            "str",
-            "int",
-            "agi"] %}
-        <div class="tab-pane {{ "active" if item == "gold" else "" }}" id="graph-{{ item }}">
-            <h3>Total</h3>
-            <div id="graph-{{ item }}-total">
-                <svg height="400"></svg>
-            </div>
-            <h3>Radiant</h3>
-            <div id="graph-{{ item }}-radiant">
-                <svg height="400"></svg>
-            </div>
-            <h3>Dire</h3>
-            <div id="graph-{{ item }}-dire">
-                <svg height="400"></svg>
-            </div>
-        </div>
-        {% endfor %}
-        <div class="tab-pane" id="graph-positions">
-            <p>Each point is a hero position roughly every 30 seconds.  Points are ofc not aligned to the map background, because that would require effort.</p>
-            <div id="graph-positions-chart">
-                <svg style="background-image:url('{{ url_for("static", filename="images/dota_map_1140.jpg") }}')" height="1140"></svg>
-            </div>
-        </div>
-    </div>
-    {% endif %}
 {% endblock %}

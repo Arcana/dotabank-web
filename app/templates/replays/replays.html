@@ -11,17 +11,14 @@
     <table class="table table-condensed table-striped">
         <thead>
             <tr>
-                <td>Replay ID</td>
+                <td>ID</td>
                 <td>Added</td>
                 <td>Got details</td>
                 <td>Downloaded</td>
-                <td>Parsed</td>
                 <td>Favourite</td>
                 <td>Rating</td>
                 <td>State</td>
-                <td>Replay state</td>
-                <td>Combat log?</td>
-{#                <td>URL</td>#}
+                <td>&nbsp;</td>
             </tr>
         </thead>
         <tbody>
@@ -31,7 +28,6 @@
                     <td>{{ replay.added_to_site_time }}</td>
                     <td>{{ replay.gc_done_time }}</td>
                     <td>{{ replay.dl_done_time }}</td>
-                    <td>{{ replay.parse_done_time}}</td>
                     <td>
                         <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
                             <span class="{{"" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"> ({{ replay.favourites|list|length }})</span>
@@ -46,16 +42,8 @@
                         </a>
                     </td>
                     <td>{{ replay.state }}</td>
-                    <td>{{ replay.replay_state }}</td>
                     <td>
-                        {% if replay.combatlog.first() %}
-                            <a href="{{ url_for("replays.combatlog", _id=replay.id) }}"><span class="glyphicon glyphicon-ok"></span></a>
-                        {% else %}
-                            <span class="glyphicon glyphicon-remove"></span>
-                        {% endif %}
-                    </td>
-                    <td>
-{#                        <a class="btn btn-default btn-xs {{ "disabled" if not replay.url else "" }}" href="{{ replay.url }}">Download</a>#}
+                        <a class="btn btn-default btn-xs {{ "disabled" if not replay.url else "" }}" href="{{ replay.url }}">Download</a>
                     </td>
                 </tr>
             {% endfor %}

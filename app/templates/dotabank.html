@@ -47,7 +47,7 @@
             </table>
         </div>
         <div class="col-sm-6">
-            <h1>Latest parsed</h1>
+            <h1>Latest archived</h1>
             <table class="table table-condensed table-striped">
                 <thead>
                     <tr>
@@ -57,11 +57,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for replay in last_parsed_replays %}
+                    {% for replay in last_archived_replays %}
                         <tr>
                             <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
                             <td>{{ replay.state }}</td>
-                            <td>{{ replay.parse_done_time }}</td>
+                            <td>{{ replay.dl_done_time }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

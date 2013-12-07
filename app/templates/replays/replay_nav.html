@@ -3,33 +3,39 @@
         <li class="{{ "active" if "replays.replay" == request.endpoint  }}">
             <a href="{{ url_for("replays.replay", _id=replay.id) }}">Overview</a>
         </li>
-        {% if replay.combatlog.first() %}
-            <li class="{{ "active" if "replays.combatlog" == request.endpoint  }}">
-                <a href="{{ url_for("replays.combatlog", _id=replay.id) }}">Combat log</a>
-            </li>
-        {% endif %}
+        <li class="{{ "active" if "replays.download" == request.endpoint  }}">
+            <a href="{{ url_for("replays.download", _id=replay.id) }}">Download</a>
+        </li>
     </ul>
     <ul class="nav navbar-nav pull-right">
         <li>
-            <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
-                <span class="{{"text-primary" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"> ({{ replay.favourites|list|length }})</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=1) }}">
-                <span class="{{"text-primary" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"> ({{ replay.ratings|selectattr("positive")|list|length }})</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=0) }}">
-                <span class="{{"text-primary" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
-            </a>
-        </li>
-        <li>
-            <div class="form">
-                <a class="btn btn-default navbar-btn {{ "disabled" if not replay.local_uri else "" }}" href="{{ url_for("replays.download", _id=replay.id) }}">Download</a>
+            View match:
+            <div class="btn-group">
+                <a class="btn btn-default navbar-btn" href="{{ "http://dotabuff.com/matches/{}".format(replay.id) }}">
+                    In-game
+                </a>
+                <a class="btn btn-default navbar-btn" href="{{ "dota2://match_id={}".format(replay.id) }}">
+                    Dotabuff
+                </a>
             </div>
         </li>
         <li>&nbsp;</li> {# Hack for button padding #}
     </ul>
 </nav>
+<ul>
+    <li>
+        <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
+            <span class="{{"text-primary" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"> ({{ replay.favourites|list|length }})</span>
+        </a>
+    </li>
+    <li>
+        <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=1) }}">
+            <span class="{{"text-primary" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"> ({{ replay.ratings|selectattr("positive")|list|length }})</span>
+        </a>
+    </li>
+    <li>
+        <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=0) }}">
+            <span class="{{"text-primary" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"> ({{ replay.ratings|rejectattr("positive")|list|length }})</span>
+        </a>
+    </li>
+</ul>

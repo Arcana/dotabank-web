@@ -33,112 +33,7 @@ def replay(_id):
         flash("Replay {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
 
-    graph_data = _replay.players.all()
-    if graph_data:
-        graph_data = sorted(graph_data, key=operator.attrgetter("team"))
-        graph_labels = [int(y.tick) for y in max(graph_data, key=lambda x: len(x.player_snapshots)).player_snapshots]
-    else:
-        graph_labels = None
-
-    teams = {}
-    teams_delta = {}  # Key: Tick
-    for key, vals in groupby(graph_data, key=operator.attrgetter("team")):
-        players = list(vals)
-
-        teams[key] = {}  # Key: tick
-        for player in players:
-            for snapshot in player.player_snapshots:
-                if teams[key].get(snapshot.tick) is None:
-                    teams[key][snapshot.tick] = {
-                        "tick": snapshot.tick,
-                        "gold": 0,
-                        "exp": 0,
-                        "lh": 0,
-                        "dn": 0,
-                        "kills": 0,
-                        "deaths": 0,
-                        "assists": 0,
-                        "max_hp": 0,
-                        "max_mana": 0,
-                        "str": 0,
-                        "int": 0,
-                        "agi": 0
-                    }
-                if teams_delta.get(snapshot.tick) is None:
-                    teams_delta[snapshot.tick] = {
-                        "tick": snapshot.tick,
-                        "gold": 0,
-                        "exp": 0,
-                        "lh": 0,
-                        "dn": 0,
-                        "kills": 0,
-                        "deaths": 0,
-                        "assists": 0,
-                        "max_hp": 0,
-                        "max_mana": 0,
-                        "str": 0,
-                        "int": 0,
-                        "agi": 0
-                    }
-
-                teams[key][snapshot.tick]["gold"] += snapshot.earned_gold
-                teams[key][snapshot.tick]["exp"] += snapshot.xp
-                teams[key][snapshot.tick]["lh"] += snapshot.last_hits
-                teams[key][snapshot.tick]["dn"] += snapshot.denies
-                teams[key][snapshot.tick]["kills"] += snapshot.kills
-                teams[key][snapshot.tick]["deaths"] += snapshot.deaths
-                teams[key][snapshot.tick]["assists"] += snapshot.assists
-                teams[key][snapshot.tick]["max_hp"] += snapshot.max_health
-                teams[key][snapshot.tick]["max_mana"] += snapshot.max_mana
-                teams[key][snapshot.tick]["str"] += snapshot.strength
-                teams[key][snapshot.tick]["int"] += snapshot.intelligence
-                teams[key][snapshot.tick]["agi"] += snapshot.agility
-
-                if key == "radiant":
-                    teams_delta[snapshot.tick]["gold"] += snapshot.earned_gold
-                    teams_delta[snapshot.tick]["exp"] += snapshot.xp
-                    teams_delta[snapshot.tick]["lh"] += snapshot.last_hits
-                    teams_delta[snapshot.tick]["dn"] += snapshot.denies
-                    teams_delta[snapshot.tick]["kills"] += snapshot.kills
-                    teams_delta[snapshot.tick]["deaths"] += snapshot.deaths
-                    teams_delta[snapshot.tick]["assists"] += snapshot.assists
-                    teams_delta[snapshot.tick]["max_hp"] += snapshot.max_health
-                    teams_delta[snapshot.tick]["max_mana"] += snapshot.max_mana
-                    teams_delta[snapshot.tick]["str"] += snapshot.strength
-                    teams_delta[snapshot.tick]["int"] += snapshot.intelligence
-                    teams_delta[snapshot.tick]["agi"] += snapshot.agility
-                elif key == "dire":
-                    teams_delta[snapshot.tick]["gold"] -= snapshot.earned_gold
-                    teams_delta[snapshot.tick]["exp"] -= snapshot.xp
-                    teams_delta[snapshot.tick]["lh"] -= snapshot.last_hits
-                    teams_delta[snapshot.tick]["dn"] -= snapshot.denies
-                    teams_delta[snapshot.tick]["kills"] -= snapshot.kills
-                    teams_delta[snapshot.tick]["deaths"] -= snapshot.deaths
-                    teams_delta[snapshot.tick]["assists"] -= snapshot.assists
-                    teams_delta[snapshot.tick]["max_hp"] -= snapshot.max_health
-                    teams_delta[snapshot.tick]["max_mana"] -= snapshot.max_mana
-                    teams_delta[snapshot.tick]["str"] -= snapshot.strength
-                    teams_delta[snapshot.tick]["int"] -= snapshot.intelligence
-                    teams_delta[snapshot.tick]["agi"] -= snapshot.agility
-
-    return render_template("replays/replay.html", replay=_replay, graph_data=graph_data, graph_labels=graph_labels, graph_teams=teams, graph_teams_delta=teams_delta)
-
-
-@mod.route("/<int:_id>/combatlog/")
-@mod.route("/<int:_id>/combatlog/<int:page>/")
-def combatlog(_id, page=1):
-    # TODO: Search for tick / timestamp and redirect to appropriate page.
-    _replay = Replay.query.filter(Replay.id == _id).first()
-    if _replay is None:
-        flash("Replay {} not found.".format(_id), "danger")
-        return redirect(request.referrer or url_for("index"))
-
-    _combatlog = _replay.combatlog.paginate(page, current_app.config["COMBATLOG_MSGS_PER_PAGE"], False)
-
-    if len(_combatlog.items) == 0:
-        flash("Motherfucking fuckers fucking my fuckfactory.", "danger")
-        return redirect(request.referrer or url_for("index"))
-    return render_template("replays/combatlog.html", replay=_replay, combatlog=_combatlog)
+    return render_template("replays/replay.html", replay=_replay)
 
 
 @mod.route("/<int:_id>/rate/")
@@ -239,7 +134,7 @@ def search():
 
         # If we don't have match_id in database, check if it's a valid match via the WebAPI and if so add it to DB.
         if not _replay and "error" not in steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result").keys():
-            flash("Replay {} was not in our database, so we've added it to the job queue to be parsed! AINT WE NICE?".format(match_id), "info")
+            flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
             _replay = Replay(match_id)
             db.session.add(_replay)
 
