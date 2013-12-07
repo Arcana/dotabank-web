@@ -35,8 +35,10 @@ s3_connection = S3Connection(
 
 dotabank_bucket = s3_connection.get_bucket(app.config["AWS_BUCKET"])
 
-from views import index, about, internalerror
+from filters import escape_every_character
+app.add_template_filter(escape_every_character)
 
+from views import index, about, internalerror
 
 from app.admin.views import mod as admin_module
 from app.users.views import mod as users_module

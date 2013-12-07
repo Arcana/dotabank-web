@@ -17,6 +17,8 @@
     {% endif %}
     {% include "site_nav.html" %}
 
+    {% include "site_notice.html" %}
+
     <div class="container">
         {% for category, message in get_flashed_messages(with_categories=true) %}
             <div class="flash alert {{ "alert-" + category if category != "message" else "warning"}}">

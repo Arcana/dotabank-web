@@ -36,12 +36,12 @@ def privacy():
 
 @app.route("/tos/")
 def tos():
-    return render_template("tos.html", emule=app.config["CONTACT_EMAIL"])
+    return render_template("tos.html")
 
 
 @app.route("/about/")
 def about():
-    return render_template("about.html", emule=app.config["CONTACT_EMAIL"])
+    return render_template("about.html")
 
 
 @app.errorhandler(401)  # Unauthorized

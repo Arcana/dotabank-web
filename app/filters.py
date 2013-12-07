@@ -1,6 +1,14 @@
 from app import cache, steam
 
 
+# General filters
+def escape_every_character(text):
+    """ Used primarily for obfuscating email addresses
+    """
+    return "".join("&#{};".format(ord(x)) for x in text)
+
+
+# API-related filters
 @cache.cached(timeout=60 * 60, key_prefix="heroes")
 def fetch_heroes():
     res = steam.api.interface("IEconDOTA2_570").GetHeroes(language="en_US").get("result")
