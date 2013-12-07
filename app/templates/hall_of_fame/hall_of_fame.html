@@ -1,44 +1,54 @@
 {% extends "layout.html" %}
 
+{% set featured_players = entry.players|list %}
+
 {% block content %}
+    <div class="page-header">
+        <h1>Hall of Fame <small><abbr title="gc week: {{ entry.week }}">Week {{ entry.adjusted_week }}</abbr></small></h1>
+        <ul class="pager">
+            <li class="previous {{ "disabled" if not pagination.has_prev }}"><a href="{{ url_for("hall_of_fame.hall_of_fame", week=pagination.prev_num) if pagination.has_prev else "" }}">&larr; Older</a></li>
+            <li class="next {{ "disabled" if not pagination.has_next }}"><a href="{{ url_for("hall_of_fame.hall_of_fame", week=pagination.next_num) if pagination.has_next else "" }}">Newer &rarr;</a></li>
+        </ul>
+    </div>
+
     <div class="row">
-        <div class="col-md-4 col-sm-4 text-center">
-            <div class="well" style="padding-top:135px;padding-bottom:0px;background-size: cover;background-position: center;background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((entry.farmer.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
-                <div class="btn-group" style="position:absolute;top: 0px;right: 15px;">
-                <a href="{{ url_for("replays.replay", _id=entry.farmer.replay_id) }}" class="btn btn-default btn-xs">Details</a>
-                    <a href="dota2://match_id={{ entry.farmer.replay_id }}" class="btn btn-default btn-xs">Replay</a>
-                </div>
-                <h4 style="margin: 20px -19px 0px;padding:4px;background:#f5f5f5;"><a href="{{ url_for("users.user", _id=entry.farmer.user_id) }}">{{ entry.farmer.user_id }}</a> ({{ entry.farmer.gold_per_min }} GPM)</h4>
+        <div class="col-md-8 col-sm-8 text-center  hall-of-fame-entry">
+            <div class="well" style="background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((entry.farmer.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
+                <span>
+                    <a href="{{ url_for("users.user", _id=entry.farmer.user_id) }}">{{ entry.farmer.user_id }}</a>
+                    ({{ entry.farmer.gold_per_min }} GPM)
+
+                    <div class="btn-group">
+                        <a href="{{ url_for("replays.replay", _id=entry.farmer.replay_id) }}" class="btn btn-default btn-xs">Replay</a>
+                        <a href="dota2://match_id={{ entry.farmer.replay_id }}" class="btn btn-default btn-xs">In-game</a>
+                    </div>
+                </span>
             </div>
         </div>
 
-        <div class="col-md-4 col-sm-4 text-center">
-            <h1>Week {{ entry.week }}</h1>
-        </div>
-
-        <div class="col-md-4 col-sm-4 text-center">
-            {% for player in [(entry.players|list).pop()] %}
-                <div class="well" style="padding-top:135px;padding-bottom:0px;background-size: cover;background-position: center;background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((player.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
-                    <h4 style="margin: 20px -19px 0px;padding:4px;background:#f5f5f5;"><a href="{{ url_for("users.user", _id=player.user_id) }}">{{ player.user_id }}</a></h4>
-{#                        <p style="font-weight: bold;text-shadow: hsl(0, 100%, 100%) 0px 0px 2px;">Played {{ player.numGames }} games of {{ (player.hero_id|get_hero_by_id)["localized_name"] }}</p>#}
+        <div class="col-md-4 col-sm-4 text-center  hall-of-fame-entry">
+            {% for player in [featured_players.pop()] %}
+                <div class="well" style="background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((player.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
+                    <span>
+                        <a href="{{ url_for("users.user", _id=player.user_id) }}">{{ player.user_id }}</a>
+                        ({{ player.num_games }} games)
+                    </span>
                 </div>
             {% endfor %}
         </div>
     </div>
     <div class="row">
-        {% for column in entry.players|slice(3) %}
-            <div class="col-md-4 col-sm-4 text-center">
+        {% for column in featured_players|slice(3) %}
+            <div class="col-md-4 col-sm-4 text-center  hall-of-fame-entry">
                 {% for player in column %}
-                    <div class="well" style="padding-top:135px;padding-bottom:0px;background-size: cover;background-position: center;background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((player.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
-                        <h4 style="margin: 20px -19px 0px;padding:4px;background:#f5f5f5;"><a href="{{ url_for("users.user", _id=player.user_id) }}">{{ player.user_id }}</a></h4>
-{#                        <p style="font-weight: bold;text-shadow: hsl(0, 100%, 100%) 0px 0px 2px;">Played {{ player.numGames }} games of {{ (player.hero_id|get_hero_by_id)["localized_name"] }}</p>#}
+                    <div class="well" style="background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((player.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
+                        <span>
+                            <a href="{{ url_for("users.user", _id=player.user_id) }}">{{ player.user_id }}</a>
+                            ({{ player.num_games }} games)
+                        </span>
                     </div>
                 {% endfor %}
             </div>
         {% endfor %}
     </div>
-    <h1>Raw stuffs</h1>
-    <pre>
-        {{ entry|pprint }}
-    </pre>
 {% endblock %}

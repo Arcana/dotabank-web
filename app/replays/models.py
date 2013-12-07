@@ -40,6 +40,7 @@ class Replay(db.Model):
     favourites = db.relationship('ReplayFavourite', backref='replay', lazy='joined', cascade="all, delete-orphan")
     combatlog = db.relationship('CombatLogMessage', order_by="asc(CombatLogMessage.timestamp)", backref='replay', lazy='dynamic', cascade="all, delete-orphan")
     players = db.relationship('ReplayPlayer', backref="replay", lazy="dynamic", cascade="all, delete-orphan")
+    downloads = db.relationship('ReplayDownload', backref="replay", lazy="dynamic", cascade="all, delete-orphan")
 
     # Set default order by
     __mapper_args__ = {

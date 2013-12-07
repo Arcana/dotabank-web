@@ -86,3 +86,22 @@
 .jumbotron dd {
     margin-left: 260px;
 }
+
+.hall-of-fame-entry .well {
+    padding-top:135px;
+    padding-bottom:0px;
+    background-size: cover;
+    background-position: center;
+}
+
+.hall-of-fame-entry span {
+    display:block;
+    margin: 20px -19px 0px;
+    padding:4px;
+    background:#f5f5f5;
+}
+
+
+.hall-of-fame-entry .btn-group {
+    float: right;
+}

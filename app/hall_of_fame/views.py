@@ -11,15 +11,19 @@ mod = Blueprint("hall_of_fame", __name__, url_prefix="/hall_of_fame")
 mod.add_app_template_filter(get_hero_by_id)
 mod.add_app_template_filter(get_hero_by_name)
 
+
 @mod.route("/")
-@mod.route("/week/<int:week>/")
+@mod.route("/<int:week>/")
 def hall_of_fame(week=None):
+
+    entry = None
     if week is None:
         entry = HallOfFame.query.order_by(HallOfFame.week.desc()).first()
-    else:
-        entry = HallOfFame.query.filter(HallOfFame.week == week).one()
 
-    return render_template("hall_of_fame/hall_of_fame.html", entry=entry)
+    pagination = HallOfFame.query.paginate(entry.adjusted_week if entry else week, 1, False)
+    entry = entry or pagination.items[0]
+
+    return render_template("hall_of_fame/hall_of_fame.html", entry=entry, pagination=pagination)
 
 
 class HallOfFameAdmin(AdminModelView):

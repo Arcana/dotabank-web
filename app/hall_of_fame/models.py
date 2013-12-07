@@ -9,12 +9,21 @@ class HallOfFame(db.Model):
     players = db.relationship('FeaturedPlayer', backref="hall_of_fame", lazy="join", cascade="all, delete-orphan")
     farmers = db.relationship('FeaturedFarmer', backref="hall_of_fame", lazy="join", cascade="all, delete-orphan")
 
+    # Set default order by
+    __mapper_args__ = {
+        "order_by": [db.asc(week)]
+    }
+
     def __init__(self, week=None):
         self.week = week
 
     @property
     def farmer(self):
         return self.farmers[0]
+
+    @property
+    def adjusted_week(self):
+        return self.week - 2232  # Weeks begin at 2233, so take 2231 to make the first = 1.
 
     def __repr__(self):
         return "<HallOfFame {}>".format(self.week)
