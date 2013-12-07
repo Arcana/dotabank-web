@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4 col-sm-4 text-center">
+            <div class="well" style="padding-top:135px;padding-bottom:0px;background-size: cover;background-position: center;background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((entry.farmer.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
+                <div class="btn-group" style="position:absolute;top: 0px;right: 15px;">
+                <a href="{{ url_for("replays.replay", _id=entry.farmer.replay_id) }}" class="btn btn-default btn-xs">Details</a>
+                    <a href="dota2://match_id={{ entry.farmer.replay_id }}" class="btn btn-default btn-xs">Replay</a>
+                </div>
+                <h4 style="margin: 20px -19px 0px;padding:4px;background:#f5f5f5;"><a href="{{ url_for("users.user", _id=entry.farmer.user_id) }}">{{ entry.farmer.user_id }}</a> ({{ entry.farmer.gold_per_min }} GPM)</h4>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-sm-4 text-center">
+            <h1>Week {{ entry.week }}</h1>
+        </div>
+
+        <div class="col-md-4 col-sm-4 text-center">
+            {% for player in [(entry.players|list).pop()] %}
+                <div class="well" style="padding-top:135px;padding-bottom:0px;background-size: cover;background-position: center;background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((player.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
+                    <h4 style="margin: 20px -19px 0px;padding:4px;background:#f5f5f5;"><a href="{{ url_for("users.user", _id=player.user_id) }}">{{ player.user_id }}</a></h4>
+{#                        <p style="font-weight: bold;text-shadow: hsl(0, 100%, 100%) 0px 0px 2px;">Played {{ player.numGames }} games of {{ (player.hero_id|get_hero_by_id)["localized_name"] }}</p>#}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        {% for column in entry.players|slice(3) %}
+            <div class="col-md-4 col-sm-4 text-center">
+                {% for player in column %}
+                    <div class="well" style="padding-top:135px;padding-bottom:0px;background-size: cover;background-position: center;background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((player.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
+                        <h4 style="margin: 20px -19px 0px;padding:4px;background:#f5f5f5;"><a href="{{ url_for("users.user", _id=player.user_id) }}">{{ player.user_id }}</a></h4>
+{#                        <p style="font-weight: bold;text-shadow: hsl(0, 100%, 100%) 0px 0px 2px;">Played {{ player.numGames }} games of {{ (player.hero_id|get_hero_by_id)["localized_name"] }}</p>#}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+    <h1>Raw stuffs</h1>
+    <pre>
+        {{ entry|pprint }}
+    </pre>
+{% endblock %}

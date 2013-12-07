@@ -1,15 +1,17 @@
-from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
 from itertools import groupby
 import operator
 from datetime import datetime, timedelta
 
+from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
+from flask.ext.login import current_user, login_required
+from boto.sqs.message import RawMessage as sqsMessage
+
 from app import steam, db, sqs_gc_queue, dotabank_bucket
 from models import Replay, ReplayRating, ReplayFavourite, ReplayDownload
-from flask.ext.login import current_user, login_required
 from app.admin.views import AdminModelView
-from filters import get_hero_by_id, get_hero_by_name
+from app.filters import get_hero_by_id, get_hero_by_name
 from forms import DownloadForm
-from boto.sqs.message import RawMessage as sqsMessage
+
 
 mod = Blueprint("replays", __name__, url_prefix="/replays")
 

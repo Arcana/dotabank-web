@@ -41,19 +41,23 @@ from views import index, about, internalerror
 from app.admin.views import mod as admin_module
 from app.users.views import mod as users_module
 from app.replays.views import mod as replays_module
+from app.hall_of_fame.views import mod as hall_of_fame_module
 
 from app.admin.views import admin, AdminModelView
 from app.users.views import UserAdmin
 from app.replays.views import ReplayAdmin
+from app.hall_of_fame.views import HallOfFameAdmin
 from app.gc.views import GCWorkerAdmin
 
 
 app.register_blueprint(admin_module)
 app.register_blueprint(users_module)
 app.register_blueprint(replays_module)
+app.register_blueprint(hall_of_fame_module)
 
 admin.add_view(UserAdmin(db.session, category="Models"))
 admin.add_view(ReplayAdmin(db.session, category="Models"))
+admin.add_view(HallOfFameAdmin(db.session, category="Models"))
 admin.add_view(GCWorkerAdmin(db.session, category="Models"))
 
 admin.init_app(app)
