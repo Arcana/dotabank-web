@@ -46,7 +46,8 @@
     <hr>
     <div id="footer" class="container text-muted">
         <ul class="list-inline pull-left">
-            <li>© <a href="https://rjackson.me">Rob Jackson</a>. Powered by <a href="http://steampowered.com">Steam</a>.</li>
+            <li>© <a href="https://rjackson.me">Rob Jackson</a>.</li>
+            <li>Bitcoin donations: <code>{{ config['BITCOIN_DONATION_ADDRESS'] }}</code></li>
         </ul>
         <ul class="list-inline pull-right">
             <li><a href="{{ url_for("privacy") }}">Privacy Policy</a></li>
@@ -55,6 +56,7 @@
         </ul>
         <div class="clearfix"></div>
         <p class="text-muted">
+            Powered by <a href="http://steampowered.com">Steam</a>.
             "Dota" is a registered trademark of <a href="http://valvesoftware.com">Valve Corporation</a>.  Dotabank is not affiliated with Valve Corporation.
         </p>
     </div>
