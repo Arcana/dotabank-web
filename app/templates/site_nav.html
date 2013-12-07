@@ -4,12 +4,17 @@
         <ul class="nav navbar-nav">
             <li class="{{ "active" if "replays" == request.endpoint  }}"><a href="{{ url_for("replays.replays") }}">Replays</a></li>
             <li class="{{ "active" if "hall_of_fame" == request.endpoint  }}"><a href="{{ url_for("hall_of_fame.hall_of_fame") }}">Hall of Fame</a></li>
+            <li><a href="https://rjackson.me/tools/mmstats" target="_blank">Matchmaking stats <small><span class="glyphicon glyphicon-new-window"></span></small></a></li>
         </ul>
         <ul class="nav navbar-nav pull-right">
             <li>
                 <form class="navbar-form" action="{{ url_for("replays.search") }}">
-                    <input name="id" class="form-control" type="text" placeholder="Match ID" style="width:100px;"/>
-                    <button class="btn btn-default" type="submit">Search</button>
+                    <div class="input-group" style="width:200px;">
+                        <input name="id" class="form-control" type="text" placeholder="Match ID"/>
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" type="submit">Search</button>
+                        </div>
+                    </div>
                 </form>
             </li>
         {% if current_user.is_authenticated() %}
