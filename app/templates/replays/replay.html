@@ -17,20 +17,19 @@
         </div>
     </div>
 
-    {% if replay.state == "ARCHIVED" %}
-    {% elif replay.state in ["WAITING_GC", "WAITING_DOWNLOAD", "DOWNLOAD_IN_PROGRESS"] %}
-        {% if replay.state == "WAITING_DOWNLOAD" and replay.replay_state != "REPLAY_AVAILABLE" %}
-            <div class="alert alert-danger"><strong>Sorry.</strong> The replay was not available ({{ replay.replay_state }}) when we attempted to archive it.</div>
-        {% else %}
-            <div class="alert alert-warning"><strong>I'm not ready!</strong> The replay is in limbo ({{ replay.state }}), check back soon.</div>
-        {% endif %}
+    {% if replay.state in ["WAITING_GC", "WAITING_DOWNLOAD", "DOWNLOAD_IN_PROGRESS"] %}
+        <div class="alert alert-warning"><strong>I'm not ready!</strong> The replay is in limbo ({{ replay.state }}), check back soon.</div>
     {% elif replay.state in ["GC_ERROR", "DOWNLOAD_ERROR"] %}
         <div class="alert alert-danger">
             <strong>Sorry!</strong>
             {% if replay.state == "GC_ERROR" %}
                 There was a problem retrieving match details, this could be because the match was private, requires a tournament pass to access, or the match id is invalid.
             {% elif replay.state == "DOWNLOAD_ERROR" %}
+                {% if replay.replay_state != "REPLAY_AVAILABLE" %}
+                    The replay was not available ({{ replay.replay_state }}) when we attempted to archive it.
+                {% else %}
                 There was a problem downloading this matches replay; it has been reported to the site admins to investigate.
+                {% endif %}
             {% endif %}
         </div>
     {% endif %}
