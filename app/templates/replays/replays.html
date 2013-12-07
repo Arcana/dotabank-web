@@ -4,8 +4,8 @@
     <div class="page-header">
         <h1>Replays <small>page {{ replays.page }}</small></h1>
         <ul class="pager">
-            <li class="previous {{ "disabled" if not replays.has_prev }}"><a href="{{ url_for("replays.replays", page=replays.prev_num) if replays.has_prev else "" }}">&larr; Older</a></li>
-            <li class="next {{ "disabled" if not replays.has_next }}"><a href="{{ url_for("replays.replays", page=replays.next_num) if replays.has_next else "" }}">Newer &rarr;</a></li>
+            <li class="previous {{ "disabled" if not replays.has_prev }}"><a href="{{ url_for("replays.replays", page=replays.prev_num) if replays.has_prev else "" }}">&larr; Newer</a></li>
+            <li class="next {{ "disabled" if not replays.has_next }}"><a href="{{ url_for("replays.replays", page=replays.next_num) if replays.has_next else "" }}">Older &rarr;</a></li>
         </ul>
     </div>
     <table class="table table-condensed table-striped">
