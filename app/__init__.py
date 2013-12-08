@@ -26,7 +26,7 @@ sqs_connection = sqs.connect_to_region(
     aws_secret_access_key=app.config["AWS_SECRET_ACCESS_KEY"]
 )
 
-sqs_gc_queue = sqs_connection.create_queue("dotabank-gc")
+sqs_gc_queue = sqs_connection.create_queue(app.config["AWS_SQS_GC"])
 
 s3_connection = S3Connection(
     aws_access_key_id=app.config["AWS_ACCESS_KEY_ID"],
