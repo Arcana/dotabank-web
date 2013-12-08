@@ -56,13 +56,13 @@ class Replay(db.Model):
 
     radiant_team_id = db.Column(db.Integer())  # optional uint32 radiant_team_id = 20;
     radiant_team_name = db.Column(db.String(80))  # optional string radiant_team_name = 23;
-    radiant_team_logo = db.Column(db.Integer())  # optional uint64 radiant_team_logo = 25;
+    radiant_team_logo = db.Column(db.BigInteger())  # optional uint64 radiant_team_logo = 25;
     radiant_team_tag = db.Column(db.String(80))  # optional string radiant_team_tag = 37;
     radiant_team_complete = db.Column(db.Boolean())  # optional uint32 radiant_team_complete = 27;
 
     dire_team_id = db.Column(db.Integer())  # optional uint32 dire_team_id = 21;
     dire_team_name = db.Column(db.String(80))  # optional string dire_team_name = 24;
-    dire_team_logo = db.Column(db.Integer())  # optional uint64 dire_team_logo = 26;
+    dire_team_logo = db.Column(db.BigInteger())  # optional uint64 dire_team_logo = 26;
     dire_team_tag = db.Column(db.String(80))  # optional string dire_team_tag = 38;
     dire_team_complete = db.Column(db.Boolean())  # optional uint32 dire_team_complete = 28;
 
@@ -221,10 +221,26 @@ class ReplayPlayer(db.Model):
     # repeated .CMatchPlayerAbilityUpgrade ability_upgrades = 47;
     # repeated .CMatchAdditionalUnitInventory additional_units_inventory = 48;
 
-    # TODO: Team property method, derive from player_slot.
-
     def __init__(self, replay_id):
         self.replay_id = replay_id
+
+    @property
+    def team(self):
+        if self.player_slot < 128:
+            return "Radiant"
+        else:
+            return "Dire"
+
+    @property
+    def items(self):
+        return [
+            self.item_0,
+            self.item_1,
+            self.item_2,
+            self.item_3,
+            self.item_4,
+            self.item_5
+        ]
 
     def __repr__(self):
         return "<ReplayPlayer {}>".format(self.id)

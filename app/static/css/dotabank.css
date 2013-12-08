@@ -130,3 +130,23 @@
 .hall-of-fame-entry .btn-group {
     float: right;
 }
+
+.endgame-table img {
+    vertical-align: top;
+}
+
+
+.endgame-table .fancy-hero-background {
+    background-size:100%;
+    background-position:center;
+}
+
+.endgame-table .fancy-hero-background a {
+    text-shadow: 0 0 2px #000;
+    font-weight: bold;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+

@@ -2,7 +2,8 @@
 
 {% block content %}
     <div class="page-header">
-        <h1>Replay <small>{{ replay.id }}</small></h1>
+        <h1>Replay <small>{{ replay.id }}{% if replay.start_time %}; {{ replay.start_time|timestamp_to_datestring }} UTC{% endif %}</small></h1>
+
         {% include "replays/replay_nav.html" %}
 
         <div class="row progress-tracker">
@@ -34,7 +35,11 @@
         </div>
     {% endif %}
 
-    <div class="tab-pane active" id="overview">
+    {% if replay.league_id%}
+        <h2>{{ (replay.league_id|get_league_by_id)["name"] }}</h2>
+        <p class="lead">{{ (replay.league_id|get_league_by_id)["description"] }}</p>
+    {% endif %}
+
         <dl class="dl-horizontal">
             <dt>id</dt>
             <dd>{{ replay.id }}</dd>
@@ -44,6 +49,148 @@
             <dd>{{ replay.replay_state }}</dd>
             <dt>ratings</dt>
             <dd>{{ replay.ratings }}</dd>
+            <dt>downloads</dt>
+            <dd>{{ replay.downloads.count() }}</dd>
         </dl>
+
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#overview" data-toggle="tab">Overview</a></li>
+            <li><a href="#players" data-toggle="tab">Players</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="overview">
+                {% for column in replay.players|sort(attribute="player_slot")|slice(2) %}
+                    {% set team_name =  replay.radiant_team_name if column[0].team == "Radiant" else replay.dire_team_name %}
+                    <h4>
+                        {{ column[0].team }}
+                        {% if team_name is not none %}
+                            - <img src="{{ (replay["{}_team_logo".format(column[0].team.lower())]|get_file_by_ugcid).url }}" style="height:32px">
+                            {{ team_name }}
+                        {% endif %}
+                    </h4>
+                    <table class="table table-striped table-bordered table-condensed endgame-table">
+                        <thead>
+                            <tr>
+                                <td class="col-md-2 col-sm-2">Hero</td>
+                                <td>Lvl</td>
+                                <td>K</td>
+                                <td>D</td>
+                                <td>A</td>
+                                <td class="col-md-3 col-sm-3">Items</td>
+                                <td>Gold</td>
+                                <td>LH</td>
+                                <td>DN</td>
+                                <td>GPM</td>
+                                <td>XPM</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for player in column %}
+                            <tr>
+                                <td class="fancy-hero-background"
+                                    style="background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((player.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
+                                    <a href="http://dota2wiki.com/wiki/{{ (player.hero_id|get_hero_by_id)["localized_name"] }}">{{ (player.hero_id|get_hero_by_id)["localized_name"] }}</a></td>
+                                <td>{{ player.level }}</td>
+                                <td>{{ player.kills }}</td>
+                                <td>{{ player.deaths }}</td>
+                                <td>{{ player.assists }}</td>
+                                <td class="text-center">
+                                    {% for item in player.items %}
+                                        {% set current_item = item|get_item_by_id %}
+                                        {% if not current_item %}
+                                            <div style="display:inline-block;width:32px;height:24px;background:lightgray;"></div>
+                                        {% else %}
+                                            <a href="http://dota2wiki.com/wiki/{{ current_item["dname"] }}">
+                                                <img src="http://media.steampowered.com/apps/dota2/images/items/{{ current_item["img"] }}"
+                                                     alt="{{ current_item["dname"] }}"
+                                                     style="height: 24px;"/>
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td>{{ player.gold }}</td>
+                                <td>{{ player.last_hits }}</td>
+                                <td>{{ player.denies }}</td>
+                                <td>{{ player.gold_per_min }}</td>
+                                <td>{{ player.xp_per_min }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td colspan="2"><em>Totals</em></td>
+                                <td>{{ column|map(attribute="kills")|sum }}</td>
+                                <td>{{ column|map(attribute="deaths")|sum }}</td>
+                                <td>{{ column|map(attribute="assists")|sum }}</td>
+                                <td></td>
+                                <td>{{ column|map(attribute="gold")|sum }}</td>
+                                <td>{{ column|map(attribute="last_hits")|sum }}</td>
+                                <td>{{ column|map(attribute="denies")|sum }}</td>
+                                <td>{{ column|map(attribute="gold_per_min")|sum }}</td>
+                                <td>{{ column|map(attribute="xp_per_min")|sum }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {% endfor %}
+                <dl class="dl-horizontal">
+                    <dt>Good guys win?</dt>
+                    <dd>{{ replay.good_guys_win }}</dd>
+                    <dt>Duration</dt>
+                    <dd>{{ replay.duration }}</dd>
+                    <dt>Start time</dt>
+                    <dd>{{ replay.start_time|timestamp_to_datestring }} UTC</dd>
+                    <dt>Radiant Tower status</dt>
+                    <dd>{{ replay.radiant_tower_status }}</dd>
+                    <dt>Dire Tower status</dt>
+                    <dd>{{ replay.dire_tower_status }}</dd>
+                    <dt>Radiant Barracks status</dt>
+                    <dd>{{ replay.radiant_barracks_status }}</dd>
+                    <dt>Dire Barracks status</dt>
+                    <dd>{{ replay.dire_barracks_status }}</dd>
+                    <dt>First blood time</dt>
+                    <dd>{{ replay.first_blood_time }}s</dd>
+                    <dt>Lobby type</dt>
+                    <dd>{{ replay.lobby_type }}</dd>
+                    <dt>Human players</dt>
+                    <dd>{{ replay.human_players }}</dd>
+                    <dt>Radiant Team ID</dt>
+                    <dd>{{ replay.radiant_team_id }}</dd>
+                    <dt>Dire Team ID</dt>
+                    <dd>{{ replay.dire_team_id}}</dd>
+                    <dt>League ID</dt>
+                    <dd>{{ replay.league_id }}</dd>
+                    <dt>Radiant team name</dt>
+                    <dd>{{ replay.radiant_team_name}}</dd>
+                    <dt>Dire team name</dt>
+                    <dd>{{ replay.dire_team_name}}</dd>
+                    <dt>Radiant team logo</dt>
+                    <dd>{{ replay.radiant_team_logo }}</dd>
+                    <dt>Dire team logo</dt>
+                    <dd>{{ replay.dire_team_logo }}</dd>
+                    <dt>Radiant team complete?</dt>
+                    <dd>{{ replay.radiant_team_complete}}</dd>
+                    <dt>Dire team complete?</dt>
+                    <dd>{{ replay.dire_team_complete }}</dd>
+                    <dt>Game mode</dt>
+                    <dd>{{ replay.game_mode }}</dd>
+                    <dt>Match Seq Num</dt>
+                    <dd>{{ replay.match_seq_num}}</dd>
+                    <dt>Radiant Guild ID</dt>
+                    <dd>{{ replay.radiant_guild_id }}</dd>
+                    <dt>Dire Guild ID</dt>
+                    <dd>{{ replay.dire_guild_id}}</dd>
+                    <dt>Radiant team tag</dt>
+                    <dd>{{ replay.radiant_team_tag }}</dd>
+                    <dt>Dire team tag</dt>
+                    <dd>{{ replay.dire_team_tag}}</dd>
+                    <dt>Series ID</dt>
+                    <dd>{{ replay.series_id }}</dd>
+                    <dt>Series type</dt>
+                    <dd>{{ replay.series_type }}</dd>
+                </dl>
+            </div>
+            <div class="tab-pane" id="players">
+                <pre>{{ replay.players|list|pprint }}</pre>
+            </div>
+        </div>
     </div>
 {% endblock %}
