@@ -90,9 +90,8 @@ class Replay(db.Model):
         "order_by": [db.desc(added_to_site_time)]
     }
 
-    def __init__(self, _id=None, url="", replay_state="UNKNOWN", state="WAITING_GC"):
+    def __init__(self, _id=None, replay_state="UNKNOWN", state="WAITING_GC"):
         self.id = _id
-        self.url = url
         self.replay_state = replay_state
         self.state = state
 
