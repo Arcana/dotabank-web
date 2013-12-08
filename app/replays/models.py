@@ -8,7 +8,6 @@ class Replay(db.Model):
     __tablename__ = "replays"
 
     id = db.Column(db.Integer, primary_key=True)  # optional uint32 match_id = 6;
-    url = db.Column(db.String(80))  # TODO: Make property method, instead of being a column.
     local_uri = db.Column(db.String(128))
     state = db.Column(db.Enum(
         "WAITING_GC",
@@ -99,6 +98,14 @@ class Replay(db.Model):
 
     def __repr__(self):
         return "<Replay {}>".format(self.id)
+
+    @property
+    def url(self):
+        return "http://replay{}.valve.net/570/{}_{}.dem.bz2".format(
+            self.replay_cluster,
+            self.id,
+            self.replay_salt
+        )
 
     def user_rating(self):
         if current_user.is_authenticated():
