@@ -11,8 +11,12 @@ def escape_every_character(text):
 # Generic API filters
 @cache.memoize(timeout=60 * 60)
 def get_account_by_id(account_id):
-    steam_id = account_id + 76561197960265728
-    res = steam.user.profile(steam_id)
+    if isinstance(account_id, list):
+        steam_ids = [_account_id + 76561197960265728 for _account_id in account_id]
+        res = steam.user.profile_batch(steam_ids)
+    else:
+        steam_id = account_id + 76561197960265728
+        res = steam.user.profile(steam_id)
     return res
 
 # Dota 2 API filters

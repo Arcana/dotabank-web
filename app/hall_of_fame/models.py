@@ -49,6 +49,10 @@ class FeaturedPlayer(db.Model):
         self.hero_id = hero_id
         self.num_games = num_games
 
+    @property
+    def account_id(self):
+        return int(self.user_id)
+
     def __repr__(self):
         return "<FeaturedPlayer {} (wk: {})>".format(self.user_id, self.week)
 
@@ -72,6 +76,10 @@ class FeaturedFarmer(db.Model):
         self.replay_id = replay_id
         self.hero_id = hero_id
         self.gold_per_min = gold_per_min
+
+    @property
+    def account_id(self):
+        return int(self.user_id)
 
     def __repr__(self):
         return "<FeaturedFarmer {} (wk: {})>".format(self.user_id, self.week)
