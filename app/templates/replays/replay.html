@@ -63,10 +63,14 @@
                 {% if replay.state not in ["WAITING_GC", "GC_ERROR"] %}
                     {% for column in replay.players|sort(attribute="player_slot")|slice(2) %}
                         {% set team_name =  replay.radiant_team_name if column[0].team == "Radiant" else replay.dire_team_name %}
+                        {% set team_logo = replay["{}_team_logo".format(column[0].team.lower())] %}
                         <h4>
                             {{ column[0].team }}
                             {% if team_name is not none %}
-                                - <img src="{{ (replay["{}_team_logo".format(column[0].team.lower())]|get_file_by_ugcid).url }}" style="height:32px">
+                                -
+                                {% if team_logo %}
+                                    <img src="{{ (team_logo|get_file_by_ugcid).url }}" style="height:32px">
+                                {% endif %}
                                 {{ team_name }}
                             {% endif %}
                         </h4>
