@@ -84,6 +84,13 @@
     margin-left: 260px;
 }
 
+.jumbotron hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 0;
+    border-top: 1px solid #fff;
+}
+
 .hall-of-fame-entry .well {
     padding-bottom: 0;
     background-size: cover;
@@ -150,3 +157,15 @@
     display: block;
 }
 
+.label-premium,
+.badge-premium {
+    background-color: #6fb04a;
+    color: white;
+    text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.25);
+}
+
+.label-dotabuff-plus,
+.badge-dotabuff-plus {
+    background-color: #f00;
+    color: white;
+}
