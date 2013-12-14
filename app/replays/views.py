@@ -131,32 +131,37 @@ def download(_id):
 @mod.route("/search/")
 def search():
     match_id = request.args.get("id")
+    error = False
     if unicode.isdecimal(unicode(match_id)):
         _replay = Replay.query.filter(Replay.id == match_id).first()
 
         # If we don't have match_id in database, check if it's a valid match via the WebAPI and if so add it to DB.
-        if not _replay and "error" not in steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result").keys():
-            flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
-            _replay = Replay(match_id)
-            db.session.add(_replay)
+        if not _replay:
+            try:
+                if "error" not in steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result").keys():
+                    _replay = Replay(match_id)
+                    db.session.add(_replay)
 
-            # Write to SQS
-            msg = sqsMessage()
-            msg.set_body(match_id)
-            queued = sqs_gc_queue.write(msg)
+                    # Write to SQS
+                    msg = sqsMessage()
+                    msg.set_body(match_id)
+                    queued = sqs_gc_queue.write(msg)
+                    if queued:
+                        flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
+                        db.session.commit()
+                        return redirect(url_for("replays.replay", _id=match_id))
+                    else:
+                        db.session.rollback()
+                        error = True
+            except steam.api.HTTPError:
+                error = True
 
-            if queued:
-                db.session.commit()
-            else:
-                db.rollback()
-                _replay = None
-                flash("Replay {} was not on our database, and we encountered errors trying to add it.  Please try again later.".format(match_id), "warning")
+    # We only get this far if there was an error or the matchid is invalid.
+    if error:
+        flash("Replay {} was not on our database, and we encountered errors trying to add it.  Please try again later.".format(match_id), "warning")
+    else:
+        flash("Invalid match id.  If this match id corresponds to a practice match it is also interpreted as invalid - Dotabank is unable to access practice lobby replays.", "danger")
 
-        if _replay:
-            return redirect(url_for("replays.replay", _id=match_id))
-
-    # Only invalid matches make it this far!
-    flash("Invalid match id.  If this match id corresponds to a practice match it is also interpreted as invalid - Dotabank is unable to access practice lobby replays.", "danger")
     return redirect(request.referrer or url_for("index"))
 
 
