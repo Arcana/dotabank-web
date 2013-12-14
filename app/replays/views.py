@@ -149,12 +149,14 @@ def search():
                     if queued:
                         flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
                         db.session.commit()
-                        return redirect(url_for("replays.replay", _id=match_id))
                     else:
                         db.session.rollback()
                         error = True
             except steam.api.HTTPError:
                 error = True
+
+        if _replay:
+            return redirect(url_for("replays.replay", _id=match_id))
 
     # We only get this far if there was an error or the matchid is invalid.
     if error:
