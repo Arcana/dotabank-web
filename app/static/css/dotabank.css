@@ -76,6 +76,20 @@
     bottom: -1.6em;
 }
 
+.item {
+    display:inline-block;
+    width:32px;
+    height:24px;
+    background:lightgray;
+    vertical-align:bottom;
+    border-radius:3px;
+}
+
+.item > img {
+    height:24px;
+    border-radius:3px;
+}
+
 .jumbotron dt {
     width: 240px;
 }

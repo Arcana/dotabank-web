@@ -11,8 +11,14 @@ def escape_every_character(text):
     return "".join("&#{};".format(ord(x)) for x in text)
 
 
+def wikiise(item_name):
+    to_return = item_name.replace(" ", "_")
+    return to_return
+
+
 def timestamp_to_datestring(timestamp, _format="%b %d, %Y %H:%M"):
     return datetime.utcfromtimestamp(int(timestamp)).strftime(_format)
+
 
 # Generic API filters
 @cache.memoize(timeout=60 * 60)
@@ -24,6 +30,7 @@ def get_account_by_id(account_id):
         steam_id = account_id + 76561197960265728
         res = steam.user.profile(steam_id)
     return res
+
 
 # Dota 2 API filters
 @cache.cached(timeout=60 * 60, key_prefix="heroes")
@@ -40,6 +47,7 @@ def fetch_heroes_by_id():
 @cache.cached(timeout=60 * 60, key_prefix="heroes_by_name")
 def fetch_heroes_by_name():
     return {x["name"]: x for x in fetch_heroes()}
+
 
 @cache.cached(timeout=60 * 60, key_prefix="items")
 def fetch_items():

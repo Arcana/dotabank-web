@@ -104,12 +104,11 @@
                                         {% for item in player.items %}
                                             {% set current_item = item|get_item_by_id %}
                                             {% if not current_item %}
-                                                <div style="display:inline-block;width:32px;height:24px;background:lightgray;"></div>
+                                                <div class="item"></div>
                                             {% else %}
-                                                <a href="http://dota2wiki.com/wiki/{{ current_item["dname"] }}">
+                                                <a href="http://dota2wiki.com/wiki/{{ (current_item["dname"]|htmlise) }}" class="item">
                                                     <img src="http://media.steampowered.com/apps/dota2/images/items/{{ current_item["img"] }}"
-                                                         alt="{{ current_item["dname"] }}"
-                                                         style="height: 24px;"/>
+                                                         alt="{{ current_item["dname"] }}" title="{{ current_item["dname"] }}">
                                                 </a>
                                             {% endif %}
                                         {% endfor %}
