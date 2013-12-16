@@ -11,11 +11,6 @@ def escape_every_character(text):
     return "".join("&#{};".format(ord(x)) for x in text)
 
 
-def wikiise(item_name):
-    to_return = item_name.replace(" ", "_")
-    return to_return
-
-
 def timestamp_to_datestring(timestamp, _format="%b %d, %Y %H:%M"):
     return datetime.utcfromtimestamp(int(timestamp)).strftime(_format)
 
