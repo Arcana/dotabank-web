@@ -35,11 +35,12 @@ s3_connection = S3Connection(
 
 dotabank_bucket = s3_connection.get_bucket(app.config["AWS_BUCKET"])
 
-from filters import escape_every_character, get_account_by_id, timestamp_to_datestring, get_file_by_ugcid
+from filters import escape_every_character, get_account_by_id, timestamp_to_datestring, get_file_by_ugcid, seconds_to_time
 app.add_template_filter(escape_every_character)
 app.add_template_filter(get_account_by_id)
 app.add_template_filter(timestamp_to_datestring)
 app.add_template_filter(get_file_by_ugcid)
+app.add_template_filter(seconds_to_time)
 
 from views import index, about, internalerror
 

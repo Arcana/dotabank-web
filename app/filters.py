@@ -1,7 +1,7 @@
 from app import cache, steam
 import json
 import urllib2
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 # General filters
@@ -14,6 +14,9 @@ def escape_every_character(text):
 def timestamp_to_datestring(timestamp, _format="%b %d, %Y %H:%M"):
     return datetime.utcfromtimestamp(int(timestamp)).strftime(_format)
 
+
+def seconds_to_time(seconds):
+    return str(timedelta(seconds=seconds))
 
 # Generic API filters
 @cache.memoize(timeout=60 * 60)

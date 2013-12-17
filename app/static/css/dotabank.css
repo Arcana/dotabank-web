@@ -78,15 +78,15 @@
 
 .item {
     display:inline-block;
-    width:32px;
-    height:24px;
+    width:40px;
+    height:30px;
     background:lightgray;
     vertical-align:bottom;
     border-radius:3px;
 }
 
 .item > img {
-    height:24px;
+    height:30px;
     border-radius:3px;
 }
 
@@ -152,14 +152,11 @@
     float: right;
 }
 
-.endgame-table img {
-    vertical-align: top;
-}
-
 
 .endgame-table .fancy-hero-background {
     background-size:100%;
     background-position:center;
+    padding:0;
 }
 
 .endgame-table .fancy-hero-background a {
@@ -167,8 +164,9 @@
     font-weight: bold;
     color: #fff;
     width: 100%;
-    height: 100%;
+    height: 50px;
     display: block;
+    padding:5px;
 }
 
 .label-premium,
@@ -182,4 +180,9 @@
 .badge-dotabuff-plus {
     background-color: #f00;
     color: white;
+}
+
+.table tbody>tr>td.item-boxes {
+    text-align:center;
+    vertical-align:middle;
 }
