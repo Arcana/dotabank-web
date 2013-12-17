@@ -159,7 +159,7 @@
     padding:0;
 }
 
-.endgame-table .fancy-hero-background a {
+.endgame-table .fancy-hero-background span {
     text-shadow: 0 0 2px #000;
     font-weight: bold;
     color: #fff;
@@ -180,6 +180,27 @@
 .badge-dotabuff-plus {
     background-color: #f00;
     color: white;
+}
+
+.btn-dotabuff {
+    background-color: #f00;
+    color: white;
+}
+
+.btn-dotabuff:hover {
+    background-color: #f44;
+    color: white;
+}
+
+.btn-wiki {
+    background-color: #333;
+    color: #ffaf48;
+    text-shadow: 1px 1px 0px #000;
+}
+.btn-wiki:hover {
+    background-color: #444444;
+    color: #ffd7a6;
+    text-shadow: 1px 1px 0px #000;
 }
 
 .table tbody>tr>td.item-boxes {

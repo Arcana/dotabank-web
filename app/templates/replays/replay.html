@@ -95,7 +95,12 @@
                             {% for player in column %}
                                 <tr>
                                     <td class="fancy-hero-background" style="background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format((player.hero_id|get_hero_by_id)["name"].replace("npc_dota_hero_", "")) }}')">
-                                        <a href="http://dota2wiki.com/wiki/{{ ((player.hero_id|get_hero_by_id)["localized_name"]|replace(" ","_")) }}">{{ (player.hero_id|get_hero_by_id)["localized_name"] }}</a>
+                                        <span>{{ (player.hero_id|get_hero_by_id)["localized_name"] }}</span>
+
+                                        <div class="btn-group">
+                                            <a href="{{ (player.hero_id|get_hero_by_id)["localized_name"]|dotabuff_hero_link }}" class="btn btn-xs btn-dotabuff">Dotabuff</a>
+                                            <a href="{{ (player.hero_id|get_hero_by_id)["localized_name"]|dota_wiki_link }}" class="btn btn-xs btn-wiki">Wiki</a>
+                                        </div>
                                     </td>
                                     <td>{{ player.level }}</td>
                                     <td>{{ player.kills }}</td>
@@ -107,7 +112,7 @@
                                             {% if not current_item %}
                                                 <div class="item"></div>
                                             {% else %}
-                                                <a href="http://dota2wiki.com/wiki/{{ (current_item["dname"]|replace(" ","_")) }}" class="item">
+                                                <a href="{{ current_item["dname"]|dota_wiki_link }}" class="item">
                                                     <img src="http://media.steampowered.com/apps/dota2/images/items/{{ current_item["img"] }}"
                                                          alt="{{ current_item["dname"] }}" title="{{ current_item["dname"] }}">
                                                 </a>

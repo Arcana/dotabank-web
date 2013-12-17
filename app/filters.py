@@ -18,6 +18,23 @@ def timestamp_to_datestring(timestamp, _format="%b %d, %Y %H:%M"):
 def seconds_to_time(seconds):
     return str(timedelta(seconds=seconds))
 
+
+def dota_wiki_link(text):
+    return "http://dota2wiki.com/wiki/{}".format(text.replace(" ", "_"))
+
+
+def dotabuff_hero_link(text):
+    return "http://dotabuff.com/heroes/{}".format(text.replace(" ", "-").lower())
+
+
+def dotabuff_item_link(text):
+    return "http://dotabuff.com/items/{}".format(text.replace(" ", "-").lower())
+
+
+def dotabuff_match_link(matchid):
+    return "http://dotabuff.com/matches/{}".format(matchid)
+
+
 # Generic API filters
 @cache.memoize(timeout=60 * 60)
 def get_account_by_id(account_id):
@@ -45,7 +62,6 @@ def fetch_heroes_by_id():
 @cache.cached(timeout=60 * 60, key_prefix="heroes_by_name")
 def fetch_heroes_by_name():
     return {x["name"]: x for x in fetch_heroes()}
-
 
 @cache.cached(timeout=60 * 60, key_prefix="items")
 def fetch_items():

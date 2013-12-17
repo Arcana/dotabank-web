@@ -14,7 +14,7 @@
                 <a class="btn btn-default navbar-btn" href="{{ "dota2://match_id={}".format(replay.id) }}">
                     In-game
                 </a>
-                <a class="btn btn-default navbar-btn" href="{{ "http://dotabuff.com/matches/{}".format(replay.id) }}">
+                <a class="btn btn-default navbar-btn" href="{{ replay.id|dotabuff_match_link }}">
                     Dotabuff
                 </a>
             </div>
