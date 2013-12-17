@@ -4,6 +4,10 @@
     position: static;
 }
 
+.dropdown {
+    cursor:default;
+}
+
 #admin-navbar {
     margin-bottom: 0;
 }
