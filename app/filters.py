@@ -78,12 +78,16 @@ def fetch_leagues():
 @cache.memoize(timeout=60 * 60)
 def get_hero_by_id(hero_id):
     if isinstance(hero_id, list):
-        hero = [fetch_heroes_by_id().get(x) for x in hero_id]
+        hero = [fetch_heroes_by_id().get(int(x)) for x in hero_id]
     else:
-        hero = fetch_heroes_by_id().get(hero_id)
+        hero = fetch_heroes_by_id().get(int(hero_id))
 
     # Return dummy object if no match is found.
-    return hero or {"name": hero_id, "localized_name": hero_id, "id": hero_id}
+    return hero or {
+        "name": str(hero_id),
+        "localized_name": str(hero_id),
+        "id": hero_id
+    }
 
 
 @cache.memoize(timeout=60 * 60)
@@ -94,23 +98,27 @@ def get_hero_by_name(hero_name):
         hero = fetch_heroes_by_name().get(hero_name)
 
     # Return dummy object if no match is found.
-    return hero or {"name": hero_name, "localized_name": hero_name, "id": -1}
+    return hero or {
+        "name": str(hero_name),
+        "localized_name": str(hero_name),
+        "id": -1
+    }
 
 
 @cache.memoize(timeout=60 * 60)
 def get_item_by_id(item_id):
     try:
-        return [fetch_items().get(x) for x in item_id]
+        return [fetch_items().get(item(x)) for x in item_id]
     except TypeError:
-        return fetch_items().get(item_id)
+        return fetch_items().get(int(item_id))
 
 
 @cache.memoize(timeout=60 * 60)
 def get_league_by_id(league_id):
     try:
-        return [fetch_leagues().get(x) for x in league_id]
+        return [fetch_leagues().get(int(x)) for x in league_id]
     except TypeError:
-        return fetch_leagues().get(league_id)
+        return fetch_leagues().get(int(league_id))
 
 
 @cache.memoize(timeout=60 * 60)
