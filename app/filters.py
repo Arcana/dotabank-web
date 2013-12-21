@@ -16,7 +16,7 @@ def timestamp_to_datestring(timestamp, _format="%b %d, %Y %H:%M"):
 
 
 def seconds_to_time(seconds):
-    return str(timedelta(seconds=seconds))
+    return str(timedelta(seconds=seconds or 0))
 
 
 def dota_wiki_link(text):
