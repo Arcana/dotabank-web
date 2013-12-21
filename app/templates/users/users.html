@@ -15,6 +15,7 @@
                 <td>Name</td>
                 <td>First seen</td>
                 <td>Last seen</td>
+                <td>Downloads</td>
             </tr>
         </thead>
         <tbody>
@@ -24,6 +25,7 @@
                     <td><a href="{{ url_for("users.user", _id=user.id) }}">{{ user.name }}</a></td>
                     <td>{{ user.first_seen }} UTC</td>
                     <td>{{ user.last_seen }} UTC</td>
+                    <td>{{ user.downloads.count() }}</td>
                 </tr>
             {% endfor %}
         </tbody>

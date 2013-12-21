@@ -27,6 +27,7 @@ class User(db.Model):
 
     replay_ratings = db.relationship('ReplayRating', backref='user', lazy='select', cascade="all, delete-orphan")
     favourites = db.relationship('ReplayFavourite', backref='user', lazy='select', cascade="all, delete-orphan")
+    downloads = db.relationship('ReplayDownload', backref="user", lazy="dynamic", cascade="all, delete-orphan")
 
     def __init__(self, _id=None, name=None, enabled=True, first_seen=datetime.datetime.utcnow(), last_seen=datetime.datetime.utcnow()):
         self.id = _id
