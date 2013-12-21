@@ -36,6 +36,7 @@ s3_connection = S3Connection(
 dotabank_bucket = s3_connection.get_bucket(app.config["AWS_BUCKET"])
 
 from filters import escape_every_character,\
+    get_steamid_from_accountid,\
     get_account_by_id,\
     timestamp_to_datestring,\
     get_file_by_ugcid,\
@@ -46,6 +47,7 @@ from filters import escape_every_character,\
     dotabuff_match_link
 
 app.add_template_filter(escape_every_character)
+app.add_template_filter(get_steamid_from_accountid)
 app.add_template_filter(get_account_by_id)
 app.add_template_filter(timestamp_to_datestring)
 app.add_template_filter(get_file_by_ugcid)

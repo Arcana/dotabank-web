@@ -6,16 +6,17 @@
         <li class="{{ "active" if "users.user" == request.endpoint }}"">
             <a href="{{ url_for("users.user", _id=user.id) }}">Profile</a>
         </li>
+        <li><a href="http://steamcommunity.com/profiles/{{ user.id|get_steamid_from_accountid }}">Steam</a></li>
     </ul>
-    {% if current_user.id == user.id %}
-        <ul class="nav navbar-nav pull-right">
-            <li>
-                <div class="form">
-                    <a class="btn btn-default navbar-btn {{ "disabled" if "users.settings" == request.endpoint }}" href="{{ url_for("users.settings", _id=user.id) }}">Settings</a>
-                    <a class="btn btn-default navbar-btn" href="{{ url_for("users.logout") }}">Logout</a>
-                </div>
-            </li>
-            <li>&nbsp;</li> <!-- Padding hack -->
-        </ul>
-    {% endif %}
+    <ul class="nav navbar-nav pull-right">
+        {% if current_user.id == user.id %}
+        <li>
+            <div class="form">
+                <a class="btn btn-default navbar-btn {{ "disabled" if "users.settings" == request.endpoint }}" href="{{ url_for("users.settings", _id=user.id) }}">Settings</a>
+                <a class="btn btn-default navbar-btn" href="{{ url_for("users.logout") }}">Logout</a>
+            </div>
+        </li>
+        {% endif %}
+        <li>&nbsp;</li> <!-- Padding hack -->
+    </ul>
 </nav>

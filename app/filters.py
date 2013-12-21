@@ -36,13 +36,21 @@ def dotabuff_match_link(matchid):
 
 
 # Generic API filters
+@cache.memoize()
+def get_steamid_from_accountid(account_id):
+    if isinstance(account_id, list):
+        return [get_steamid_from_accountid(_account_id) for _account_id in account_id]
+    else:
+        return account_id + 76561197960265728
+
+
 @cache.memoize(timeout=60 * 60)
 def get_account_by_id(account_id):
     if isinstance(account_id, list):
-        steam_ids = [_account_id + 76561197960265728 for _account_id in account_id]
+        steam_ids = get_steamid_from_accountid(account_id)
         res = steam.user.profile_batch(steam_ids)
     else:
-        steam_id = account_id + 76561197960265728
+        steam_id = get_steamid_from_accountid(account_id)
         res = steam.user.profile(steam_id)
     return res
 
