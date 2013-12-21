@@ -80,7 +80,7 @@ def user(_id):
 @login_required
 def settings(_id):
     # Authentication
-    if current_user.id != _id or not current_user.is_admin():
+    if current_user.id != _id and not current_user.is_admin():
         flash("You are not authorised to edit user {}'s settings.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
 
