@@ -61,4 +61,32 @@
         </tbody>
     </table>
 
+    <h2>Downloads</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Replay ID</th>
+                <th>Replay</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if user.downloads.count() > 0 %}
+            {% for download in user.downloads %}
+                <tr>
+                    <td>{{ download.created_at }}</td>
+                    <td>{{ download.replay_id }}</td>
+                    <td><a href="{{ url_for("replays.replay", _id=download.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="4" class="text-muted">
+                    <em>No download history</em>
+                </td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
 {% endblock %}
