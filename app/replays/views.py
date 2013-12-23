@@ -107,7 +107,7 @@ def download(_id):
 
         download_log_entry = ReplayDownload(
             _replay.id,
-            current_user.id if current_user else None
+            current_user.get_id() if current_user else None
         )
         db.session.add(download_log_entry)
         db.session.commit()
@@ -133,7 +133,7 @@ def search():
     match_id = request.args.get("id")
     error = False
 
-    search_log = Search(current_user.id, match_id, request.remote_addr)
+    search_log = Search(current_user.get_id(), match_id, request.remote_addr)
 
     if unicode.isdecimal(unicode(match_id)):
         _replay = Replay.query.filter(Replay.id == match_id).first()
