@@ -31,4 +31,34 @@
         {% endfor %}
     </ul>
 
+    <h2>Search history</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Search query</th>
+                <th>Success</th>
+                <th>Replay</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if user.searches.count() > 0 %}
+            {% for search in user.searches %}
+                <tr>
+                    <td>{{ search.created_at }}</td>
+                    <td><em>{{ search.search_query }}</em></td>
+                    <td>{{ search.success }}</td>
+                    <td><a href="{{ url_for("replays.replay", _id=search.replay.id) if search.replay }}" class="btn btn-xs btn-default {{ "disabled" if not search.replay }}">View replay</a></td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="4" class="text-muted">
+                    <em>No search history</em>
+                </td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
 {% endblock %}

@@ -5,13 +5,14 @@ from models import User, AnonymousUser
 from forms import SettingsForm
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app.admin.views import AdminModelView
+from app.replays.models import Search
 
 mod = Blueprint("users", __name__, url_prefix="/users")
 
 login_manager.anonymous_user = AnonymousUser
 
-# User authentication
 
+# User authentication
 @login_manager.user_loader
 def load_user(user_id):
     _user = User.query.get(user_id)

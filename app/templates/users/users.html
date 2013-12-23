@@ -15,8 +15,9 @@
                 <td>Name</td>
                 <td>First seen</td>
                 <td>Last seen</td>
-                <td>Downloads</td>
                 <td>Premium?</td>
+                <td>Searches</td>
+                <td>Downloads</td>
             </tr>
         </thead>
         <tbody>
@@ -26,8 +27,9 @@
                     <td {{ "style=\"text-shadow: yellow 0px 0px 2px;\""|safe if user.is_premium }}><a href="{{ url_for("users.user", _id=user.id) }}">{{ user.name }}</a></td>
                     <td>{{ user.first_seen }} UTC</td>
                     <td>{{ user.last_seen }} UTC</td>
-                    <td>{{ user.downloads.count() }}</td>
                     <td>{{ user.is_premium }}</td>
+                    <td>{{ user.searches.count() }}</td>
+                    <td>{{ user.downloads.count() }}</td>
                 </tr>
             {% endfor %}
         </tbody>

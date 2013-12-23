@@ -127,6 +127,7 @@ class ReplayRating(db.Model):
     replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     positive = db.Column(db.Boolean, default=False, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, replay_id=None, user_id=None, positive=None):
         self.replay_id = replay_id
@@ -144,6 +145,7 @@ class ReplayFavourite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, replay_id=None, user_id=None):
         self.replay_id = replay_id
@@ -160,6 +162,7 @@ class ReplayDownload(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, replay_id=None, user_id=None):
         self.replay_id = replay_id
@@ -260,9 +263,12 @@ class Search(db.Model):
     search_query = db.Column(db.Text)
     ip_address = db.Column(db.Text)
     success = db.Column(db.Boolean)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
+
+    replay = db.relationship('Replay', backref='search', lazy='joined', cascade="all")
 
     def __init__(self, user_id=None, search_query=None, ip_address=None, success=None, replay_id=None):
         self.search_query = search_query
