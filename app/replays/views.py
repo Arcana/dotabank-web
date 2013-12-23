@@ -43,12 +43,12 @@ def replay(_id):
 def replay_rate(_id):
     # TODO: API-ify (ajax request & jsonify response)
     if "positive" in request.args:
-        current_rating = ReplayRating.query.filter(ReplayRating.replay_id == _id, ReplayRating.user_id == current_user.id).first() or ReplayRating()
+        current_rating = ReplayRating.query.filter(ReplayRating.replay_id == _id, ReplayRating.user_id == current_user.get_id()).first() or ReplayRating()
         try:
             positive_arg = bool(int(request.args["positive"]))
 
             current_rating.positive = positive_arg
-            current_rating.user_id = current_user.id
+            current_rating.user_id = current_user.get_id()
             current_rating.replay_id = _id
 
             db.session.add(current_rating)
@@ -65,12 +65,12 @@ def replay_rate(_id):
 @login_required
 def replay_favourite(_id):
     # TODO: API-ify (ajax request & jsonify response)
-    favourite = ReplayFavourite.query.filter(ReplayFavourite.replay_id == _id, ReplayFavourite.user_id == current_user.id).first()
+    favourite = ReplayFavourite.query.filter(ReplayFavourite.replay_id == _id, ReplayFavourite.user_id == current_user.get_id()).first()
     try:
         if "remove" not in request.args or not bool(int(request.args["remove"])):
             if favourite is None:
                 favourite = ReplayFavourite()
-            favourite.user_id = current_user.id
+            favourite.user_id = current_user.get_id()
             favourite.replay_id = _id
 
             db.session.add(favourite)
