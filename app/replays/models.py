@@ -250,3 +250,27 @@ class ReplayPlayer(db.Model):
 
     def __repr__(self):
         return "<ReplayPlayer {}>".format(self.id)
+
+
+class Search(db.Model):
+    """ Track matchids users search for. """
+    __tablename__ = "searches"
+
+    id = db.Column(db.Integer, primary_key=True)
+    search_query = db.Column(db.Text)
+    ip_address = db.Column(db.Text)
+    success = db.Column(db.Boolean)
+
+    replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
+
+    def __init__(self, user_id=None, search_query=None, ip_address=None, success=None, replay_id=None):
+        self.search_query = search_query
+        self.user_id = user_id
+        self.ip_address = ip_address
+        self.success = success
+        self.replay_id = replay_id
+
+    def __repr__(self):
+        return "<Search {}/{}>".format(self.replay_id, self.user_id)
+

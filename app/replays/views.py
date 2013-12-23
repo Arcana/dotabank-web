@@ -7,7 +7,7 @@ from flask.ext.login import current_user, login_required
 from boto.sqs.message import RawMessage as sqsMessage
 
 from app import steam, db, sqs_gc_queue, dotabank_bucket
-from models import Replay, ReplayRating, ReplayFavourite, ReplayDownload
+from models import Replay, ReplayRating, ReplayFavourite, ReplayDownload, Search
 from app.admin.views import AdminModelView
 from app.filters import get_hero_by_id, get_hero_by_name, get_item_by_id, get_league_by_id
 from forms import DownloadForm
@@ -132,6 +132,9 @@ def download(_id):
 def search():
     match_id = request.args.get("id")
     error = False
+
+    search_log = Search(current_user.id, match_id, request.remote_addr)
+
     if unicode.isdecimal(unicode(match_id)):
         _replay = Replay.query.filter(Replay.id == match_id).first()
 
@@ -156,6 +159,10 @@ def search():
                 error = True
 
         if _replay:
+            search_log.replay_id = _replay.id
+            search_log.success = True
+            db.session.add(search_log)
+            db.session.commit()
             return redirect(url_for("replays.replay", _id=match_id))
 
     # We only get this far if there was an error or the matchid is invalid.
@@ -164,6 +171,9 @@ def search():
     else:
         flash("Invalid match id.  If this match id corresponds to a practice match it is also interpreted as invalid - Dotabank is unable to access practice lobby replays.", "danger")
 
+    search_log.success = False
+    db.session.add(search_log)
+    db.session.commit()
     return redirect(request.referrer or url_for("index"))
 
 
