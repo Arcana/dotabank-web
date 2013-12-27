@@ -87,6 +87,7 @@
     background:lightgray;
     vertical-align:bottom;
     border-radius:3px;
+    margin-right:4px;
 }
 
 .item > img {
@@ -210,4 +211,5 @@
 .table tbody>tr>td.item-boxes {
     text-align:center;
     vertical-align:middle;
+    font-size:0; //Hack to get around inconsistent spacing between item boxes.
 }
