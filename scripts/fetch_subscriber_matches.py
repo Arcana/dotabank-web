@@ -1,3 +1,4 @@
+#!/srv/www/dotabank.com/dotabank-web/bin/python
 """
 
 Add archive jobs for the latest matches played by Dotabank premium subscribers.
