@@ -187,7 +187,7 @@ class ReplayPlayer(db.Model):
     replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=False)
 
     # GC data
-    account_id = db.Column(db.Integer)  # optional uint32 account_id = 1;
+    account_id = db.Column(db.Integer, db.ForeignKey("users.id"))  # optional uint32 account_id = 1;
     player_slot = db.Column(db.Integer)  # optional uint32 player_slot = 2;
     hero_id = db.Column(db.Integer)  # optional uint32 hero_id = 3;
     item_0 = db.Column(db.Integer)  # optional uint32 item_0 = 4;
