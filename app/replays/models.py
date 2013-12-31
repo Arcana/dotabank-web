@@ -1,6 +1,7 @@
-from app import db
+from app import db, sqs_gc_queue
 from flask.ext.login import current_user
 import datetime
+from boto.sqs.message import RawMessage as sqsMessage
 
 
 # noinspection PyShadowingBuiltins
@@ -117,6 +118,13 @@ class Replay(db.Model):
             return next((favourite for favourite in self.favourites if favourite.user_id == current_user.id), False)
         else:
             return False
+
+    @staticmethod
+    def add_gc_job(_replay):
+        # Write to SQS
+        msg = sqsMessage()
+        msg.set_body(_replay.id)
+        return sqs_gc_queue.write(msg)
 
 
 # noinspection PyShadowingBuiltins

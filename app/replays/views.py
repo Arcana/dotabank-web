@@ -4,9 +4,8 @@ from datetime import datetime, timedelta
 
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
 from flask.ext.login import current_user, login_required
-from boto.sqs.message import RawMessage as sqsMessage
 
-from app import steam, db, sqs_gc_queue, dotabank_bucket
+from app import steam, db, dotabank_bucket
 from models import Replay, ReplayRating, ReplayFavourite, ReplayDownload, Search
 from app.admin.views import AdminModelView
 from app.filters import get_hero_by_id, get_hero_by_name, get_item_by_id, get_league_by_id
@@ -145,10 +144,7 @@ def search():
                     _replay = Replay(match_id)
                     db.session.add(_replay)
 
-                    # Write to SQS
-                    msg = sqsMessage()
-                    msg.set_body(match_id)
-                    queued = sqs_gc_queue.write(msg)
+                    queued = Replay.add_gc_job(_replay)
                     if queued:
                         flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
                         db.session.commit()
