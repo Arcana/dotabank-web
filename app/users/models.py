@@ -1,7 +1,7 @@
 from app import db
 from flask.ext.login import AnonymousUserMixin
 import datetime
-
+from calendar import timegm as to_timestamp
 
 # noinspection PyMethodMayBeStatic
 class AnonymousUser(AnonymousUserMixin):
@@ -87,3 +87,12 @@ class Subscription(db.Model):
 
     def __repr__(self):
         return "<Subscription {}>".format(id)
+
+    @property
+    def created_at_timestamp(self):
+        return to_timestamp(self.created_at.utctimetuple())
+
+
+    @staticmethod
+    def get_valid_subscriptions():
+        return Subscription.query.filter(Subscription.expires_at >= datetime.datetime.utcnow()).all()
