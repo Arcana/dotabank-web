@@ -269,7 +269,7 @@
         </div>
         <div class="tab-pane" id="replays">
             <h2>Replays</h2>
-            <p>Matches archives on Dotabank that you participated in.</p>
+            <p>Match archives on Dotabank that {{user.name}} has participated in.</p>
             <table class="table table-striped table-condensed">
                 <thead>
                     <tr>
@@ -282,7 +282,7 @@
                 </thead>
                 <tbody>
                 {% if user.replay_players.count() > 0 %}
-                    {% for replay_player in user.replay_players %}
+                    {% for replay_player in user.replay_players.limit(15*page_num).offset(15*(page_num-1)) %}
                         <tr>
                             <td>{{ replay_player.replay.start_time|timestamp_to_datestring }}</td>
                             <td>{{ (replay_player.hero_id|get_hero_by_id)["localized_name"] }}</td>

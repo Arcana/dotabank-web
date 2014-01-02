@@ -31,7 +31,7 @@ class User(db.Model):
     subscriptions = db.relationship('Subscription', backref="user", lazy="dynamic", cascade="all")
     searches = db.relationship('Search', backref="user", lazy="dynamic", cascade="all")
 
-    replay_players = db.relationship('ReplayPlayer', backref='user', lazy='dynamic', order_by='ReplayPlayer.replay_id')
+    replay_players = db.relationship('ReplayPlayer', backref='user', lazy='dynamic', order_by='desc(ReplayPlayer.replay_id)')
 
     def __init__(self, _id=None, name=None, enabled=True, first_seen=datetime.datetime.utcnow(), last_seen=datetime.datetime.utcnow()):
         self.id = _id

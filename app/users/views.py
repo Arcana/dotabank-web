@@ -68,13 +68,20 @@ def users(page=1):
     return render_template("users/users.html", users=_users)
 
 
-@mod.route("/<int:_id>/")
+@mod.route("/<int:_id>/", methods=["GET"])
 def user(_id):
     _user = User.query.filter(User.id == _id).first()
+    try:
+        page_num = int(request.args.get('page'))
+    except ValueError:
+        page_num = 1
+    except TypeError:
+        page_num = 1
+
     if _user is None:
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
-    return render_template("users/user.html", user=_user)
+    return render_template("users/user.html", user=_user, page_num=page_num)
 
 
 @mod.route("/<int:_id>/settings/", methods=["POST", "GET"])
