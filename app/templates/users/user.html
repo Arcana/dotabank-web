@@ -3,178 +3,17 @@
 {% block content %}
     {% include "users/user_nav.html" %}
 
-    <div class="tab-content">
-        <div class="tab-pane active" id="overview">
-            <dl class="dl-horizontal">
-                <dt>First seen</dt>
-                <dd>{{ user.first_seen }} UTC</dd>
-                <dt>Last seen</dt>
-                <dd>{{ user.last_seen }} UTC</dd>
-                <dt>Premium?</dt>
-                <dd>{{ user.is_premium }}</dd>
-            </dl>
-            <div class="row">
-                <div class="col-sm-6">
-                    <h2><a href='{{ url_for("users.user_favourites", _id = user.id) }}'>Favourites</a></h2>
-                    <table class="table table-striped table-condensed">
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Replay ID</th>
-                                <th>Replay</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% if user.favourites %}
-                            {% for favourite in user.favourites[:8] %}
-                                <tr>
-                                    <td>{{ favourite.created_at }}</td>
-                                    <td>{{ favourite.replay_id }}</td>
-                                    <td><a href="{{ url_for("replays.replay", _id=favourite.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="4" class="text-muted">
-                                    <em>No favourites</em>
-                                </td>
-                            </tr>
-                        {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col-sm-6">
-                    <h2><a href='{{ url_for("users.user_ratings", _id = user.id) }}'>Ratings</a></h2>
-                    <table class="table table-striped table-condensed">
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Replay ID</th>
-                                <th>Positive?</th>
-                                <th>Replay</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% if user.replay_ratings %}
-                            {% for rating in user.replay_ratings[:8] %}
-                                <tr>
-                                    <td>{{ rating.created_at }}</td>
-                                    <td>{{ rating.replay_id }}</td>
-                                    <td>{{ rating.positive }}</td>
-                                    <td><a href="{{ url_for("replays.replay", _id=rating.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="4" class="text-muted">
-                                    <em>No ratings</em>
-                                </td>
-                            </tr>
-                        {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <h2><a href='{{ url_for("users.user_searches", _id = user.id) }}'>Search history</a></h2>
-                    <table class="table table-striped table-condensed">
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Search query</th>
-                                <th>Success</th>
-                                <th>Replay</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% if user.searches.count() > 0 %}
-                            {% for search in user.searches.limit(8) %}
-                                <tr>
-                                    <td>{{ search.created_at }}</td>
-                                    <td><em>{{ search.search_query }}</em></td>
-                                    <td>{{ search.success }}</td>
-                                    <td><a href="{{ url_for("replays.replay", _id=search.replay.id) if search.replay }}" class="btn btn-xs btn-default {{ "disabled" if not search.replay }}">View replay</a></td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="4" class="text-muted">
-                                    <em>No search history</em>
-                                </td>
-                            </tr>
-                        {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col-sm-6">
-                    <h2><a href='{{ url_for("users.user_downloads", _id = user.id) }}'>Downloads</a></h2>
-                    <table class="table table-striped table-condensed">
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Replay ID</th>
-                                <th>Replay</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% if user.downloads.count() > 0 %}
-                            {% for download in user.downloads.limit(8) %}
-                                <tr>
-                                    <td>{{ download.created_at }}</td>
-                                    <td>{{ download.replay_id }}</td>
-                                    <td><a href="{{ url_for("replays.replay", _id=download.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="3" class="text-muted">
-                                    <em>No download history</em>
-                                </td>
-                            </tr>
-                        {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <h2><a href='{{ url_for("users.user_replays", _id = user.id) }}'>Replays</a></h2>
-                    <table class="table table-striped table-condensed">
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Hero</th>
-                                <th>Replay ID</th>
-                                <th>Replay state</th>
-                                <th>Replay</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% if user.replay_players.count() > 0 %}
-                            {% for replay_player in user.replay_players.limit(8) %}
-                                <tr>
-                                    <td>{{ replay_player.replay.start_time|timestamp_to_datestring }}</td>
-                                    <td>{{ (replay_player.hero_id|get_hero_by_id)["localized_name"] }}</td>
-                                    <td>{{ replay_player.replay.id }}</td>
-                                    <td>{{ replay_player.replay.state }}</td>
-                                    <td><a href="{{ url_for("replays.replay", _id=replay_player.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="3" class="text-muted">
-                                    <em>No replay history</em>
-                                </td>
-                            </tr>
-                        {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="tab-pane" id="favourites">
-            <h2>Favourites</h2>
+    <dl class="dl-horizontal">
+        <dt>First seen</dt>
+        <dd>{{ user.first_seen }} UTC</dd>
+        <dt>Last seen</dt>
+        <dd>{{ user.last_seen }} UTC</dd>
+        <dt>Premium?</dt>
+        <dd>{{ user.is_premium }}</dd>
+    </dl>
+    <div class="row">
+        <div class="col-sm-6">
+            <h2><a href='{{ url_for("users.user_favourites", _id = user.id) }}'>Favourites</a></h2>
             <table class="table table-striped table-condensed">
                 <thead>
                     <tr>
@@ -184,8 +23,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% if user.favourites %}
-                    {% for favourite in user.favourites %}
+                {% if favourites|length %}
+                    {% for favourite in favourites %}
                         <tr>
                             <td>{{ favourite.created_at }}</td>
                             <td>{{ favourite.replay_id }}</td>
@@ -202,7 +41,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="tab-pane" id="ratings">
+        <div class="col-sm-6">
             <h2><a href='{{ url_for("users.user_ratings", _id = user.id) }}'>Ratings</a></h2>
             <table class="table table-striped table-condensed">
                 <thead>
@@ -214,8 +53,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% if user.replay_ratings %}
-                    {% for rating in user.replay_ratings %}
+                {% if ratings|length %}
+                    {% for rating in ratings %}
                         <tr>
                             <td>{{ rating.created_at }}</td>
                             <td>{{ rating.replay_id }}</td>
@@ -233,8 +72,10 @@
                 </tbody>
             </table>
         </div>
-        <div class="tab-pane" id="searches">
-            <h2>Search history</h2>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <h2><a href='{{ url_for("users.user_searches", _id = user.id) }}'>Search history</a></h2>
             <table class="table table-striped table-condensed">
                 <thead>
                     <tr>
@@ -245,8 +86,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% if user.searches.count() > 0 %}
-                    {% for search in user.searches %}
+                {% if searches|length %}
+                    {% for search in searches %}
                         <tr>
                             <td>{{ search.created_at }}</td>
                             <td><em>{{ search.search_query }}</em></td>
@@ -264,7 +105,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="tab-pane" id="downloads">
+        <div class="col-sm-6">
             <h2><a href='{{ url_for("users.user_downloads", _id = user.id) }}'>Downloads</a></h2>
             <table class="table table-striped table-condensed">
                 <thead>
@@ -275,8 +116,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% if user.downloads.count() > 0 %}
-                    {% for download in user.downloads %}
+                {% if downloads|length %}
+                    {% for download in downloads %}
                         <tr>
                             <td>{{ download.created_at }}</td>
                             <td>{{ download.replay_id }}</td>
@@ -293,9 +134,10 @@
                 </tbody>
             </table>
         </div>
-        <div class="tab-pane" id="replays">
-            <h2>Replays</h2>
-            <p>Match archives on Dotabank that {{user.name}} has participated in.</p>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <h2><a href='{{ url_for("users.user_replays", _id = user.id) }}'>Replays</a></h2>
             <table class="table table-striped table-condensed">
                 <thead>
                     <tr>
@@ -307,14 +149,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% if user.replay_players.count() > 0 %}
-                    {% for replay_player in user.replay_players %}
+                {% if replays_participated|length %}
+                    {% for participation_award in replays_participated %}
                         <tr>
-                            <td>{{ replay_player.replay.start_time|timestamp_to_datestring }}</td>
-                            <td>{{ (replay_player.hero_id|get_hero_by_id)["localized_name"] }}</td>
-                            <td>{{ replay_player.replay.id }}</td>
-                            <td>{{ replay_player.replay.state }}</td>
-                            <td><a href="{{ url_for("replays.replay", _id=replay_player.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
+                            <td>{{ participation_award.replay.start_time|timestamp_to_datestring }}</td>
+                            <td>{{ (participation_award.hero_id|get_hero_by_id)["localized_name"] }}</td>
+                            <td>{{ participation_award.replay.id }}</td>
+                            <td>{{ participation_award.replay.state }}</td>
+                            <td><a href="{{ url_for("replays.replay", _id=participation_award.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
                     {% endfor %}
                 {% else %}

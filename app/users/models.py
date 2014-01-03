@@ -25,8 +25,8 @@ class User(db.Model):
     admin = db.Column(db.Boolean, default=False)
     show_ads = db.Column(db.Boolean, default=True)
 
-    replay_ratings = db.relationship('ReplayRating', backref='user', lazy='select', cascade="all, delete-orphan")
-    favourites = db.relationship('ReplayFavourite', backref='user', lazy='select', cascade="all, delete-orphan")
+    replay_ratings = db.relationship('ReplayRating', backref='user', lazy='dynamic', cascade="all, delete-orphan")
+    favourites = db.relationship('ReplayFavourite', backref='user', lazy='dynamic', cascade="all, delete-orphan")
     downloads = db.relationship('ReplayDownload', backref="user", lazy="dynamic", cascade="all")
     subscriptions = db.relationship('Subscription', backref="user", lazy="dynamic", cascade="all")
     searches = db.relationship('Search', backref="user", lazy="dynamic", cascade="all")
