@@ -28,7 +28,7 @@
                         <tr>
                             <td>{{ favourite.created_at }}</td>
                             <td>{{ favourite.replay_id }}</td>
-                            <td><a href="{{ url_for("replays.replay", _id=favourite.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
+                            <td><a href="{{ url_for("replays.replay", _id=favourite.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
                     {% endfor %}
                 {% else %}
@@ -59,7 +59,7 @@
                             <td>{{ rating.created_at }}</td>
                             <td>{{ rating.replay_id }}</td>
                             <td>{{ rating.positive }}</td>
-                            <td><a href="{{ url_for("replays.replay", _id=rating.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
+                            <td><a href="{{ url_for("replays.replay", _id=rating.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
                     {% endfor %}
                 {% else %}
@@ -92,7 +92,7 @@
                             <td>{{ search.created_at }}</td>
                             <td><em>{{ search.search_query }}</em></td>
                             <td>{{ search.success }}</td>
-                            <td><a href="{{ url_for("replays.replay", _id=search.replay.id) if search.replay }}" class="btn btn-xs btn-default {{ "disabled" if not search.replay }}">View replay</a></td>
+                            <td><a href="{{ url_for("replays.replay", _id=search.replay_id) if search.replay }}" class="btn btn-xs btn-default {{ "disabled" if not search.replay }}">View replay</a></td>
                         </tr>
                     {% endfor %}
                 {% else %}
@@ -121,7 +121,7 @@
                         <tr>
                             <td>{{ download.created_at }}</td>
                             <td>{{ download.replay_id }}</td>
-                            <td><a href="{{ url_for("replays.replay", _id=download.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
+                            <td><a href="{{ url_for("replays.replay", _id=download.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
                     {% endfor %}
                 {% else %}
@@ -154,9 +154,9 @@
                         <tr>
                             <td>{{ participation_award.replay.start_time|timestamp_to_datestring }}</td>
                             <td>{{ (participation_award.hero_id|get_hero_by_id)["localized_name"] }}</td>
-                            <td>{{ participation_award.replay.id }}</td>
+                            <td>{{ participation_award.replay_id }}</td>
                             <td>{{ participation_award.replay.state }}</td>
-                            <td><a href="{{ url_for("replays.replay", _id=participation_award.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
+                            <td><a href="{{ url_for("replays.replay", _id=participation_award.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
                     {% endfor %}
                 {% else %}

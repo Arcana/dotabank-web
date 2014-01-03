@@ -77,28 +77,25 @@ def user(_id):
         return redirect(request.referrer or url_for("index"))
 
     favourites = ReplayFavourite.query.\
-        join(ReplayPlayer.replay).\
         filter(ReplayFavourite.user_id == _user.id).\
         order_by(ReplayFavourite.created_at.desc()).\
         limit(current_app.config["LATEST_REPLAYS_LIMIT"]).\
         all()
 
     ratings = ReplayRating.query.\
-        join(ReplayPlayer.replay).\
         filter(ReplayRating.user_id == _user.id).\
         order_by(ReplayRating.created_at.desc()).\
         limit(current_app.config["LATEST_REPLAYS_LIMIT"]).\
         all()
 
     searches = Search.query.\
-        join(ReplayPlayer.replay).\
         filter(Search.user_id == _user.id).\
         order_by(Search.created_at.desc()).\
         limit(current_app.config["LATEST_REPLAYS_LIMIT"]).\
         all()
 
     downloads = ReplayDownload.query.\
-        join(ReplayPlayer.replay).\
+        join(ReplayDownload.replay).\
         filter(ReplayDownload.user_id == _user.id).\
         order_by(ReplayDownload.created_at.desc()).\
         limit(current_app.config["LATEST_REPLAYS_LIMIT"]).\
