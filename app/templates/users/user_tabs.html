@@ -1,0 +1,8 @@
+<ul class="nav nav-tabs">
+    <li {{ "class=active" if "users.user" == request.endpoint }} }}><a href='{{ url_for("users.user", _id = user.id) }}'>Overview</a></li>
+    <li {{ "class=active" if "users.user_favourites" == request.endpoint }}><a href='{{ url_for("users.user_favourites", _id = user.id) }}'>Favourites</a></li>
+    <li {{ "class=active" if "users.user_ratings" == request.endpoint }}><a href='{{ url_for("users.user_ratings", _id = user.id) }}'>Ratings</a></li>
+    <li {{ "class=active" if "users.user_searches" == request.endpoint }}><a href='{{ url_for("users.user_searches", _id = user.id) }}'>Searches</a></li>
+    <li {{ "class=active" if "users.user_downloads" == request.endpoint }}><a href='{{ url_for("users.user_downloads", _id = user.id) }}'>Downloads</a></li>
+    <li {{ "class=active" if "users.user_replays" == request.endpoint }} }}><a href='{{ url_for("users.user_replays", _id = user.id) }}'>Replays</a></li>
+</ul>

@@ -4,19 +4,24 @@
     </div>
     <ul class="nav navbar-nav">
         <li class="{{ "active" if "users.user" == request.endpoint }}"">
-            <a href="{{ url_for("users.user", _id=user.id) }}">Profile</a>
+            <a href="{{ url_for("users.user", _id=user.id) }}">Overview</a>
         </li>
-        <li><a href="http://steamcommunity.com/profiles/{{ user.id|get_steamid_from_accountid }}">Steam</a></li>
+        <li {{ "class=active" if "users.user_favourites" == request.endpoint }}><a href='{{ url_for("users.user_favourites", _id = user.id) }}'>Favourites</a></li>
+        <li {{ "class=active" if "users.user_ratings" == request.endpoint }}><a href='{{ url_for("users.user_ratings", _id = user.id) }}'>Ratings</a></li>
+        <li {{ "class=active" if "users.user_searches" == request.endpoint }}><a href='{{ url_for("users.user_searches", _id = user.id) }}'>Searches</a></li>
+        <li {{ "class=active" if "users.user_downloads" == request.endpoint }}><a href='{{ url_for("users.user_downloads", _id = user.id) }}'>Downloads</a></li>
+        <li {{ "class=active" if "users.user_replays" == request.endpoint }} }}><a href='{{ url_for("users.user_replays", _id = user.id) }}'>Replays</a></li>
     </ul>
     <ul class="nav navbar-nav pull-right">
-        {% if current_user.id == user.id %}
         <li>
             <div class="form">
-                <a class="btn btn-default navbar-btn {{ "disabled" if "users.settings" == request.endpoint }}" href="{{ url_for("users.settings", _id=user.id) }}">Settings</a>
-                <a class="btn btn-default navbar-btn" href="{{ url_for("users.logout") }}">Logout</a>
+                <a class="btn btn-default navbar-btn href="http://steamcommunity.com/profiles/{{ user.id|get_steamid_from_accountid }}">Steam</a>
+                {% if current_user.id == user.id %}
+                    <a class="btn btn-default navbar-btn {{ "disabled" if "users.settings" == request.endpoint }}" href="{{ url_for("users.settings", _id=user.id) }}">Settings</a>
+                    <a class="btn btn-default navbar-btn" href="{{ url_for("users.logout") }}">Logout</a>
+                {% endif %}
             </div>
         </li>
-        {% endif %}
         <li>&nbsp;</li> <!-- Padding hack -->
     </ul>
 </nav>

@@ -68,20 +68,55 @@ def users(page=1):
     return render_template("users/users.html", users=_users)
 
 
-@mod.route("/<int:_id>/", methods=["GET"])
+@mod.route("/<int:_id>/")
 def user(_id):
     _user = User.query.filter(User.id == _id).first()
-    try:
-        page_num = int(request.args.get('page'))
-    except ValueError:
-        page_num = 1
-    except TypeError:
-        page_num = 1
 
     if _user is None:
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
-    return render_template("users/user.html", user=_user, page_num=page_num)
+    return render_template("users/user.html", user=_user)
+
+@mod.route("/<int:_id>/replays/")
+@mod.route("/<int:_id>/replays/<int:page>/")
+def user_replays(_id, page=1):
+    _user = User.query.filter(User.id == _id).first()
+    if _user is None:
+        flash("User {} not found.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
+    _replays = _user.replay_players.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
+    return render_template("users/replays.html", user=_user, replays=_replays)
+
+@mod.route("/<int:_id>/favourites/")
+@mod.route("/<int:_id>/favourites/<int:page>/")
+def user_favourites(_id, page=1):
+    _user = User.query.filter(User.id == _id).first()
+    if _user is None:
+        flash("User {} not found.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
+    _favourites = _user.favourites.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
+    return render_template("users/replays.html", user=_user, favourites=_favourites)
+
+@mod.route("/<int:_id>/ratings/")
+@mod.route("/<int:_id>/ratings/<int:page>/")
+def user_ratings(_id, page=1):
+    return True
+
+@mod.route("/<int:_id>/searches/")
+@mod.route("/<int:_id>/searches/<int:page>/")
+def user_searches(_id, page=1):
+    return True
+
+@mod.route("/<int:_id>/downloads/")
+@mod.route("/<int:_id>/downloads/<int:page>/")
+def user_downloads(_id, page=1):
+    _user = User.query.filter(User.id == _id).first()
+    if _user is None:
+        flash("User {} not found.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
+    _downloads = _user.downloads.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
+    return render_template("users/downloads.html", user=_user, downloads=_downloads)
+
 
 
 @mod.route("/<int:_id>/settings/", methods=["POST", "GET"])
