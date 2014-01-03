@@ -64,12 +64,18 @@ def fetch_heroes():
 
 @cache.cached(timeout=60 * 60, key_prefix="heroes_by_id")
 def fetch_heroes_by_id():
-    return {x["id"]: x for x in fetch_heroes()}
+    try:
+        return {x["id"]: x for x in fetch_heroes()}
+    except steam.api.HTTPError:
+        return {}
 
 
 @cache.cached(timeout=60 * 60, key_prefix="heroes_by_name")
 def fetch_heroes_by_name():
-    return {x["name"]: x for x in fetch_heroes()}
+    try:
+        return {x["name"]: x for x in fetch_heroes()}
+    except steam.api.HTTPError:
+        return {}
 
 @cache.cached(timeout=60 * 60, key_prefix="items")
 def fetch_items():
@@ -79,8 +85,11 @@ def fetch_items():
 
 @cache.cached(timeout=60 * 60, key_prefix="leagues")
 def fetch_leagues():
-    res = steam.api.interface("IDOTA2Match_570").GetLeagueListing(language="en_US").get("result")
-    return {x["leagueid"]: x for x in res.get("leagues")}
+    try:
+        res = steam.api.interface("IDOTA2Match_570").GetLeagueListing(language="en_US").get("result")
+        return {x["leagueid"]: x for x in res.get("leagues")}
+    except steam.api.HTTPError:
+        return {}
 
 
 @cache.memoize(timeout=60 * 60)
