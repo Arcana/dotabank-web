@@ -68,8 +68,8 @@
                             {{ column[0].team }}
                             {% if team_name is not none %}
                                 -
-                                {% if team_logo %}
-                                    <img src="{{ (team_logo|get_file_by_ugcid).url }}" style="height:32px">
+                                {% if team_logo and (team_logo|get_file_by_ugcid) %}
+                                    <img src="{{ (team_logo|get_file_by_ugcid) }}" style="height:32px">
                                 {% endif %}
                                 {{ team_name }}
                             {% endif %}
@@ -164,40 +164,74 @@
                         <dd>{{ replay.lobby_type }}</dd>
                         <dt>Human players</dt>
                         <dd>{{ replay.human_players }}</dd>
+                        {% if replay.radiant_team_id %}
                         <dt>Radiant Team ID</dt>
                         <dd>{{ replay.radiant_team_id }}</dd>
+                        {% endif %}
+                        {% if replay.dire_team_id %}
                         <dt>Dire Team ID</dt>
                         <dd>{{ replay.dire_team_id}}</dd>
+                        {% endif %}
+                        {% if replay.league_id %}
                         <dt>League ID</dt>
                         <dd>{{ replay.league_id }}</dd>
+                        {% endif %}
+                        {% if replay.radiant_team_name %}
                         <dt>Radiant team name</dt>
                         <dd>{{ replay.radiant_team_name}}</dd>
+                        {% endif %}
+                        {% if replay.dire_team_name %}
                         <dt>Dire team name</dt>
                         <dd>{{ replay.dire_team_name}}</dd>
+                        {% endif %}
+                        {% if replay.radiant_team_logo %}
                         <dt>Radiant team logo</dt>
                         <dd>{{ replay.radiant_team_logo }}</dd>
+                        {% endif %}
+                        {% if replay.dire_team_logo %}
                         <dt>Dire team logo</dt>
                         <dd>{{ replay.dire_team_logo }}</dd>
+                        {% endif %}
+                        {% if replay.radiant_team_complete %}
                         <dt>Radiant team complete?</dt>
                         <dd>{{ replay.radiant_team_complete}}</dd>
+                        {% endif %}
+                        {% if replay.dire_team_complete %}
                         <dt>Dire team complete?</dt>
                         <dd>{{ replay.dire_team_complete }}</dd>
+                        {% endif %}
+                        {% if replay.game_mode %}
                         <dt>Game mode</dt>
                         <dd>{{ replay.game_mode }}</dd>
+                        {% endif %}
+                        {% if replay.match_seq_num %}
                         <dt>Match Seq Num</dt>
                         <dd>{{ replay.match_seq_num}}</dd>
+                        {% endif %}
+                        {% if replay.radiant_guild_id %}
                         <dt>Radiant Guild ID</dt>
                         <dd>{{ replay.radiant_guild_id }}</dd>
+                        {% endif %}
+                        {% if replay.dire_guild_id %}
                         <dt>Dire Guild ID</dt>
                         <dd>{{ replay.dire_guild_id}}</dd>
+                        {% endif %}
+                        {% if replay.radiant_team_tag %}
                         <dt>Radiant team tag</dt>
                         <dd>{{ replay.radiant_team_tag }}</dd>
+                        {% endif %}
+                        {% if replay.dire_team_tag %}
                         <dt>Dire team tag</dt>
                         <dd>{{ replay.dire_team_tag}}</dd>
+                        {% endif %}
+                        {% if replay.series_id %}
                         <dt>Series ID</dt>
                         <dd>{{ replay.series_id }}</dd>
+                        {% endif %}
+                        {% if replay.series_type %}
                         <dt>Series type</dt>
                         <dd>{{ replay.series_type }}</dd>
+                        {% endif %}
                     </dl>
 
                     <p>TODO: Picks & Bans, additional player units'</p>

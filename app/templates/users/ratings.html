@@ -15,31 +15,31 @@
         <dd>{{ ratings.total }}</dd>
     </dl>
     <table class="table table-striped table-condensed">
-            <thead>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Replay ID</th>
+                <th>Positive?</th>
+                <th>Replay</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if ratings.total > 0 %}
+            {% for rating in ratings.items %}
                 <tr>
-                    <th>Time</th>
-                    <th>Replay ID</th>
-                    <th>Positive?</th>
-                    <th>Replay</th>
+                    <td>{{ rating.created_at|datetime_to_datestring }}</td>
+                    <td>{{ rating.replay_id }}</td>
+                    <td>{{ rating.positive }}</td>
+                    <td><a href="{{ url_for("replays.replay", _id=rating.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                 </tr>
-            </thead>
-            <tbody>
-            {% if ratings.total > 0 %}
-                {% for rating in ratings.items %}
-                    <tr>
-                        <td>{{ rating.created_at }}</td>
-                        <td>{{ rating.replay_id }}</td>
-                        <td>{{ rating.positive }}</td>
-                        <td><a href="{{ url_for("replays.replay", _id=rating.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
-                    </tr>
-                {% endfor %}
-            {% else %}
-                <tr>
-                    <td colspan="4" class="text-muted">
-                        <em>No ratings</em>
-                    </td>
-                </tr>
-            {% endif %}
-            </tbody>
-        </table>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="4" class="text-muted">
+                    <em>No ratings</em>
+                </td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
 {% endblock %}

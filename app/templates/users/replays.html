@@ -32,7 +32,7 @@
                         <td>{{ (replay.hero_id|get_hero_by_id)["localized_name"] }}</td>
                         <td>{{ replay.replay.id }}</td>
                         <td>{{ replay.replay.state }}</td>
-                        <td><a href="{{ url_for("replays.replay", _id=replay.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
+                        <td><a href="{{ url_for("replays.replay", _id=replay.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                     </tr>
                 {% endfor %}
             {% else %}

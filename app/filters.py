@@ -1,4 +1,5 @@
 from app import cache, steam
+from flask import current_app
 import json
 import urllib2
 from datetime import datetime, timedelta
@@ -11,8 +12,14 @@ def escape_every_character(text):
     return "".join("&#{};".format(ord(x)) for x in text)
 
 
-def timestamp_to_datestring(timestamp, _format="%b %d, %Y %H:%M"):
-    return datetime.utcfromtimestamp(int(timestamp)).strftime(_format)
+def timestamp_to_datestring(timestamp):
+    return datetime.utcfromtimestamp(int(timestamp)).strftime(current_app.config["DATE_STRING_FORMAT"])
+
+def datetime_to_datestring(input):
+    if isinstance(input, datetime):
+        return input.strftime(current_app.config["DATE_STRING_FORMAT"])
+    else:
+        return None
 
 
 def seconds_to_time(seconds):
@@ -140,5 +147,7 @@ def get_league_by_id(league_id):
 
 @cache.memoize(timeout=60 * 60)
 def get_file_by_ugcid(ugcid):
-    res = steam.remote_storage.ugc_file(570, ugcid)
-    return res
+    try:
+        return steam.remote_storage.ugc_file(570, ugcid).url
+    except steam.remote_storage.FileNotFoundError:
+        return None

@@ -26,17 +26,17 @@
             {% if downloads.total > 0 %}
                 {% for download in downloads.items %}
                      <tr>
-                        <td>{{ download.replay.start_time|timestamp_to_datestring }}</td>
+                        <td>{{ download.created_at|datetime_to_datestring }}</td>
                         <td>{{ download.replay.id }}</td>
-                        <td><a href="{{ url_for("replays.replay", _id=download.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
+                        <td><a href="{{ url_for("replays.replay", _id=download.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                     </tr>
                 {% endfor %}
             {% else %}
-                    <tr>
-                        <td colspan="3" class="text-muted">
-                            <em>No download history</em>
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="3" class="text-muted">
+                        <em>No download history</em>
+                    </td>
+                </tr>
             {% endif %}
             </tbody>
     </table>

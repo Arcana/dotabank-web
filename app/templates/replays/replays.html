@@ -26,9 +26,9 @@
             {% for replay in replays.items %}
                 <tr>
                     <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
-                    <td>{{ replay.added_to_site_time }}</td>
-                    <td>{{ replay.gc_done_time }}</td>
-                    <td>{{ replay.dl_done_time }}</td>
+                    <td>{{ replay.added_to_site_time|datetime_to_datestring }}</td>
+                    <td>{{ replay.gc_done_time|datetime_to_datestring }}</td>
+                    <td>{{ replay.dl_done_time|datetime_to_datestring }}</td>
                     <td>
                         <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
                             <span class="{{"" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"> ({{ replay.favourites|list|length }})</span>

@@ -25,15 +25,15 @@
         <tbody>
         {% if favourites.total > 0 %}
             {% for favourite in favourites.items %}
-                <tr>
-                    <td>{{ favourite.created_at }}</td>
+                 <tr>
+                    <td>{{ favourite.created_at|datetime_to_datestring }}</td>
                     <td>{{ favourite.replay_id }}</td>
                     <td><a href="{{ url_for("replays.replay", _id=favourite.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                 </tr>
             {% endfor %}
         {% else %}
             <tr>
-                <td colspan="4" class="text-muted">
+                <td colspan="3" class="text-muted">
                     <em>No favourites</em>
                 </td>
             </tr>

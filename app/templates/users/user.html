@@ -23,10 +23,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% if favourites|length %}
+                {% if favourites.count() >0 %}
                     {% for favourite in favourites %}
                         <tr>
-                            <td>{{ favourite.created_at }}</td>
+                            <td>{{ favourite.created_at|datetime_to_datestring }}</td>
                             <td>{{ favourite.replay_id }}</td>
                             <td><a href="{{ url_for("replays.replay", _id=favourite.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
@@ -53,10 +53,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% if ratings|length %}
+                {% if ratings.count() >0 %}
                     {% for rating in ratings %}
                         <tr>
-                            <td>{{ rating.created_at }}</td>
+                            <td>{{ rating.created_at|datetime_to_datestring }}</td>
                             <td>{{ rating.replay_id }}</td>
                             <td>{{ rating.positive }}</td>
                             <td><a href="{{ url_for("replays.replay", _id=rating.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
@@ -86,10 +86,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% if searches|length %}
+                {% if searches.count() >0 %}
                     {% for search in searches %}
                         <tr>
-                            <td>{{ search.created_at }}</td>
+                            <td>{{ search.created_at|datetime_to_datestring }}</td>
                             <td><em>{{ search.search_query }}</em></td>
                             <td>{{ search.success }}</td>
                             <td><a href="{{ url_for("replays.replay", _id=search.replay_id) if search.replay }}" class="btn btn-xs btn-default {{ "disabled" if not search.replay }}">View replay</a></td>
@@ -116,10 +116,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% if downloads|length %}
+                {% if downloads.count() >0 %}
                     {% for download in downloads %}
                         <tr>
-                            <td>{{ download.created_at }}</td>
+                            <td>{{ download.created_at|datetime_to_datestring }}</td>
                             <td>{{ download.replay_id }}</td>
                             <td><a href="{{ url_for("replays.replay", _id=download.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
@@ -149,14 +149,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% if replays_participated|length %}
-                    {% for participation_award in replays_participated %}
+                {% if replays.count() > 0 %}
+                    {% for replay_player in replays %}
                         <tr>
-                            <td>{{ participation_award.replay.start_time|timestamp_to_datestring }}</td>
-                            <td>{{ (participation_award.hero_id|get_hero_by_id)["localized_name"] }}</td>
-                            <td>{{ participation_award.replay_id }}</td>
-                            <td>{{ participation_award.replay.state }}</td>
-                            <td><a href="{{ url_for("replays.replay", _id=participation_award.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
+                            <td>{{ replay_player.replay.start_time|timestamp_to_datestring }}</td>
+                            <td>{{ (replay_player.hero_id|get_hero_by_id)["localized_name"] }}</td>
+                            <td>{{ replay_player.replay_id }}</td>
+                            <td>{{ replay_player.replay.state }}</td>
+                            <td><a href="{{ url_for("replays.replay", _id=replay_player.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
                     {% endfor %}
                 {% else %}
