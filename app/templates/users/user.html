@@ -5,9 +5,9 @@
 
     <dl class="dl-horizontal">
         <dt>First seen</dt>
-        <dd>{{ user.first_seen }} UTC</dd>
+        <dd>{{ user.first_seen|datetime_to_datestring }} UTC</dd>
         <dt>Last seen</dt>
-        <dd>{{ user.last_seen }} UTC</dd>
+        <dd>{{ user.last_seen|datetime_to_datestring }} UTC</dd>
         <dt>Premium?</dt>
         <dd>{{ user.is_premium }}</dd>
     </dl>

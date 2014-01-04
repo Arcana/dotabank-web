@@ -59,7 +59,7 @@
                         <tr>
                             <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
                             <td>{{ replay.state }}</td>
-                            <td>{{ replay.added_to_site_time }}</td>
+                            <td>{{ replay.added_to_site_time|datetime_to_datestring }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -80,7 +80,7 @@
                         <tr>
                             <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
                             <td>{{ replay.state }}</td>
-                            <td>{{ replay.dl_done_time }}</td>
+                            <td>{{ replay.dl_done_time|datetime_to_datestring }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
