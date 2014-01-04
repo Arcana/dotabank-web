@@ -116,6 +116,7 @@ def user(_id):
                            downloads=downloads,
                            replays_participated=replays_participated)
 
+
 @mod.route("/<int:_id>/replays/")
 @mod.route("/<int:_id>/replays/<int:page>/")
 def user_replays(_id, page=1):
@@ -126,6 +127,7 @@ def user_replays(_id, page=1):
     _replays = _user.replay_players.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/replays.html", user=_user, replays=_replays)
 
+
 @mod.route("/<int:_id>/favourites/")
 @mod.route("/<int:_id>/favourites/<int:page>/")
 def user_favourites(_id, page=1):
@@ -133,8 +135,9 @@ def user_favourites(_id, page=1):
     if _user is None:
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
-    _favourites = _user.favourites.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
-    return render_template("users/favourites.html", user=_user, favourites=_favourites)
+    favourites = _user.favourites.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
+    return render_template("users/favourites.html", user=_user, favourites=favourites)
+
 
 @mod.route("/<int:_id>/ratings/")
 @mod.route("/<int:_id>/ratings/<int:page>/")
@@ -143,8 +146,9 @@ def user_ratings(_id, page=1):
     if _user is None:
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
-    _favourites = _user.replay_ratings.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
-    return render_template("users/ratings.html", user=_user, favourites=_favourites)
+    ratings = _user.replay_ratings.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
+    return render_template("users/ratings.html", user=_user, ratings=ratings)
+
 
 @mod.route("/<int:_id>/searches/")
 @mod.route("/<int:_id>/searches/<int:page>/")
@@ -153,8 +157,9 @@ def user_searches(_id, page=1):
     if _user is None:
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
-    _favourites = _user.searches.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
-    return render_template("users/searches.html", user=_user, favourites=_favourites)
+    searches = _user.searches.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
+    return render_template("users/searches.html", user=_user, searches=searches)
+
 
 @mod.route("/<int:_id>/downloads/")
 @mod.route("/<int:_id>/downloads/<int:page>/")

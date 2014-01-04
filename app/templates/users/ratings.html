@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    {% include "users/user_nav.html" %}
+
+    <div class="page-header">
+        <h1>Ratings  <small>page {{ ratings.page }}</small></h1>
+    </div>
+    <ul class="pager">
+        <li class="previous {{ "disabled" if not ratings.has_prev }}"><a href="{{ url_for("users.user_ratings", _id = user.id, page=ratings.prev_num) if ratings.has_prev else "" }}">&larr; Older</a></li>
+        <li class="next {{ "disabled" if not ratings.has_next }}"><a href="{{ url_for("users.user_ratings", _id = user.id, page=ratings.next_num) if ratings.has_next else "" }}">Newer &rarr;</a></li>
+    </ul>
+    <dl class="dl-horizontal">
+        <dt>Number of ratings</dt>
+        <dd>{{ ratings.total }}</dd>
+    </dl>
+    <table class="table table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Replay ID</th>
+                    <th>Positive?</th>
+                    <th>Replay</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if ratings.total > 0 %}
+                {% for rating in ratings.items %}
+                    <tr>
+                        <td>{{ rating.created_at }}</td>
+                        <td>{{ rating.replay_id }}</td>
+                        <td>{{ rating.positive }}</td>
+                        <td><a href="{{ url_for("replays.replay", _id=rating.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4" class="text-muted">
+                        <em>No ratings</em>
+                    </td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+{% endblock %}
