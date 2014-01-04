@@ -65,14 +65,14 @@
                         {% set team_name =  replay.radiant_team_name if column[0].team == "Radiant" else replay.dire_team_name %}
                         {% set team_logo = replay["{}_team_logo".format(column[0].team.lower())] %}
                         <h4>
-                            {{ column[0].team }}
                             {% if team_name is not none %}
-                                -
                                 {% if team_logo and (team_logo|get_file_by_ugcid) %}
                                     <img src="{{ (team_logo|get_file_by_ugcid) }}" style="height:32px">
                                 {% endif %}
                                 {{ team_name }}
+                                -
                             {% endif %}
+                            {{ column[0].team }}
                             {{" - WINNERS" if (column[0].team == "Radiant" and replay.good_guys_win) or (column[0].team == "Dire" and not replay.good_guys_win)  }}
                         </h4>
                         <table class="table table-striped table-bordered table-condensed endgame-table">
