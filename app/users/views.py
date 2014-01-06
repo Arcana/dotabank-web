@@ -70,17 +70,16 @@ def users(page=1):
 
 @mod.route("/<int:_id>/")
 def user(_id):
-    limit = current_app.config["USER_OVERVIEW_LIMIT"]
     _user = User.query.filter(User.id == _id).first()
+    limit = current_app.config["USER_OVERVIEW_LIMIT"]
+    if _user is None:
+        flash("User {} not found.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
     _replays = _user.replay_players.order_by(False).order_by(ReplayPlayer.replay_id.desc()).limit(limit)
     _favourites = _user.favourites.order_by(False).order_by(ReplayFavourite.created_at.desc()).limit(limit)
     _searches = _user.searches.order_by(False).order_by(Search.created_at.desc()).limit(limit)
     _downloads = _user.downloads.order_by(False).order_by(ReplayDownload.created_at.desc()).limit(limit)
     _ratings = _user.replay_ratings.order_by(False).order_by(ReplayRating.created_at.desc()).limit(limit)
-
-    if _user is None:
-        flash("User {} not found.".format(_id), "danger")
-        return redirect(request.referrer or url_for("index"))
     return render_template("users/user.html", user=_user, replays=_replays, favourites=_favourites, searches=_searches, downloads=_downloads, ratings=_ratings)
 
 @mod.route("/<int:_id>/replays/")

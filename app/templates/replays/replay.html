@@ -73,7 +73,6 @@
                                 -
                             {% endif %}
                             {{ column[0].team }}
-                            {{" - WINNERS" if (column[0].team == "Radiant" and replay.good_guys_win) or (column[0].team == "Dire" and not replay.good_guys_win)  }}
                         </h4>
                         <table class="table table-striped table-bordered table-condensed endgame-table">
                             <thead>
@@ -144,8 +143,22 @@
                         </table>
                     {% endfor %}
                     <dl class="dl-horizontal">
-                        <dt>Good guys win?</dt>
-                        <dd>{{ replay.good_guys_win }}</dd>
+                        <dt>Victors</dt>
+                        <dd>
+                            {% if replay.good_guys_win %}
+                                {% if replay.radiant_team_name %}
+                                    {{replay.radiant_team_name}}
+                                {% else %}
+                                    Radiant
+                                {% endif %}
+                            {% else %}
+                                {% if replay.dire_team_name %}
+                                    {{replay.dire_team_name}}
+                                {% else %}
+                                    Dire
+                                {% endif %}
+                            {% endif %}
+                        </dd>
                         <dt>Duration</dt>
                         <dd>{{ replay.duration|seconds_to_time }}</dd>
                         <dt>Start time</dt>
