@@ -153,6 +153,8 @@ def get_league_by_id(league_id):
 @cache.memoize(timeout=60 * 60)
 def get_file_by_ugcid(ugcid):
     try:
-        return steam.remote_storage.ugc_file(570, ugcid).url
+        file_info = steam.remote_storage.ugc_file(570, ugcid)
+        file_info.url
+        return file_info
     except steam.remote_storage.FileNotFoundError:
         return None
