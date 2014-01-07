@@ -53,13 +53,18 @@ def get_steamid_from_accountid(account_id):
 
 @cache.memoize(timeout=60 * 60)
 def get_account_by_id(account_id):
-    if isinstance(account_id, list):
-        steam_ids = get_steamid_from_accountid(account_id)
-        res = steam.user.profile_batch(steam_ids)
-    else:
-        steam_id = get_steamid_from_accountid(account_id)
-        res = steam.user.profile(steam_id)
-    return res
+    try:
+        if isinstance(account_id, list):
+            steam_ids = get_steamid_from_accountid(account_id)
+            res = steam.user.profile_batch(steam_ids)
+        else:
+            steam_id = get_steamid_from_accountid(account_id)
+            res = steam.user.profile(steam_id)
+            res.id64
+
+        return res
+    except steam.api.HTTPFileNotFoundError:
+        return None
 
 
 # Dota 2 API filters

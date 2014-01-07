@@ -2,6 +2,7 @@ from app import db
 from flask.ext.login import AnonymousUserMixin
 import datetime
 from calendar import timegm as to_timestamp
+from app.filters import get_account_by_id
 
 # noinspection PyMethodMayBeStatic
 class AnonymousUser(AnonymousUserMixin):
@@ -68,6 +69,16 @@ class User(db.Model):
         self.last_seen = datetime.datetime.utcnow()
         db.session.add(self)
         db.session.commit()
+
+    def update_steam_name(self):
+        # Called every page load for current_user (API is cached)
+        steam_account_info = get_account_by_id(self.id)
+        if steam_account_info is not None:
+            if self.name is not steam_account_info.persona:
+                self.name = steam_account_info.persona
+                db.session.add(self)
+
+
 
     def allows_ads(self):
         return self.show_ads

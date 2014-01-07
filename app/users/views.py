@@ -18,6 +18,7 @@ def load_user(user_id):
     _user = User.query.get(user_id)
     if _user:
         _user.update_last_seen()
+        _user.update_steam_name()
     return _user
 
 
