@@ -43,12 +43,22 @@ def create_or_login(resp):
 
     login_attempt = login_user(_user)
     if login_attempt is True:
-        flash("You are logged in as {}".format(_user.name), "success")
+        flash(u"You are logged in as {}".format(_user.name), "success")
     elif not _user.is_active():
-        flash("Cannot log you in as {}, your account has been disabled.  If you believe this is in error, please contact {}.".format(_user.name, current_app.config["CONTACT_EMAIL"]), "danger")
+        flash(u"Cannot log you in as {}, your account has been disabled.  If you believe this is in error, please contact {}.".format(_user.name, current_app.config["CONTACT_EMAIL"]), "danger")
     else:
-        flash("Error logging you in as {}, please try again later.".format(_user.name), "danger")
+        flash(u"Error logging you in as {}, please try again later.".format(_user.name), "danger")
     return redirect(oid.get_next_url())
+
+
+#@mod.route('/shittytest/')
+#def shitty_test():
+#    _users = User.query.all()
+#
+#    for _user in _users:
+#        flash(u"FUCKING USER {}".format(_user.name), "success")
+#
+#    return redirect(url_for('index'))
 
 
 @mod.route('/logout/')
