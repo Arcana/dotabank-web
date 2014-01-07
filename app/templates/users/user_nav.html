@@ -15,7 +15,7 @@
     <ul class="nav navbar-nav pull-right">
         <li>
             <div class="form">
-                <a class="btn btn-default navbar-btn href="http://steamcommunity.com/profiles/{{ user.id|get_steamid_from_accountid }}">Steam</a>
+                <a class="btn btn-default navbar-btn" href='http://steamcommunity.com/profiles/{{ user.id|get_steamid_from_accountid }}'>Steam</a>
                 {% if current_user.id == user.id %}
                     <a class="btn btn-default navbar-btn {{ "disabled" if "users.settings" == request.endpoint }}" href="{{ url_for("users.settings", _id=user.id) }}">Settings</a>
                     <a class="btn btn-default navbar-btn" href="{{ url_for("users.logout") }}">Logout</a>
