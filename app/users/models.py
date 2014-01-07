@@ -33,6 +33,11 @@ class User(db.Model):
 
     replay_players = db.relationship('ReplayPlayer', backref='user', lazy='dynamic', order_by='ReplayPlayer.replay_id')
 
+    # Set default order by
+    __mapper_args__ = {
+        "order_by": [db.asc(first_seen)]
+    }
+
     def __init__(self, _id=None, name=None, enabled=True, first_seen=datetime.datetime.utcnow(), last_seen=datetime.datetime.utcnow()):
         self.id = _id
         self.name = name
