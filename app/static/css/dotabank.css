@@ -213,3 +213,6 @@
     vertical-align:middle;
     font-size:0; //Hack to get around inconsistent spacing between item boxes.
 }
+.navbar-btn:last-of-type {
+    margin-right:8px;
+}
