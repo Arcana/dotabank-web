@@ -1,0 +1,10 @@
+{%- macro lobby_type(value) -%}
+    {{"Normal Matchmaking" if value == 0}}
+	{{"Practice Match" if value == 1}}
+	{{"Tournament Match" if value == 2}}
+	{{"Tutorial" if value == 3}}
+	{{"Co-op Bot Match" if value == 4}}
+	{{"Team Matchmaking" if value == 5}}
+	{{"Solo Queue" if value == 6}}
+	{{"Ranked Matchmaking" if value == 7}}
+{% endmacro %}
