@@ -164,12 +164,11 @@ def settings(_id):
     form = SettingsForm(_user, request.form)
 
     if form.validate_on_submit():
-        _user.name = form.name.data
         _user.email = form.email.data
         _user.show_ads = form.show_ads.data
         db.session.add(_user)
         db.session.commit()
-        return redirect(request.args.get("next") or url_for("index"))
+        return redirect(request.args.get("next") or url_for("users.user", _id=_user.id))
 
     return render_template("users/settings.html", user=_user, form=form)
 

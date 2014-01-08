@@ -7,7 +7,6 @@
 
     <form class="form-horizontal" role="form" method="POST">
         {{ form.hidden_tag() }}
-        {{ wtf.horizontal_field(form.name) }}
         {{ wtf.horizontal_field(form.email) }}
         {{ wtf.horizontal_checkbox(form.show_ads) }}
 

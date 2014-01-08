@@ -8,7 +8,6 @@ from app.users.models import User
 
 
 class SettingsForm(Form):
-    name = TextField("Display name", validators=[Required("You must provide a display name.")])
     email = TextField("E-mail address",
                       validators=[Optional(), Email()],
                       description="Used to notify you when your matches have been parsed.")
