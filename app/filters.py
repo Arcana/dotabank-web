@@ -158,3 +158,16 @@ def get_file_by_ugcid(ugcid):
         return file_info
     except steam.remote_storage.FileNotFoundError:
         return None
+
+
+def lobby_type(value):
+    try:
+        return ["Public Matchmaking",
+         "Practice Game",
+         "Tournament Game",
+         "Tutorial",
+         "Co-op Bot",
+         "Team Matchmaking",
+         "Ranked Match"][value]
+    except IndexError:
+        return "Invalid ("+value+")"

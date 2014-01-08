@@ -1,5 +1,4 @@
 {% extends "layout.html" %}
-{% import "replays/replay_macros.html" as rm %}
 
 {% block content %}
     <div class="page-header">
@@ -175,7 +174,7 @@
                         <dt>First blood time</dt>
                         <dd>{{ replay.first_blood_time|seconds_to_time }}</dd>
                         <dt>Lobby type</dt>
-                        <dd>{{ rm.lobby_type(replay.lobby_type) }}</dd>
+                        <dd>{{ replay.lobby_type|lobby_type }}</dd>
                         <dt>Human players</dt>
                         <dd>{{ replay.human_players }}</dd>
                         {% if replay.radiant_team_id %}

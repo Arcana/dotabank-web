@@ -45,7 +45,8 @@ from filters import escape_every_character,\
     dota_wiki_link,\
     dotabuff_hero_link,\
     dotabuff_item_link,\
-    dotabuff_match_link
+    dotabuff_match_link,\
+    lobby_type
 
 app.add_template_filter(escape_every_character)
 app.add_template_filter(get_steamid_from_accountid)
@@ -58,6 +59,7 @@ app.add_template_filter(dota_wiki_link)
 app.add_template_filter(dotabuff_hero_link)
 app.add_template_filter(dotabuff_item_link)
 app.add_template_filter(dotabuff_match_link)
+app.add_template_filter(lobby_type)
 
 from views import index, about, internalerror
 
