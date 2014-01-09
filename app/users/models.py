@@ -77,8 +77,7 @@ class User(db.Model):
             if self.name is not steam_account_info.persona:
                 self.name = steam_account_info.persona
                 db.session.add(self)
-
-
+                db.session.commit()
 
     def allows_ads(self):
         return self.show_ads
