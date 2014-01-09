@@ -168,6 +168,7 @@ def lobby_type(value):
          "Tutorial",
          "Co-op Bot",
          "Team Matchmaking",
+         "Solo Matchmaking",
          "Ranked Match"][value]
     except IndexError:
-        return "Invalid ("+value+")"
+        return "Invalid ({})".format(value)
