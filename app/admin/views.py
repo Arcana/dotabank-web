@@ -3,6 +3,10 @@ from flask.ext.admin import Admin, expose, AdminIndexView
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from flask.ext.login import current_user
 
+from datetime import datetime, timedelta
+
+from app.gc.models import GCJob, GCWorker
+
 mod = Blueprint("dotabank_admin", __name__)
 
 
@@ -19,7 +23,12 @@ class AdminModelView(AuthMixin, ModelView):
 class AdminIndex(AuthMixin, AdminIndexView):
     @expose("/")
     def index(self):
-        return self.render('admin/index.html', blorg="lblrlbleblorg")
+        match_requests_capacity = GCWorker.query.count() * 100
+        match_requests_past_24hrs = GCJob.query.filter(GCJob.timestamp >= (datetime.utcnow() - timedelta(hours=24))).count()
+
+        return self.render('admin/index.html',
+                           match_requests_capacity=match_requests_capacity,
+                           match_requests_past_24hrs=match_requests_past_24hrs)
 
 
 admin = Admin(name="Dotabank", index_view=AdminIndex())

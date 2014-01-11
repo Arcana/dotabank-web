@@ -1,6 +1,39 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
-    BLORG BLORG BLORG
-    {{ blorg }}
+    <div class="row">
+        <div class="col-sm-4">
+            <h2>Match requests</h2>
+            <canvas id="match-requests-gauge"></canvas>
+            <div class="text-center">
+                <span class="match-requests-past-24hrs">{{ match_requests_past_24hrs }} / <span class="match-requests-capacity text-muted">{{ match_requests_capacity }} per 24hrs</span>
+            </div>
+        </div>
+    </div>
+
+    {# Current admin templates don't have a "scripts" block in master layout. #}
+    <script src="{{ url_for('static', filename='js/gauge.min.js') }}"></script>
+    <script>
+        var opts = {
+          lines: 12, // The number of lines to draw
+          angle: 0.15, // The length of each line
+          lineWidth: 0.44, // The line thickness
+          pointer: {
+            length: 0.9, // The radius of the inner circle
+            strokeWidth: 0.035, // The rotation offset
+            color: '#000000' // Fill color
+          },
+          limitMax: 'false',   // If true, the pointer will not go past the end of the gauge
+
+          colorStart: '#6FADCF',   // Colors
+          colorStop: '#8FC0DA',    // just experiment with them
+          strokeColor: '#E0E0E0',   // to see which ones work best for you
+          generateGradient: true
+        };
+        var target = document.getElementById('match-requests-gauge'); // your canvas element
+        var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
+        gauge.maxValue = {{ match_requests_capacity }}; // set max gauge value
+        gauge.animationSpeed = 32; // set animation speed (32 is default value)
+        gauge.set({{ match_requests_past_24hrs }}); // set actual value
+    </script>
 {% endblock %}
