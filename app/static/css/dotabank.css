@@ -163,6 +163,7 @@
     background-position:top;
     padding:0;
     background-repeat:no-repeat;
+    min-width:100px;
 }
 
 .endgame-table .fancy-hero-background span {
