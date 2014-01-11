@@ -38,7 +38,7 @@ for subscription in subscriptions:
     latest_match = SubscriptionLastMatch.query.\
         filter(SubscriptionLastMatch.user_id == subscription.user_id,
                SubscriptionLastMatch.replay_found == True).\
-        order_by(SubscriptionLastMatch.created_at).\
+        order_by(SubscriptionLastMatch.created_at.desc()).\
         first()
 
     if latest_match:
