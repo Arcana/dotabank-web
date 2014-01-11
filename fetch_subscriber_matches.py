@@ -22,7 +22,7 @@ ReplayPlayer entries before doing this, else we could get duplicate DB entries. 
 """
 
 from app import steam, db  # .info
-from app.users.models import Subscription
+from app.users.models import Subscription, SubscriptionLastMatch
 from app.replays.models import Replay, ReplayPlayer
 
 subscriptions = Subscription.get_valid_subscriptions()
@@ -35,18 +35,23 @@ for subscription in subscriptions:
         "matches_requested": 100  # 100 Max
     }
 
-    latest_replay = Replay.query.\
-        filter(Replay.id == ReplayPlayer.replay_id,
-               ReplayPlayer.account_id == subscription.user_id).\
-        order_by(Replay.start_time.desc()).first()
+    latest_match = SubscriptionLastMatch.query.\
+        filter(SubscriptionLastMatch.user_id == subscription.user_id,
+               SubscriptionLastMatch.replay_found == True).\
+        order_by(SubscriptionLastMatch.created_at).\
+        first()
 
-    if latest_replay.start_time >= subscription.created_at_timestamp:
-        webapi_params["date_min"] = latest_replay.start_time
-        # Can't use start_at_match_id because that filters out newer games, not older games.
+    if latest_match:
+        webapi_params["date_min"] = latest_match.created_at_timestamp
     else:
         webapi_params["date_min"] = subscription.created_at_timestamp
 
     matches = steam.api.interface("IDOTA2Match_570").GetMatchHistory(**webapi_params).get("result")
+
+    # Log this match check, as well as whether or not we found a match.
+    last_match_log = SubscriptionLastMatch(subscription.user_id, len(matches.get("matches")) > 0)
+    db.session.add(last_match_log)
+    db.session.commit()
 
     print "Found {} matches for {}".format(len(matches.get("matches")), subscription.user_id)
     for match in matches.get("matches"):

@@ -113,3 +113,24 @@ class Subscription(db.Model):
     @staticmethod
     def get_valid_subscriptions():
         return Subscription.query.filter(Subscription.expires_at >= datetime.datetime.utcnow()).all()
+
+
+class SubscriptionLastMatch(db.Model):
+    """
+    Used for automatic match archiving.  Logs the last replay
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    replay_found = db.Column(db.Boolean)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __init__(self, user_id=None, replay_found=None):
+        self.user_id = user_id
+        self.replay_found = replay_found
+
+    def __repr__(self):
+        return "SubscriptionLastMatch {}/{}>".format(self.user_id, self.created_at)
+
+    @property
+    def created_at_timestamp(self):
+        return to_timestamp(self.created_at.utctimetuple())
