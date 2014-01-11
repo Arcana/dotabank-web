@@ -160,8 +160,9 @@
 
 .endgame-table .fancy-hero-background {
     background-size:100%;
-    background-position:center;
+    background-position:top;
     padding:0;
+    background-repeat:no-repeat;
 }
 
 .endgame-table .fancy-hero-background span {
@@ -211,8 +212,14 @@
 .table tbody>tr>td.item-boxes {
     text-align:center;
     vertical-align:middle;
+    min-width:110px;
     font-size:0; //Hack to get around inconsistent spacing between item boxes.
 }
 .navbar-btn:last-of-type {
     margin-right:8px;
+}
+@media (max-width: 992px) {
+    .endgame-table .fancy-hero-background {
+        background-size:auto;
+    }
 }

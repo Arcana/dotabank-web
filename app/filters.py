@@ -27,7 +27,7 @@ def seconds_to_time(seconds):
 
 
 def dota_wiki_link(text):
-    return "http://dota2wiki.com/wiki/{}".format(text.replace(" ", "_"))
+    return "http://dota2.gamepedia.com/{}".format(text.replace(" ", "_"))
 
 
 def dotabuff_hero_link(text):
