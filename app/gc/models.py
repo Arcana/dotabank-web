@@ -29,6 +29,11 @@ class GCJob(db.Model):
     __tablename__ = "gc_jobs"
     id = db.Column(db.Integer, primary_key=True)
     worker_id = db.Column(db.Integer, db.ForeignKey("gc_workers.id", ondelete="CASCADE"), nullable=False)
+    type = db.Column(db.Enum(
+        "SHITS_BROKE",
+        "MATCH_REQUEST",
+        "PROFILE_REQUEST"
+    ), default='SHITS_BROKE')
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):
