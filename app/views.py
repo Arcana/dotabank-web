@@ -5,9 +5,17 @@ from app import app, db
 from app.users.models import User
 from app.replays.models import Replay
 from app.replays.models import ReplayDownload
-from app.gc.models import GCJob
+from app.replays.forms import SearchForm
+
 
 from flask.ext.login import current_user
+
+
+# Inject search form into template (CSRF)
+@app.context_processor
+def inject_search_form():
+    return dict(search_form=SearchForm())
+
 
 # Routes
 @app.route('/')
@@ -37,10 +45,13 @@ def index():
             'downloads': ReplayDownload.query.filter(ReplayDownload.created_at >= _time_ago).count()
         }
 
+    search_form = SearchForm()
+
     return render_template("dotabank.html",
                            last_added_replays=last_added_replays,
                            last_archived_replays=last_archived_replays,
-                           stats=stats)
+                           stats=stats,
+                           search_form=search_form)
 
 
 @app.route("/privacy/")

@@ -9,7 +9,7 @@ from app import steam, db, dotabank_bucket
 from models import Replay, ReplayRating, ReplayFavourite, ReplayDownload, Search
 from app.admin.views import AdminModelView
 from app.filters import get_hero_by_id, get_hero_by_name, get_item_by_id, get_league_by_id
-from forms import DownloadForm
+from forms import DownloadForm, SearchForm
 
 
 mod = Blueprint("replays", __name__, url_prefix="/replays")
@@ -127,49 +127,52 @@ def download(_id):
                            form=form)
 
 
-@mod.route("/search/")
+@mod.route("/search/", methods=['POST'])
 def search():
-    match_id = request.args.get("id")
-    error = False
+    form = SearchForm()
 
-    search_log = Search(current_user.get_id(), match_id, request.remote_addr)
+    if form.validate_on_submit():
+        match_id = form.query.data
+        error = False
 
-    if unicode.isdecimal(unicode(match_id)):
-        _replay = Replay.query.filter(Replay.id == match_id).first()
+        search_log = Search(current_user.get_id(), match_id, request.remote_addr)
 
-        # If we don't have match_id in database, check if it's a valid match via the WebAPI and if so add it to DB.
-        if not _replay:
-            try:
-                if "error" not in steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result").keys():
-                    _replay = Replay(match_id)
-                    db.session.add(_replay)
+        if unicode.isdecimal(unicode(match_id)):
+            _replay = Replay.query.filter(Replay.id == match_id).first()
 
-                    queued = Replay.add_gc_job(_replay)
-                    if queued:
-                        flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
-                        db.session.commit()
-                    else:
-                        db.session.rollback()
-                        error = True
-            except steam.api.HTTPError:
-                error = True
+            # If we don't have match_id in database, check if it's a valid match via the WebAPI and if so add it to DB.
+            if not _replay:
+                try:
+                    if "error" not in steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result").keys():
+                        _replay = Replay(match_id)
+                        db.session.add(_replay)
 
-        if _replay:
-            search_log.replay_id = _replay.id
-            search_log.success = True
-            db.session.add(search_log)
-            db.session.commit()
-            return redirect(url_for("replays.replay", _id=match_id))
+                        queued = Replay.add_gc_job(_replay)
+                        if queued:
+                            flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
+                            db.session.commit()
+                        else:
+                            db.session.rollback()
+                            error = True
+                except steam.api.HTTPError:
+                    error = True
 
-    # We only get this far if there was an error or the matchid is invalid.
-    if error:
-        flash("Replay {} was not on our database, and we encountered errors trying to add it.  Please try again later.".format(match_id), "warning")
-    else:
-        flash("Invalid match id.  If this match id corresponds to a practice match it is also interpreted as invalid - Dotabank is unable to access practice lobby replays.", "danger")
+            if _replay:
+                search_log.replay_id = _replay.id
+                search_log.success = True
+                db.session.add(search_log)
+                db.session.commit()
+                return redirect(url_for("replays.replay", _id=match_id))
 
-    search_log.success = False
-    db.session.add(search_log)
-    db.session.commit()
+        # We only get this far if there was an error or the matchid is invalid.
+        if error:
+            flash("Replay {} was not on our database, and we encountered errors trying to add it.  Please try again later.".format(match_id), "warning")
+        else:
+            flash("Invalid match id.  If this match id corresponds to a practice match it is also interpreted as invalid - Dotabank is unable to access practice lobby replays.", "danger")
+
+        search_log.success = False
+        db.session.add(search_log)
+        db.session.commit()
     return redirect(request.referrer or url_for("index"))
 
 

@@ -8,9 +8,10 @@
         </ul>
         <ul class="nav navbar-nav pull-right">
             <li>
-                <form class="navbar-form" action="{{ url_for("replays.search") }}">
+                <form class="navbar-form" method="POST" action="{{ url_for("replays.search") }}">
+                    {{ search_form.hidden_tag() }}
                     <div class="input-group" style="width:200px;">
-                        <input name="id" class="form-control" type="text" placeholder="Match ID"/>
+                        {{ search_form.query(class='form-control', placeholder='Match ID') }}
                         <div class="input-group-btn">
                             <button class="btn btn-default" type="submit">Search</button>
                         </div>
