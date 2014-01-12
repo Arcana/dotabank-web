@@ -105,7 +105,8 @@
                                     <td>{{ player.kills }}</td>
                                     <td>{{ player.deaths }}</td>
                                     <td>{{ player.assists }}</td>
-                                    <td class="item-boxes">
+                                    <td class="item-cell">
+                                        <div class="item-boxes">
                                         {% for item in player.items %}
                                             {% set current_item = item|get_item_by_id %}
                                             {% if not current_item %}
@@ -117,6 +118,7 @@
                                                 </a>
                                             {% endif %}
                                         {% endfor %}
+                                        </div>
                                     </td>
                                     <td>{{ player.gold }}</td>
                                     <td>{{ player.last_hits }}</td>

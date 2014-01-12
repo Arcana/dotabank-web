@@ -210,17 +210,30 @@
     text-shadow: 1px 1px 0px #000;
 }
 
-.table tbody>tr>td.item-boxes {
-    text-align:center;
+table > tbody > tr > td.item-cell {
     vertical-align:middle;
-    min-width:110px;
-    font-size:0; //Hack to get around inconsistent spacing between item boxes.
+}
+
+.item-boxes {
+    text-align:center;
+    min-width:150px;
+    font-size:0;
+    margin:auto;
 }
 .navbar-btn:last-of-type {
     margin-right:8px;
 }
-@media (max-width: 992px) {
+@media (max-width: 991px) {
     .endgame-table .fancy-hero-background {
-        background-size:auto;
+        background-size:auto 100%;
     }
+}
+@media (max-width: 1199px) {
+    .item-boxes {
+        width:150px;
+        min-width:150px;
+    }
+}
+td {
+    min-width:48px;
 }
