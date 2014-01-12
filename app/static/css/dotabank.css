@@ -234,6 +234,6 @@ table > tbody > tr > td.item-cell {
         min-width:150px;
     }
 }
-td {
+.endgame-table td {
     min-width:48px;
 }
