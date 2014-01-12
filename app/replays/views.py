@@ -135,7 +135,7 @@ def search():
         match_id = form.query.data
         error = False
 
-        search_log = Search(current_user.get_id(), match_id, request.remote_addr)
+        search_log = Search(current_user.get_id(), match_id, request.access_route[0])
 
         if unicode.isdecimal(unicode(match_id)):
             _replay = Replay.query.filter(Replay.id == match_id).first()
