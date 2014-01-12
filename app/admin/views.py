@@ -1,4 +1,4 @@
-from flask import Blueprint, g
+from flask import Blueprint, g, current_app
 from flask.ext.admin import Admin, expose, AdminIndexView
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from flask.ext.login import current_user
@@ -23,12 +23,30 @@ class AdminModelView(AuthMixin, ModelView):
 class AdminIndex(AuthMixin, AdminIndexView):
     @expose("/")
     def index(self):
-        match_requests_capacity = GCWorker.query.count() * 100
-        match_requests_past_24hrs = GCJob.query.filter(GCJob.timestamp >= (datetime.utcnow() - timedelta(hours=24))).count()
+        gc_workers = GCWorker.query.all()
+
+        stats = []
+        for worker in gc_workers:
+
+            stats.append({
+                "id": worker.id,
+                "display_name": worker.display_name,
+                "match_requests_past_24hrs": GCJob.query.filter(
+                    GCJob.worker_id == worker.id,
+                    GCJob.type == "MATCH_REQUEST",
+                    GCJob.timestamp >= (datetime.utcnow() - timedelta(hours=24))
+                ).count(),
+                "match_requests_capacity": current_app.config['GC_MATCH_REQUSTS_RATE_LIMIT'],
+                "profile_requests_past_24hrs": GCJob.query.filter(
+                    GCJob.worker_id == worker.id,
+                    GCJob.type == "PROFILE_REQUEST",
+                    GCJob.timestamp >= (datetime.utcnow() - timedelta(hours=24))
+                ).count(),
+                "profile_requests_capacity": current_app.config['GC_PROFILE_REQUSTS_RATE_LIMIT']
+            })
 
         return self.render('admin/index.html',
-                           match_requests_capacity=match_requests_capacity,
-                           match_requests_past_24hrs=match_requests_past_24hrs)
+                           stats=stats)
 
 
 admin = Admin(name="Dotabank", index_view=AdminIndex())
