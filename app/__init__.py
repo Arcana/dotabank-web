@@ -71,7 +71,7 @@ from app.hall_of_fame.views import mod as hall_of_fame_module
 from app.admin.views import admin, AdminModelView
 from app.users.views import UserAdmin
 from app.users.models import Subscription
-from app.replays.views import ReplayAdmin
+from app.replays.views import ReplayAdmin, Search, ReplayFavourite, ReplayDownload, ReplayRating
 from app.hall_of_fame.views import HallOfFameAdmin
 from app.gc.views import GCWorkerAdmin
 
@@ -86,6 +86,11 @@ admin.add_view(AdminModelView(Subscription, db.session, category="Models"))
 admin.add_view(ReplayAdmin(db.session, category="Models"))
 admin.add_view(HallOfFameAdmin(db.session, category="Models"))
 admin.add_view(GCWorkerAdmin(db.session, category="Models"))
+
+admin.add_view(AdminModelView(Search, db.session, category="User actions"))
+admin.add_view(AdminModelView(ReplayFavourite, db.session, category="User actions"))
+admin.add_view(AdminModelView(ReplayRating, db.session, category="User actions"))
+admin.add_view(AdminModelView(ReplayDownload, db.session, category="User actions"))
 
 admin.init_app(app)
 
