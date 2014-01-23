@@ -1,4 +1,4 @@
-from app import db, sqs_gc_queue
+from app import db, sqs_gc_queue, sqs_dl_queue
 from flask.ext.login import current_user
 import datetime
 from boto.sqs.message import RawMessage as sqsMessage
@@ -123,8 +123,15 @@ class Replay(db.Model):
     def add_gc_job(_replay):
         # Write to SQS
         msg = sqsMessage()
-        msg.set_body(_replay.id)
+        msg.set_body(str(_replay.id))
         return sqs_gc_queue.write(msg)
+
+    @staticmethod
+    def add_dl_job(_replay):
+        # Write to SQS
+        msg = sqsMessage()
+        msg.set_body(str(_replay.id))
+        return sqs_dl_queue.write(msg)
 
 
 # noinspection PyShadowingBuiltins

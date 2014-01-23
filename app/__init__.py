@@ -27,6 +27,8 @@ sqs_connection = sqs.connect_to_region(
 )
 
 sqs_gc_queue = sqs_connection.create_queue(app.config["AWS_SQS_GC"])
+sqs_dl_queue = sqs_connection.create_queue(app.config["AWS_SQS_DL"])
+
 
 s3_connection = S3Connection(
     aws_access_key_id=app.config["AWS_ACCESS_KEY_ID"],

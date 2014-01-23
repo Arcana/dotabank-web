@@ -19,7 +19,14 @@
                 </a>
             </div>
         </li>
-        <li>&nbsp;</li> {# Hack for button padding #}
+        {% if current_user.is_admin() %}
+            <li>
+                <div class="btn-group">
+                    <a class="btn btn-default navbar-btn" href="{{ url_for('replays.add_gc_job', _id=replay.id) }}">Add GC job</a>
+                    <a class="btn btn-default navbar-btn" href="{{ url_for('replays.add_dl_job', _id=replay.id) }}">Add DL job</a>
+                </div>
+            </li>
+        {% endif %}
     </ul>
 </nav>
 <ul>

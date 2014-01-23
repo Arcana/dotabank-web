@@ -60,6 +60,67 @@ def replay_rate(_id):
         return redirect(request.referrer or url_for("index"))
 
 
+@mod.route("/<int:_id>/add_gc_job")
+@login_required
+def add_gc_job(_id):
+    # Check auth
+    if not current_user.is_admin():
+        flash("Only admins can add new GC jobs.", "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    # Check replay exists
+    _replay = Replay.query.filter(Replay.id == _id).first()
+    if _replay is None:
+        flash("Replay {} doesn't exist.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    # Update status
+    _replay.status = "WAITING_GC"
+    db.session.add(_replay)
+
+    # Add to job queue.
+    queued = Replay.add_gc_job(_replay)
+    if queued:
+        flash("Added GC job for replay {}.".format(_id), "info")
+        db.session.commit()
+    else:
+        flash("Error adding GC job for replay {}.".format(_id), "danger")
+        db.session.rollback()
+
+    return redirect(request.referrer or url_for("index"))
+
+
+@mod.route("/<int:_id>/add_dl_job")
+@login_required
+def add_dl_job(_id):
+    # Check auth
+    if not current_user.is_admin():
+        flash("Only admins can add new DL jobs.", "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    # Check replay exists
+    _replay = Replay.query.filter(Replay.id == _id).first()
+    if _replay is None:
+        flash("Replay {} doesn't exist.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    # Update status
+    _replay.status = "WAITING_DOWNLOAD"
+    db.session.add(_replay)
+
+    # Add to job queue.
+    queued = Replay.add_dl_job(_replay)
+    if queued:
+        flash("Added DL job for replay {}.".format(_id), "info")
+        db.session.commit()
+    else:
+        flash("Error adding DL job for replay {}.".format(_id), "danger")
+        db.session.rollback()
+
+    return redirect(request.referrer or url_for("index"))
+
+
+
 @mod.route("/<int:_id>/favourite/")
 @login_required
 def replay_favourite(_id):
