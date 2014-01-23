@@ -164,6 +164,7 @@
     padding:0;
     background-repeat:no-repeat;
     min-width:100px;
+    position:relative;
 }
 
 .endgame-table .fancy-hero-background span {
@@ -171,9 +172,14 @@
     font-weight: bold;
     color: #fff;
     width: 100%;
-    height: 50px;
     display: block;
     padding:5px;
+    margin-bottom:50px;
+}
+
+.endgame-table .fancy-hero-background .btn-group {
+    position:absolute;
+    bottom:0;
 }
 
 .label-premium,
