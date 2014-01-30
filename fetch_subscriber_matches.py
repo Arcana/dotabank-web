@@ -62,6 +62,7 @@ for subscription in subscriptions:
             replay.match_seq_num = match["match_seq_num"]
             replay.start_time = match["start_time"]
             replay.lobby_type = match["lobby_type"]
+            replay.game_mode = match["game_mode"]
             db.session.add(replay)
             db.session.commit()
 
