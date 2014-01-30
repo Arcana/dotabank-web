@@ -177,6 +177,8 @@
                         <dd>{{ replay.first_blood_time|seconds_to_time }}</dd>
                         <dt>Lobby type</dt>
                         <dd>{{ replay.lobby_type|lobby_type }}</dd>
+                        <dt>Game mode</dt>
+                        <dd>{{ replay.game_mode|game_mode }}</dd>
                         <dt>Human players</dt>
                         <dd>{{ replay.human_players }}</dd>
                         {% if replay.radiant_team_id %}
@@ -214,10 +216,6 @@
                         {% if replay.dire_team_complete %}
                         <dt>Dire team complete?</dt>
                         <dd>{{ replay.dire_team_complete }}</dd>
-                        {% endif %}
-                        {% if replay.game_mode %}
-                        <dt>Game mode</dt>
-                        <dd>{{ replay.game_mode }}</dd>
                         {% endif %}
                         {% if replay.match_seq_num %}
                         <dt>Match Seq Num</dt>

@@ -172,3 +172,30 @@ def lobby_type(value):
          "Ranked Match"][value]
     except IndexError:
         return "Invalid ({})".format(value)
+
+
+def game_mode(value):
+    if not value or value == 0:
+        return "Unknown"
+    else:
+        try:
+            return ["Invalid (0)",
+                    "All Pick",
+                    "Captain's Mode",
+                    "Random Draft",
+                    "Standard Draft",
+                    "All Random",
+                    "Invalid (6)",
+                    "Diretide",
+                    "Reverse Captains Mode",
+                    "The Greeviling",
+                    "Tutorial",
+                    "Mid Only",
+                    "Least Played",
+                    "Limited Heroes",
+                    "Compendium",
+                    "Captains Draft",
+                    "Balanced Draft",
+                    "Ability Draft"][value]
+        except IndexError:
+            return "Invalid ({})".format(value)

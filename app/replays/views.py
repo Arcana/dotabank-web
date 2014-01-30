@@ -34,7 +34,7 @@ def replay(_id):
     if _replay is None:
         return redirect(url_for("replays.search", id=_id))
 
-    return render_template("replays/replay.html", replay=_replay)
+    return render_template("replays/replay.html", replay=_replay, api_key=current_app.config["STEAM_API_KEY"])
 
 
 @mod.route("/<int:_id>/rate/")
@@ -204,8 +204,10 @@ def search():
             # If we don't have match_id in database, check if it's a valid match via the WebAPI and if so add it to DB.
             if not _replay:
                 try:
-                    if "error" not in steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result").keys():
+                    matchDetails = steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result")
+                    if "error" not in matchDetails.keys():
                         _replay = Replay(match_id)
+                        _replay.game_mode = matchDetails.get("game_mode")
                         db.session.add(_replay)
 
                         queued = Replay.add_gc_job(_replay)

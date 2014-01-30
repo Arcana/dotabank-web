@@ -24,6 +24,12 @@
                 <div class="btn-group">
                     <a class="btn btn-default navbar-btn" href="{{ url_for('replays.add_gc_job', _id=replay.id) }}">Add GC job</a>
                     <a class="btn btn-default navbar-btn" href="{{ url_for('replays.add_dl_job', _id=replay.id) }}">Add DL job</a>
+				</div>
+			</li>
+			<li>
+				<div class="btn-group">
+					<a class="btn btn-default navbar-btn" href="https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/V001/?match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchDetails</a>
+					<a class="btn btn-default navbar-btn" href="https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001/?start_at_match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchHistory</a>
                 </div>
             </li>
         {% endif %}
