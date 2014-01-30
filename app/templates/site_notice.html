@@ -4,4 +4,10 @@
         implemented. Feel free to use such features while development continues.<br/>
         Please report any major bugs to <a href="mailto:{{ config['CONTACT_EMAIL']|escape_every_character|safe }}">{{ config['CONTACT_EMAIL']|escape_every_character|safe }}</a>.
     </div>
+
+    <div class="alert alert-warning">
+        <strong>GC Errors</strong> - Recent Dota 2 updates have caused match detail requests to time out for all game clients, as a result Dotabank
+        cannot currently access the information required to download and archive replays.  We will go through and attempt to re-archive any failed
+        matches once the game has been fixed.
+    </div>
 </div>
