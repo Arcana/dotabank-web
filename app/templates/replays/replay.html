@@ -65,8 +65,8 @@
                     <dd>{{ replay.downloads.count() }}</dd>
                 </dl>
 
-                {% if replay.state not in ["WAITING_GC", "GC_ERROR"] %}
-                    {% for column in replay.players|sort(attribute="player_slot")|slice(2) %}
+                {% if replay.players.count() > 0 %}
+                    {% for column in replay.players.all|sort(attribute="player_slot")|slice(2) %}
                         {% set team_name =  replay.radiant_team_name if column[0].team == "Radiant" else replay.dire_team_name %}
                         {% set team_logo = replay["{}_team_logo".format(column[0].team.lower())] %}
                         <h4>
@@ -149,117 +149,116 @@
                             </tfoot>
                         </table>
                     {% endfor %}
-                    <dl class="dl-horizontal">
-                        <dt>Victors</dt>
-                        <dd>
-                            {% if replay.good_guys_win %}
-                                {% if replay.radiant_team_name %}
-                                    {{replay.radiant_team_name}}
-                                {% else %}
-                                    Radiant
-                                {% endif %}
-                            {% else %}
-                                {% if replay.dire_team_name %}
-                                    {{replay.dire_team_name}}
-                                {% else %}
-                                    Dire
-                                {% endif %}
-                            {% endif %}
-                        </dd>
-                        <dt>Duration</dt>
-                        <dd>{{ replay.duration|seconds_to_time }}</dd>
-                        <dt>Start time</dt>
-                        <dd>{{ replay.start_time|timestamp_to_datestring if replay.start_time }} UTC</dd>
-                        <dt>Radiant Tower status</dt>
-                        <dd>{{ replay.radiant_tower_status }}</dd>
-                        <dt>Dire Tower status</dt>
-                        <dd>{{ replay.dire_tower_status }}</dd>
-                        <dt>Radiant Barracks status</dt>
-                        <dd>{{ replay.radiant_barracks_status }}</dd>
-                        <dt>Dire Barracks status</dt>
-                        <dd>{{ replay.dire_barracks_status }}</dd>
-                        <dt>First blood time</dt>
-                        <dd>{{ replay.first_blood_time|seconds_to_time }}</dd>
-                        <dt>Lobby type</dt>
-                        <dd>{{ replay.lobby_type|lobby_type }}</dd>
-                        <dt>Game mode</dt>
-                        <dd>{{ replay.game_mode|game_mode }}</dd>
-                        <dt>Human players</dt>
-                        <dd>{{ replay.human_players }}</dd>
-                        {% if replay.radiant_team_id %}
-                        <dt>Radiant Team ID</dt>
-                        <dd>{{ replay.radiant_team_id }}</dd>
-                        {% endif %}
-                        {% if replay.dire_team_id %}
-                        <dt>Dire Team ID</dt>
-                        <dd>{{ replay.dire_team_id}}</dd>
-                        {% endif %}
-                        {% if replay.league_id %}
-                        <dt>League ID</dt>
-                        <dd>{{ replay.league_id }}</dd>
-                        {% endif %}
-                        {% if replay.radiant_team_name %}
-                        <dt>Radiant team name</dt>
-                        <dd>{{ replay.radiant_team_name}}</dd>
-                        {% endif %}
-                        {% if replay.dire_team_name %}
-                        <dt>Dire team name</dt>
-                        <dd>{{ replay.dire_team_name}}</dd>
-                        {% endif %}
-                        {% if replay.radiant_team_logo %}
-                        <dt>Radiant team logo</dt>
-                        <dd>{{ replay.radiant_team_logo }}</dd>
-                        {% endif %}
-                        {% if replay.dire_team_logo %}
-                        <dt>Dire team logo</dt>
-                        <dd>{{ replay.dire_team_logo }}</dd>
-                        {% endif %}
-                        {% if replay.radiant_team_complete %}
-                        <dt>Radiant team complete?</dt>
-                        <dd>{{ replay.radiant_team_complete}}</dd>
-                        {% endif %}
-                        {% if replay.dire_team_complete %}
-                        <dt>Dire team complete?</dt>
-                        <dd>{{ replay.dire_team_complete }}</dd>
-                        {% endif %}
-                        {% if replay.match_seq_num %}
-                        <dt>Match Seq Num</dt>
-                        <dd>{{ replay.match_seq_num}}</dd>
-                        {% endif %}
-                        {% if replay.radiant_guild_id %}
-                        <dt>Radiant Guild ID</dt>
-                        <dd>{{ replay.radiant_guild_id }}</dd>
-                        {% endif %}
-                        {% if replay.dire_guild_id %}
-                        <dt>Dire Guild ID</dt>
-                        <dd>{{ replay.dire_guild_id}}</dd>
-                        {% endif %}
-                        {% if replay.radiant_team_tag %}
-                        <dt>Radiant team tag</dt>
-                        <dd>{{ replay.radiant_team_tag }}</dd>
-                        {% endif %}
-                        {% if replay.dire_team_tag %}
-                        <dt>Dire team tag</dt>
-                        <dd>{{ replay.dire_team_tag}}</dd>
-                        {% endif %}
-                        {% if replay.series_id %}
-                        <dt>Series ID</dt>
-                        <dd>{{ replay.series_id }}</dd>
-                        {% endif %}
-                        {% if replay.series_type %}
-                        <dt>Series type</dt>
-                        <dd>{{ replay.series_type }}</dd>
-                        {% endif %}
-                    </dl>
-
-                    {% if building_statuses %}
-                        <h1>Map</h1>
-                        {% include "replays/map.html" %}
-                    {% endif %}
-
-                    <p>TODO: Picks & Bans, additional player units'</p>
-
                 {% endif %}
+                <dl class="dl-horizontal">
+                    <dt>Victors</dt>
+                    <dd>
+                        {% if replay.good_guys_win %}
+                            {% if replay.radiant_team_name %}
+                                {{replay.radiant_team_name}}
+                            {% else %}
+                                Radiant
+                            {% endif %}
+                        {% else %}
+                            {% if replay.dire_team_name %}
+                                {{replay.dire_team_name}}
+                            {% else %}
+                                Dire
+                            {% endif %}
+                        {% endif %}
+                    </dd>
+                    <dt>Duration</dt>
+                    <dd>{{ replay.duration|seconds_to_time }}</dd>
+                    <dt>Start time</dt>
+                    <dd>{{ replay.start_time|timestamp_to_datestring if replay.start_time }} UTC</dd>
+                    <dt>Radiant Tower status</dt>
+                    <dd>{{ replay.radiant_tower_status }}</dd>
+                    <dt>Dire Tower status</dt>
+                    <dd>{{ replay.dire_tower_status }}</dd>
+                    <dt>Radiant Barracks status</dt>
+                    <dd>{{ replay.radiant_barracks_status }}</dd>
+                    <dt>Dire Barracks status</dt>
+                    <dd>{{ replay.dire_barracks_status }}</dd>
+                    <dt>First blood time</dt>
+                    <dd>{{ replay.first_blood_time|seconds_to_time }}</dd>
+                    <dt>Lobby type</dt>
+                    <dd>{{ replay.lobby_type|lobby_type }}</dd>
+                    <dt>Game mode</dt>
+                    <dd>{{ replay.game_mode|game_mode }}</dd>
+                    <dt>Human players</dt>
+                    <dd>{{ replay.human_players }}</dd>
+                    {% if replay.radiant_team_id %}
+                    <dt>Radiant Team ID</dt>
+                    <dd>{{ replay.radiant_team_id }}</dd>
+                    {% endif %}
+                    {% if replay.dire_team_id %}
+                    <dt>Dire Team ID</dt>
+                    <dd>{{ replay.dire_team_id}}</dd>
+                    {% endif %}
+                    {% if replay.league_id %}
+                    <dt>League ID</dt>
+                    <dd>{{ replay.league_id }}</dd>
+                    {% endif %}
+                    {% if replay.radiant_team_name %}
+                    <dt>Radiant team name</dt>
+                    <dd>{{ replay.radiant_team_name}}</dd>
+                    {% endif %}
+                    {% if replay.dire_team_name %}
+                    <dt>Dire team name</dt>
+                    <dd>{{ replay.dire_team_name}}</dd>
+                    {% endif %}
+                    {% if replay.radiant_team_logo %}
+                    <dt>Radiant team logo</dt>
+                    <dd>{{ replay.radiant_team_logo }}</dd>
+                    {% endif %}
+                    {% if replay.dire_team_logo %}
+                    <dt>Dire team logo</dt>
+                    <dd>{{ replay.dire_team_logo }}</dd>
+                    {% endif %}
+                    {% if replay.radiant_team_complete %}
+                    <dt>Radiant team complete?</dt>
+                    <dd>{{ replay.radiant_team_complete}}</dd>
+                    {% endif %}
+                    {% if replay.dire_team_complete %}
+                    <dt>Dire team complete?</dt>
+                    <dd>{{ replay.dire_team_complete }}</dd>
+                    {% endif %}
+                    {% if replay.match_seq_num %}
+                    <dt>Match Seq Num</dt>
+                    <dd>{{ replay.match_seq_num}}</dd>
+                    {% endif %}
+                    {% if replay.radiant_guild_id %}
+                    <dt>Radiant Guild ID</dt>
+                    <dd>{{ replay.radiant_guild_id }}</dd>
+                    {% endif %}
+                    {% if replay.dire_guild_id %}
+                    <dt>Dire Guild ID</dt>
+                    <dd>{{ replay.dire_guild_id}}</dd>
+                    {% endif %}
+                    {% if replay.radiant_team_tag %}
+                    <dt>Radiant team tag</dt>
+                    <dd>{{ replay.radiant_team_tag }}</dd>
+                    {% endif %}
+                    {% if replay.dire_team_tag %}
+                    <dt>Dire team tag</dt>
+                    <dd>{{ replay.dire_team_tag}}</dd>
+                    {% endif %}
+                    {% if replay.series_id %}
+                    <dt>Series ID</dt>
+                    <dd>{{ replay.series_id }}</dd>
+                    {% endif %}
+                    {% if replay.series_type %}
+                    <dt>Series type</dt>
+                    <dd>{{ replay.series_type }}</dd>
+                    {% endif %}
+                </dl>
+
+                {% if building_statuses %}
+                    <h1>Map</h1>
+                    {% include "replays/map.html" %}
+                {% endif %}
+
+                <p>TODO: Picks & Bans, additional player units'</p>
             </div>
             <div class="tab-pane" id="players">
                 <pre>{{ replay.players|list|pprint }}</pre>

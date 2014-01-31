@@ -2,6 +2,7 @@ from app import db, sqs_gc_queue, sqs_dl_queue
 from flask.ext.login import current_user
 import datetime
 from boto.sqs.message import RawMessage as sqsMessage
+from app import steam
 
 
 # noinspection PyShadowingBuiltins
@@ -91,13 +92,41 @@ class Replay(db.Model):
         "order_by": [db.desc(added_to_site_time)]
     }
 
-    def __init__(self, _id=None, replay_state="UNKNOWN", state="WAITING_GC"):
+    def __init__(self, _id=None, replay_state="UNKNOWN", state="WAITING_GC", skip_webapi=False):
         self.id = _id
         self.replay_state = replay_state
         self.state = state
 
+        if not skip_webapi:
+            self._populate_from_webapi()
+
+
     def __repr__(self):
         return "<Replay {}>".format(self.id)
+
+    def _populate_from_webapi(self):
+        """ Populates a new replay object with data from WebAPI.
+        """
+        try:
+            match_data = steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=self.id).get("result")
+
+            if match_data:
+                self.good_guys_win = match_data.get('radiant_win')
+                self.duration = match_data.get('duration')
+                self.start_time = match_data.get('start_time')
+                self.match_seq_num = match_data.get('match_seq_num')
+                self.radiant_tower_status = match_data.get('tower_status_radiant')
+                self.dire_tower_status = match_data.get('tower_status_dire')
+                self.radiant_barracks_status = match_data.get('barracks_status_radiant')
+                self.dire_barracks_status = match_data.get('barracks_status_dire')
+                self.replay_cluster = match_data.get('cluster')
+                self.first_blood_time = match_data.get('first_blood_time')
+                self.lobby_type = match_data.get('lobby_type')
+                self.human_players = match_data.get('human_players')
+                self.league_id = match_data.get('leagueid')
+                self.game_mode = match_data.get('game_mode')
+        except steam.api.HTTPError:
+            pass
 
     @property
     def url(self):

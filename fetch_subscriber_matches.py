@@ -58,22 +58,12 @@ for subscription in subscriptions:
         replay_exists = Replay.query.filter(Replay.id == match["match_id"]).count() > 0
 
         if not replay_exists:
-            match_data = steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match["match_id"]).get("result")
-            
-            if match_data:
-                replay = Replay(match["match_id"])
-                replay.match_seq_num = match_data["match_seq_num"]
-                replay.start_time = match_data["start_time"]
-                replay.lobby_type = match_data["lobby_type"]
-                replay.game_mode = match_data["game_mode"]
-                replay.duration = match_data["duration"]
-                db.session.add(replay)
-                db.session.commit()
+            replay = Replay(match["match_id"])
+            db.session.add(replay)
+            db.session.commit()
 
-                Replay.add_gc_job(replay)
+            Replay.add_gc_job(replay)
 
-                print "Added {} to database and job queue".format(match["match_id"])
-            else:
-                print "Shit broke, probably API exploded. vOv. Match id {}".format(match["match_id"])
+            print "Added {} to database and job queue".format(match["match_id"])
         else:
             print "Match {} already in database, skipping.".format(match["match_id"])
