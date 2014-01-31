@@ -214,15 +214,19 @@ def search():
 
             # If we don't have match_id in database, check if it's a valid match via the WebAPI and if so add it to DB.
             if not _replay:
-                _replay = Replay(match_id)
-                db.session.add(_replay)
-
-                queued = Replay.add_gc_job(_replay)
-                if queued:
-                    flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
-                    db.session.commit()
-                else:
-                    db.session.rollback()
+                try:
+                    matchDetails = steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result")
+                    if "error" not in matchDetails.keys():
+                        _replay = Replay(match_id)
+                        db.session.add(_replay)
+                        queued = Replay.add_gc_job(_replay)
+                        if queued:
+                            flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
+                            db.session.commit()
+                        else:
+                            db.session.rollback()
+                            error = True
+                except steam.api.HTTPError:
                     error = True
 
             if _replay:
