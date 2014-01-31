@@ -1,5 +1,4 @@
-from itertools import groupby
-import operator
+from math import ceil
 from datetime import datetime, timedelta
 
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
@@ -22,9 +21,12 @@ mod.add_app_template_filter(get_league_by_id)
 
 @mod.route("/")
 @mod.route("/page/<int:page>/")
-def replays(page=1):
+def replays(page=None):
     # TODO: Filters & ordering
-    _replays = Replay.query.order_by(Replay.added_to_site_time.desc()).paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
+    if not page:
+        page = int(ceil(float(Replay.query.count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
+
+    _replays = Replay.query.order_by(Replay.added_to_site_time.asc()).paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("replays/replays.html", replays=_replays)
 
 
@@ -127,6 +129,34 @@ def add_dl_job(_id):
     else:
         flash("Error adding DL job for replay {}.".format(_id), "danger")
         db.session.rollback()
+
+    return redirect(request.referrer or url_for("index"))
+
+
+@mod.route("/<int:_id>/api_populate/")
+@login_required
+def api_populate(_id):
+    # Check auth
+    if not current_user.is_admin():
+        flash("Only admins can populate from API jobs.", "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    # Check replay exists
+    _replay = Replay.query.filter(Replay.id == _id).first()
+    if _replay is None:
+        flash("Replay {} doesn't exist.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    # Update status
+    _replay._populate_from_webapi()
+    db.session.add(_replay)
+    if _replay is None:
+        flash("Error", "danger")
+        return redirect(request.referrer or url_for("index"))
+    else:
+        db.session.commit()
+
+    # Add to job queue.
 
     return redirect(request.referrer or url_for("index"))
 

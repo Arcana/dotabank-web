@@ -6,6 +6,7 @@ from app.replays.models import ReplayPlayer, ReplayFavourite, ReplayRating, Repl
 from forms import SettingsForm
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app.admin.views import AdminModelView
+from math import ceil
 
 mod = Blueprint("users", __name__, url_prefix="/users")
 
@@ -95,52 +96,63 @@ def user(_id):
 
 @mod.route("/<int:_id>/replays/")
 @mod.route("/<int:_id>/replays/<int:page>/")
-def user_replays(_id, page=1):
+def user_replays(_id, page=None):
     _user = User.query.filter(User.id == _id).first()
     if _user is None:
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
+    if not page:
+        page = int(ceil(float(ReplayPlayer.query.filter(ReplayPlayer.account_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
     _replays = _user.replay_players.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/replays.html", user=_user, replays=_replays)
 
 
 @mod.route("/<int:_id>/favourites/")
 @mod.route("/<int:_id>/favourites/<int:page>/")
-def user_favourites(_id, page=1):
+def user_favourites(_id, page=None):
     _user = User.query.filter(User.id == _id).first()
     if _user is None:
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
+    if not page:
+        page = int(ceil(float(ReplayFavourite.query.filter(ReplayFavourite.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
     _favourites = _user.favourites.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/favourites.html", user=_user, favourites=_favourites)
 
 @mod.route("/<int:_id>/ratings/")
 @mod.route("/<int:_id>/ratings/<int:page>/")
-def user_ratings(_id, page=1):
+def user_ratings(_id, page=None):
     _user = User.query.filter(User.id == _id).first()
     if _user is None:
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
+    if not page:
+        pass
+    page = int(ceil(float(ReplayRating.query.filter(ReplayRating.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
     _ratings = _user.replay_ratings.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/ratings.html", user=_user, ratings=_ratings)
 
 @mod.route("/<int:_id>/searches/")
 @mod.route("/<int:_id>/searches/<int:page>/")
-def user_searches(_id, page=1):
+def user_searches(_id, page=None):
     _user = User.query.filter(User.id == _id).first()
     if _user is None:
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
+    if not page:
+        page = int(ceil(float(Search.query.filter(Search.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
     _searches = _user.searches.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/searches.html", user=_user, searches=_searches)
 
 @mod.route("/<int:_id>/downloads/")
 @mod.route("/<int:_id>/downloads/<int:page>/")
-def user_downloads(_id, page=1):
+def user_downloads(_id, page=None):
     _user = User.query.filter(User.id == _id).first()
     if _user is None:
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
+    if not page:
+        page = int(ceil(float(ReplayDownload.query.filter(ReplayDownload.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
     _downloads = _user.downloads.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/downloads.html", user=_user, downloads=_downloads)
 
