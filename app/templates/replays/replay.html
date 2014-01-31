@@ -66,7 +66,7 @@
                 </dl>
 
                 {% if replay.players.count() > 0 %}
-                    {% for column in replay.players.all|sort(attribute="player_slot")|slice(2) %}
+                    {% for column in replay.players|sort(attribute="player_slot")|slice(2) %}
                         {% set team_name =  replay.radiant_team_name if column[0].team == "Radiant" else replay.dire_team_name %}
                         {% set team_logo = replay["{}_team_logo".format(column[0].team.lower())] %}
                         <h4>
