@@ -34,8 +34,16 @@ def replay(_id):
     if _replay is None:
         return redirect(url_for("replays.search", id=_id))
 
-    building_statuses = ["{0:011b}".format(_replay.radiant_tower_status), "{0:011b}".format(_replay.dire_tower_status),
-                         "{0:06b}".format(_replay.radiant_barracks_status), "{0:06b}".format(_replay.dire_barracks_status)]
+    # Split bitmasks into a simple object store.
+    if _replay.radiant_tower_status is not None\
+            and _replay.dire_tower_status is not None\
+            and _replay.radiant_barracks_status is not None\
+            and _replay.dire_barracks_status is not None:
+        building_statuses = ["{0:011b}".format(_replay.radiant_tower_status), "{0:011b}".format(_replay.dire_tower_status),
+                             "{0:06b}".format(_replay.radiant_barracks_status), "{0:06b}".format(_replay.dire_barracks_status)]
+    else:
+        building_statuses = None
+
     return render_template("replays/replay.html", replay=_replay, building_statuses=building_statuses, api_key=current_app.config["STEAM_API_KEY"])
 
 

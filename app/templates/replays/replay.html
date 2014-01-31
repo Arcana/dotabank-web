@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 
 {% block style %}
-<link href="{{ url_for("static", filename="css/map.css") }}" rel="stylesheet"/>
+    {{ super() }}
+    <link href="{{ url_for("static", filename="css/map.css") }}" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
@@ -251,8 +252,10 @@
                         {% endif %}
                     </dl>
 
-					<h1>Map</h1>
-					{% include "replays/map.html" %}
+                    {% if building_statuses %}
+                        <h1>Map</h1>
+                        {% include "replays/map.html" %}
+                    {% endif %}
 
                     <p>TODO: Picks & Bans, additional player units'</p>
 
