@@ -196,6 +196,7 @@ def game_mode(value):
                     "Compendium",
                     "Captains Draft",
                     "Balanced Draft",
+                    "Invalid (17)",
                     "Ability Draft"][value]
         except IndexError:
             return "Invalid ({})".format(value)
