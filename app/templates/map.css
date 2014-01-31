@@ -1,0 +1,70 @@
+#map {
+	width:500px;
+	height:500px;
+	background:url("test_minimap.png") #333;
+	background-size: 500px 500px;
+	position:relative;
+}
+.tower, .barracks, .ancient {
+	position:absolute;
+	box-sizing:border-box;
+	border:2px solid black;
+}
+.destroyed {
+	display:none;
+}
+.dire {
+	background:red;
+}
+.radiant {
+	background:green;
+}
+.tower {
+	width:15px;
+	height:15px;
+}
+.barracks {
+	width:10px;
+	height:10px;
+}
+.ancient {
+	border-radius:100%;
+	width:25px;
+	height:25px;
+}
+.mid, .anc {
+	-webkit-transform:rotate(45deg);
+}
+.radiant.top.tier_1 {
+	top:200px;
+	left:50px;
+}
+
+.dire.ancient {
+	right:70px;
+	top:80px;
+}
+.dire.top.tier_1 {
+	top:54px;
+	left:97px;
+}
+.dire.top.tier_2 {
+	top:54px;
+	left:242px;
+}
+.dire.top.tier_3 {
+	top:62px;
+	left:350px;
+}
+.dire.mid.tier_1 {
+	top:232px;
+	left:272px;
+}
+.dire.mid.tier_2 {
+	top:178px;
+	left:320px;
+}
+.dire.mid.tier_3 {
+	top:128px;
+	left:370px;
+}

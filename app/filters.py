@@ -199,3 +199,13 @@ def game_mode(value):
                     "Ability Draft"][value]
         except IndexError:
             return "Invalid ({})".format(value)
+
+
+def building_status(value):
+    try:
+        if not value or value == "0":
+            return " destroyed"
+        else:
+            return ""
+    except IndexError:
+        return " destroyed"

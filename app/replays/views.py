@@ -34,7 +34,9 @@ def replay(_id):
     if _replay is None:
         return redirect(url_for("replays.search", id=_id))
 
-    return render_template("replays/replay.html", replay=_replay, api_key=current_app.config["STEAM_API_KEY"])
+    building_statuses = ["{0:011b}".format(_replay.radiant_tower_status), "{0:011b}".format(_replay.dire_tower_status),
+                         "{0:06b}".format(_replay.radiant_barracks_status), "{0:06b}".format(_replay.dire_barracks_status)]
+    return render_template("replays/replay.html", replay=_replay, building_statuses=building_statuses, api_key=current_app.config["STEAM_API_KEY"])
 
 
 @mod.route("/<int:_id>/rate/")

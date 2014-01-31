@@ -1,5 +1,9 @@
 {% extends "layout.html" %}
 
+{% block style %}
+<link href="{{ url_for("static", filename="css/map.css") }}" rel="stylesheet"/>
+{% endblock %}
+
 {% block content %}
     <div class="page-header">
         <h1>Replay <small>{{ replay.id }}{% if replay.start_time %}; {{ replay.start_time|timestamp_to_datestring }} UTC{% endif %}</small></h1>
@@ -247,7 +251,11 @@
                         {% endif %}
                     </dl>
 
+					<h1>Map</h1>
+					{% include "replays/map.html" %}
+
                     <p>TODO: Picks & Bans, additional player units'</p>
+
                 {% endif %}
             </div>
             <div class="tab-pane" id="players">
