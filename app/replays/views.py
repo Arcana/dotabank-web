@@ -86,6 +86,7 @@ def add_gc_job(_id):
 
     # Update status
     _replay.status = "WAITING_GC"
+    _replay.gc_fails = 0
     db.session.add(_replay)
 
     # Add to job queue.
