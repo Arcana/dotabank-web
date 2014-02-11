@@ -39,12 +39,10 @@ class User(db.Model):
         "order_by": [db.asc(first_seen)]
     }
 
-    def __init__(self, _id=None, name=None, enabled=True, first_seen=datetime.datetime.utcnow(), last_seen=datetime.datetime.utcnow()):
+    def __init__(self, _id=None, name=None, enabled=True):
         self.id = _id
         self.name = name
         self.enabled = enabled
-        self.first_seen = first_seen
-        self.last_seen = last_seen
 
     def __repr__(self):
         return self.name
