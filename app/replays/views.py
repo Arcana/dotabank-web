@@ -1,7 +1,7 @@
 from math import ceil
 from datetime import datetime, timedelta
 
-from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
+from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app, abort
 from flask.ext.login import current_user, login_required
 
 from app import steam, db, dotabank_bucket
@@ -34,7 +34,7 @@ def replays(page=None):
 def replay(_id):
     _replay = Replay.query.filter(Replay.id == _id).first()
     if _replay is None:
-        return redirect(url_for("replays.search", id=_id))
+        abort(404)
 
     # Split bitmasks into a simple object store.
     if _replay.radiant_tower_status is not None\
