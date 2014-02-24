@@ -16,6 +16,7 @@ $(function(){
 		"melee":{text:"Melee",element:"tier"}
 	}
 	function hoverIn(e){
+		$("#hover_box #building_team, #hover_box #building_location, #hover_box #building_tier, #hover_box #building_type").text("");
 		$('#hover_box').css({
 			left:e.pageX+25,
 			top:e.pageY+25
