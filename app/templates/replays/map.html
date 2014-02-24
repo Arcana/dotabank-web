@@ -1,4 +1,7 @@
-<div style='background:url({{ url_for('static', filename='images/minimap.png') }}) #333' id="map">
+<div style="background:url({{ url_for('static', filename='images/minimap.png') }}) #333" id="map">
+
+	<div id="hover_box"></div>
+
 	<div class="ancient dire{{ ' destroyed' if replay.good_guys_win }}"></div>
 
 	<div class="tower dire top tier_1{{building_statuses[1][10]|building_status}}"></div>

@@ -94,6 +94,7 @@ def user(_id):
     _ratings = _user.replay_ratings.order_by(False).order_by(ReplayRating.created_at.desc()).limit(limit)
     return render_template("users/user.html", user=_user, replays=_replays, favourites=_favourites, searches=_searches, downloads=_downloads, ratings=_ratings)
 
+
 @mod.route("/<int:_id>/replays/")
 @mod.route("/<int:_id>/replays/<int:page>/")
 def user_replays(_id, page=None):
@@ -119,6 +120,7 @@ def user_favourites(_id, page=None):
     _favourites = _user.favourites.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/favourites.html", user=_user, favourites=_favourites)
 
+
 @mod.route("/<int:_id>/ratings/")
 @mod.route("/<int:_id>/ratings/<int:page>/")
 def user_ratings(_id, page=None):
@@ -132,6 +134,7 @@ def user_ratings(_id, page=None):
     _ratings = _user.replay_ratings.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/ratings.html", user=_user, ratings=_ratings)
 
+
 @mod.route("/<int:_id>/searches/")
 @mod.route("/<int:_id>/searches/<int:page>/")
 def user_searches(_id, page=None):
@@ -144,6 +147,7 @@ def user_searches(_id, page=None):
     _searches = _user.searches.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/searches.html", user=_user, searches=_searches)
 
+
 @mod.route("/<int:_id>/downloads/")
 @mod.route("/<int:_id>/downloads/<int:page>/")
 def user_downloads(_id, page=None):
@@ -155,7 +159,6 @@ def user_downloads(_id, page=None):
         page = int(ceil(float(ReplayDownload.query.filter(ReplayDownload.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
     _downloads = _user.downloads.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/downloads.html", user=_user, downloads=_downloads)
-
 
 
 @mod.route("/<int:_id>/settings/", methods=["POST", "GET"])
