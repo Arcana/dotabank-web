@@ -1,0 +1,22 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+    <h2>Replays without 10 players</h2>
+    <p>Volvo why isn't year beast its own game mode?</p>
+    <table class="table">
+    <thead>
+    <tr>
+        <th>Replay ID</th>
+        <th>Player count</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for replay in replays_without_ten_players %}
+        <tr>
+            <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+            <td>{{ replay.player_count }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+{% endblock %}

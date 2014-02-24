@@ -210,3 +210,15 @@ def building_status(value):
             return ""
     except IndexError:
         return " destroyed"
+
+
+def players_to_teams(players):
+    # Sort players by their in-game slot
+    players = sorted(players, key=lambda x: x.player_slot)
+
+    # Split players into teams
+    radiant = [p for p in players if p.team == "Radiant"]  # 8th bit false
+    dire = [p for p in players if p.team == "Dire"]  # 8th bit true
+
+    return radiant, dire
+
