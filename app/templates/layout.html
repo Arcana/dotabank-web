@@ -6,14 +6,14 @@
     <meta name="description" content="{{ meta_description or "A Dota 2 replay archiving service." }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-    {% if current_user.get_id() != '36635802' %}
-        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet"/>
-    {% elif current_user.get_id() != '64674417' or current_user.get_id() != '36489577' %}
+    {% if current_user.get_id() == '36635802' %}
+        {# If sunny, make Dotabank urban. #}
+        <link href="{{ url_for("static", filename="css/cyborg/bootstrap.min.css") }}" rel="stylesheet"/>
+    {% elif current_user.get_id() == '64674417' or current_user.get_id() == '36489577' %}
         {# If Kowiz, make Dotabank pretty. #}
         <link href="{{ url_for("static", filename="css/cupid/bootstrap.min.css") }}" rel="stylesheet"/>
     {% else %}
-        {# If sunny, make Dotabank urban. #}
-        <link href="{{ url_for("static", filename="css/cyborg/bootstrap.min.css") }}" rel="stylesheet"/>
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet"/>
     {% endif %}
     <link href="{{ url_for("static", filename="css/dotabank.css") }}" rel="stylesheet"/>
     {%- block style %}
