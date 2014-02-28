@@ -6,7 +6,7 @@
     <meta name="description" content="{{ meta_description or "A Dota 2 replay archiving service." }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-    {% if current_user.get_id() == '36635802' or current_user.get_id() == '64674417' or current_user.get_id() == '36489577' or current_user.get_id() == '28956443' %}
+    {% if current_user.get_id() in ('36635802', '64674417', '36489577', '28956443', '39933033') %}
         {# If special, make Dotabank pretty. #}
         <link href="{{ url_for("static", filename="css/{}/bootstrap.min.css".format(['cupid', 'cyborg']|random)) }}" rel="stylesheet"/>
     {% else %}
