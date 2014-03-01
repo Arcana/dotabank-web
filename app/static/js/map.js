@@ -18,7 +18,7 @@ $(function(){
 	function hoverIn(e){
 		$("#hover_box #building_team, #hover_box #building_location, #hover_box #building_tier, #hover_box #building_type").text("");
 		$('#hover_box').css({
-			left:e.pageX+15,
+			left:e.pageX+18,
 			top:e.pageY-16
 		});
 		var class_list = $(this).attr('class').split(/\s+/);
