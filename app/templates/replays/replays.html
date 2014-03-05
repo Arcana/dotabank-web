@@ -1,3 +1,4 @@
+{% from "macros.html" import iconic %}
 {% extends "layout.html" %}
 
 {% block content %}
@@ -34,21 +35,42 @@
                     {% if current_user.is_authenticated() %}
                     <td>
                         <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
-                            <span class="{{"" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"><sub>({{ replay.favourites|list|length }})</sub></span></a>
+                            <span class="{{"" if replay.user_favourite() else "text-muted" }}">
+                                {{ iconic('star', class='iconic-sm') }}
+                                <sub>({{ replay.favourites|list|length }})</sub>
+                            </span>
+                        </a>
                     </td>
                     <td>
                         <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=1) }}">
-                            <span class="{{"" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"><sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub></span></a>&nbsp;
+                            <span class="{{"" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }}">
+                                {{ iconic('thumb', state="up", class='iconic-sm') }}
+                                <sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub>
+                            </span>
+                        </a>&nbsp;
                         <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=0) }}">
-                            <span class="{{"" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"><sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub></span></a>
+                            <span class="{{"" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }}">
+                                {{ iconic('thumb', state="down", class='iconic-sm') }}
+                                <sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub>
+                            </span>
+                        </a>
                     </td>
                     {% else %}
                     <td>
-                        <span class="text-muted glyphicon glyphicon-star"><sub>({{ replay.favourites|list|length }})</sub></span>
+                        <span class="text-muted">
+                            {{ iconic('star', class='iconic-sm') }}
+                            <sub>({{ replay.favourites|list|length }})</sub>
+                        </span>
                     </td>
                     <td>
-                        <span class="text-muted glyphicon glyphicon-thumbs-up"><sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub></span>&nbsp;
-                        <span class="text-muted glyphicon glyphicon-thumbs-down"><sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub></span>
+                        <span class="text-muted">
+                            {{ iconic('thumb', state="up", class='iconic-sm') }}
+                            <sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub>
+                        </span>&nbsp;
+                        <span class="text-muted">
+                            {{ iconic('thumb', state="down", class='iconic-sm') }}
+                            <sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub>
+                        </span>
                     </td>
                     {% endif %}
                     <td>{{ replay.state }}</td>

@@ -1,3 +1,4 @@
+{% from "macros.html" import iconic %}
 <nav id="replay-nav" class="navbar navbar-default">
     <ul class="nav navbar-nav">
         <li class="{{ "active" if "replays.replay" == request.endpoint  }}">
@@ -24,12 +25,12 @@
                 <div class="btn-group">
                     <a class="btn btn-default navbar-btn" href="{{ url_for('replays.add_gc_job', _id=replay.id) }}">Add GC job</a>
                     <a class="btn btn-default navbar-btn" href="{{ url_for('replays.add_dl_job', _id=replay.id) }}">Add DL job</a>
-				</div>
-			</li>
-			<li>
-				<div class="btn-group">
-					<a class="btn btn-default navbar-btn" href="https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/V001/?match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchDetails</a>
-					<a class="btn btn-default navbar-btn" href="https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001/?start_at_match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchHistory</a>
+                </div>
+            </li>
+            <li>
+                <div class="btn-group">
+                    <a class="btn btn-default navbar-btn" href="https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/V001/?match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchDetails</a>
+                    <a class="btn btn-default navbar-btn" href="https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001/?start_at_match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchHistory</a>
                 </div>
             </li>
         {% endif %}
@@ -37,27 +38,36 @@
 </nav>
 <ul>
     {% if current_user.is_authenticated() %}
-    <li>
+    <li class="{{ "" if replay.user_favourite() else "text-muted" }}">
         <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
-            <span class="{{"" if replay.user_favourite() else "text-muted" }} glyphicon glyphicon-star"><sub>({{ replay.favourites|list|length }})</sub></span></a>
+            {{ iconic('star', class="iconic-sm") }}
+            <sub>({{ replay.favourites|list|length }})</sub>
+        </a>
     </li>
-    <li>
+    <li class="{{ "" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }}">
         <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=1) }}">
-            <span class="{{"" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }} glyphicon glyphicon-thumbs-up"><sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub></span></a>
+            {{ iconic('thumb', state="up", class="iconic-sm") }}
+            <sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub>
+        </a>
     </li>
-    <li>
+    <li class="{{ "" if replay.user_rating() and replay.user_rating().positive != True else "text-muted" }}">
         <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=0) }}">
-            <span class="{{"" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }} glyphicon glyphicon-thumbs-down"><sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub></span></a>
+            {{ iconic('thumb', state="down", class="iconic-sm") }}
+            <sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub>
+        </a>
     </li>
     {% else %}
-    <li>
-        <span class="text-muted glyphicon glyphicon-star"><sub>({{ replay.favourites|list|length }})</sub></span>
+    <li class="text-muted">
+        {{ iconic('star', class='iconic-sm') }}
+        <sub>({{ replay.favourites|list|length }})</sub>
     </li>
-    <li>
-        <span class="text-muted glyphicon glyphicon-thumbs-up"><sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub></span>
+    <li class="text-muted">
+        {{ iconic('thumb', state='up', class='iconic-sm') }}
+        <sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub>
     </li>
-    <li>
-        <span class="text-muted glyphicon glyphicon-thumbs-down"><sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub></span>
+    <li class="text-muted">
+        {{ iconic('thumb', state='down', class='iconic-sm') }}
+        <sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub>
     </li>
     {% endif %}
 </ul>

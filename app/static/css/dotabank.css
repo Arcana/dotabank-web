@@ -243,3 +243,8 @@ table > tbody > tr > td.item-cell {
 .endgame-table td {
     min-width:48px;
 }
+
+.text-muted .iconic {
+    fill: #777;
+    stroke: #777;
+}

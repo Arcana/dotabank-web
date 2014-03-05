@@ -58,3 +58,11 @@
     </div>
 </div>
 {% endmacro %}
+
+{%- macro iconic(icon, class='', state='') -%}
+    <img
+        class="iconic {{ class }}"
+        data-src="{{ url_for('static', filename="images/iconic/smart/{}.svg".format(icon)) }}"
+        {% if state %}data-state="{{ state }}"{% endif %}
+    />
+{% endmacro %}

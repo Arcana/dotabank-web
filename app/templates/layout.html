@@ -1,3 +1,4 @@
+{% from "macros.html" import iconic %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -53,7 +54,7 @@
     <div id="footer" class="container text-muted">
         <ul class="list-inline pull-left">
             <li>© <a href="https://rjackson.me">Rob Jackson</a>.</li>
-            <li>Bitcoin donations: <code>{{ config['BITCOIN_DONATION_ADDRESS'] }}</code></li>
+            <li>{{ iconic('bitcoin-address', 'iconic-sm') }} <code>{{ config['BITCOIN_DONATION_ADDRESS'] }}</code></li>
         </ul>
         <ul class="list-inline pull-right">
             <li><a href="{{ url_for("privacy") }}">Privacy Policy</a></li>
@@ -69,6 +70,7 @@
     {% block scripts %}
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+        <script src="{{ url_for('static', filename='js/iconic.min.js') }}"></script>
         <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
           (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
