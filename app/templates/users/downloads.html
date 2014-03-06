@@ -6,10 +6,6 @@
     <div class="page-header">
         <h1>Downloads  <small>page {{ downloads.page }}</small></h1>
     </div>
-    <ul class="pager">
-        <li class="previous {{ "disabled" if not downloads.has_prev }}"><a href="{{ url_for("users.user_downloads", _id = user.id, page=downloads.prev_num) if downloads.has_prev else "" }}">&larr; Older</a></li>
-        <li class="next {{ "disabled" if not downloads.has_next }}"><a href="{{ url_for("users.user_downloads", _id = user.id, page=downloads.next_num) if downloads.has_next else "" }}">Newer &rarr;</a></li>
-    </ul>
     <dl class="dl-horizontal">
         <dt>Number of downloads</dt>
         <dd>{{ downloads.total }}</dd>
@@ -40,4 +36,5 @@
             {% endif %}
             </tbody>
     </table>
+	{{downloads|pagination("users.user_downloads", {"_id":user.id})}}
 {% endblock %}

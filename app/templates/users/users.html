@@ -3,10 +3,6 @@
 {% block content %}
     <div class="page-header">
         <h1>Users  <small>page {{ users.page }}</small></h1>
-        <ul class="pager">
-            <li class="previous {{ "disabled" if not users.has_prev }}"><a href="{{ url_for("users.users", page=users.prev_num) if users.has_prev else "" }}">&larr; Older</a></li>
-            <li class="next {{ "disabled" if not users.has_next }}"><a href="{{ url_for("users.users", page=users.next_num) if users.has_next else "" }}">Newer &rarr;</a></li>
-        </ul>
     </div>
     <table class="table table-condensed table-striped">
         <thead>
@@ -34,4 +30,5 @@
             {% endfor %}
         </tbody>
     </table>
+	{{users|pagination("users.users")}}
 {% endblock %}

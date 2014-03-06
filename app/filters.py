@@ -1,8 +1,9 @@
 from app import cache, steam
-from flask import current_app
+from flask import current_app, url_for
 import json
 import urllib2
 from datetime import datetime, timedelta
+from jinja2 import Markup
 
 
 # General filters
@@ -222,3 +223,27 @@ def players_to_teams(players):
 
     return radiant, dire
 
+
+def pagination(pagination_obj, endpoint, endpoint_values={}, size="sm"):
+    if pagination_obj.pages > 1:
+        paginated = '<ul class="pagination pagination-{size}">'.format(size=size)
+        if pagination_obj.has_prev:
+            paginated += '<li><a class="prev" href="{url}">&#9664;</a></li>'.format(url=url_for(endpoint, page=pagination_obj.prev_num, **endpoint_values))
+        else:
+            paginated += '<li class="disabled"><a class="prev">&#9664;</a></li>'
+        if pagination_obj.has_next:
+            paginated += '<li><a class="next" href="{url}">&#9654;</a></li>'.format(url=url_for(endpoint, page=pagination_obj.next_num, **endpoint_values))
+        else:
+            paginated += '<li class="disabled"><a class="next">&#9654;</a></li>'
+        for page in pagination_obj.iter_pages():
+            if page:
+                if page is not pagination_obj.page:
+                    paginated += '<li><a href="{url}">{page}</a></li>'.format(url=url_for(endpoint, page=page, **endpoint_values), page=page)
+                else:
+                    paginated += '<li class="active"><a>{page}</a></li>'.format(page=page)
+            else:
+                paginated += '<li class="disabled"><a>&hellip;</a></li>'
+        paginated += '</ul>'
+        return Markup(paginated)
+    else:
+        return ""

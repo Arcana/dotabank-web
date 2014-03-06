@@ -6,10 +6,6 @@
     <div class="page-header">
         <h1>Replays  <small>page {{ replays.page }}</small></h1>
     </div>
-    <ul class="pager">
-        <li class="previous {{ "disabled" if not replays.has_prev }}"><a href="{{ url_for("users.user_replays", _id = user.id, page=replays.prev_num) if replays.has_prev else "" }}">&larr; Older</a></li>
-        <li class="next {{ "disabled" if not replays.has_next }}"><a href="{{ url_for("users.user_replays", _id = user.id, page=replays.next_num) if replays.has_next else "" }}">Newer &rarr;</a></li>
-    </ul>
     <dl class="dl-horizontal">
         <dt>Number of replays</dt>
         <dd>{{ replays.total }}</dd>
@@ -44,4 +40,5 @@
             {% endif %}
             </tbody>
     </table>
+	{{replays|pagination("users.user_replays", {"_id":user.id})}}
 {% endblock %}

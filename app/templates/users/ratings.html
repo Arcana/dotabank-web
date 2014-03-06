@@ -6,10 +6,6 @@
     <div class="page-header">
         <h1>Ratings  <small>page {{ ratings.page }}</small></h1>
     </div>
-    <ul class="pager">
-        <li class="previous {{ "disabled" if not ratings.has_prev }}"><a href="{{ url_for("users.user_ratings", _id = user.id, page=ratings.prev_num) if ratings.has_prev else "" }}">&larr; Older</a></li>
-        <li class="next {{ "disabled" if not ratings.has_next }}"><a href="{{ url_for("users.user_ratings", _id = user.id, page=ratings.next_num) if ratings.has_next else "" }}">Newer &rarr;</a></li>
-    </ul>
     <dl class="dl-horizontal">
         <dt>Number of ratings</dt>
         <dd>{{ ratings.total }}</dd>
@@ -42,4 +38,5 @@
         {% endif %}
         </tbody>
     </table>
+	{{ratings|pagination("users.user_ratings", {"_id":user.id})}}
 {% endblock %}
