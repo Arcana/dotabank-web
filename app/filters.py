@@ -157,7 +157,7 @@ def get_file_by_ugcid(ugcid):
         file_info = steam.remote_storage.ugc_file(570, ugcid)
         file_info.url
         return file_info
-    except steam.remote_storage.FileNotFoundError:
+    except (steam.remote_storage.FileNotFoundError, steam.api.HTTPError):
         return None
 
 
