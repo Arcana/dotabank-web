@@ -92,8 +92,11 @@ def fetch_heroes_by_name():
 
 @cache.cached(timeout=60 * 60, key_prefix="items")
 def fetch_items():
-    data = json.loads(urllib2.urlopen("http://www.dota2.com/jsfeed/itemdata").read())["itemdata"]
-    return {data[k]["id"]: data[k] for k in data}
+    try:
+        data = json.loads(urllib2.urlopen("http://www.dota2.com/jsfeed/itemdata").read())["itemdata"]
+        return {data[k]["id"]: data[k] for k in data}
+    except urllib2.URLError:
+        return {}
 
 
 @cache.cached(timeout=60 * 60, key_prefix="leagues")
@@ -171,7 +174,7 @@ def lobby_type(value):
          "Team Matchmaking",
          "Solo Matchmaking",
          "Ranked Match"][value]
-    except IndexError:
+    except (IndexError, TypeError):
         return "Invalid ({})".format(value)
 
 
