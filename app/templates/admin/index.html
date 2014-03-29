@@ -1,40 +1,28 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-sm-4 text-center">
-            <h2>Match requests</h2>
+    <div class="panel panel-default text-center">
+        <div class="panel-heading">Match requests</div>
+        <div class="panel-body">
             <canvas id="match-requests-gauge"></canvas>
-            <div class="text-center">
-                <span class="match-requests-past-24hrs">{{ stats|map(attribute='match_requests_past_24hrs')|sum }}</span> / <span class="match-requests-capacity text-muted">{{ stats|map(attribute='match_requests_capacity')|sum }} per 24hrs</span>
-            </div>
+            <div class="clearfix"></div>
+            <span class="match-requests-past-24hrs">{{ stats|map(attribute='match_requests_past_24hrs')|sum }}</span> / <span class="match-requests-capacity text-muted">{{ stats|map(attribute='match_requests_capacity')|sum }} per 24hrs</span>
+        </div>
+    </div>
 
-            {% for worker in stats %}
-                <hr>
-                <h3>{{ worker['display_name'] }}</h3>
-                <canvas id="worker-{{ worker['id'] }}-match-requests-gauge"></canvas>
-                <div class="text-center">
+    <div class="row">
+    {% for worker in stats %}
+        <div class="col-sm-4">
+            <div class="panel panel-default text-center">
+                <div class="panel-heading">{{ worker['display_name'] }}</div>
+                <div class="panel-body">
+                    <canvas id="worker-{{ worker['id'] }}-match-requests-gauge"></canvas>
+                    <div class="clearfix"></div>
                     <span class="worker-{{ worker['id'] }}-match-requests-past-24hrs">{{ worker['match_requests_past_24hrs'] }}</span> / <span class="worker-{{ worker['id'] }}-match-requests-capacity text-muted">{{ worker['match_requests_capacity'] }} per 24hrs</span>
                 </div>
-            {% endfor %}
-        </div>
-    
-        <div class="col-sm-4 text-center">
-            <h2>Profile requests</h2>
-            <canvas id="profile-requests-gauge"></canvas>
-            <div class="text-center">
-                <span class="profile-requests-past-24hrs">{{ stats|map(attribute='profile_requests_past_24hrs')|sum }}</span> / <span class="profile-requests-capacity text-muted">{{ stats|map(attribute='profile_requests_capacity')|sum }} per 24hrs</span>
             </div>
-
-            {% for worker in stats %}
-                <hr>
-                <h3>{{ worker['display_name'] }}</h3>
-                <canvas id="worker-{{ worker['id'] }}-profile-requests-gauge"></canvas>
-                <div class="text-center">
-                    <span class="worker-{{ worker['id'] }}-profile-requests-past-24hrs">{{ worker['profile_requests_past_24hrs'] }}</span> / <span class="worker-{{ worker['id'] }}-profile-requests-capacity text-muted">{{ worker['profile_requests_capacity'] }} per 24hrs</span>
-                </div>
-            {% endfor %}
         </div>
+    {% endfor %}
     </div>
 
     {# Current admin templates don't have a "scripts" block in master layout. #}
@@ -66,17 +54,6 @@
             var worker_{{ worker['id'] }}_gauge = new Gauge(document.getElementById('worker-{{ worker['id'] }}-match-requests-gauge')).setOptions(opts); // create sexy gauge!
             worker_{{ worker['id'] }}_gauge.maxValue = {{ worker['match_requests_capacity'] }}; // set max gauge value
             worker_{{ worker['id'] }}_gauge.set({{ worker['match_requests_past_24hrs'] }}); // set actual value
-        {% endfor %}
-
-        // Profile reqs
-        var gauge = new Gauge(document.getElementById('profile-requests-gauge')).setOptions(opts); // create sexy gauge!
-        gauge.maxValue = {{ stats|map(attribute='profile_requests_capacity')|sum }}; // set max gauge value
-        gauge.set({{ stats|map(attribute='profile_requests_past_24hrs')|sum }}); // set actual value
-
-        {% for worker in stats %}
-            var worker_{{ worker['id'] }}_gauge = new Gauge(document.getElementById('worker-{{ worker['id'] }}-profile-requests-gauge')).setOptions(opts); // create sexy gauge!
-            worker_{{ worker['id'] }}_gauge.maxValue = {{ worker['profile_requests_capacity'] }}; // set max gauge value
-            worker_{{ worker['id'] }}_gauge.set({{ worker['profile_requests_past_24hrs'] }}); // set actual value
         {% endfor %}
     </script>
 {% endblock %}

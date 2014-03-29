@@ -39,13 +39,7 @@ class AdminIndex(AuthMixin, AdminIndexView):
                     GCJob.type == "MATCH_REQUEST",
                     GCJob.timestamp >= (datetime.utcnow() - timedelta(hours=24))
                 ).count(),
-                "match_requests_capacity": current_app.config['GC_MATCH_REQUSTS_RATE_LIMIT'],
-                "profile_requests_past_24hrs": GCJob.query.filter(
-                    GCJob.worker_id == worker.id,
-                    GCJob.type == "PROFILE_REQUEST",
-                    GCJob.timestamp >= (datetime.utcnow() - timedelta(hours=24))
-                ).count(),
-                "profile_requests_capacity": current_app.config['GC_PROFILE_REQUSTS_RATE_LIMIT']
+                "match_requests_capacity": current_app.config['GC_MATCH_REQUSTS_RATE_LIMIT']
             })
 
         return self.render('admin/index.html',
