@@ -24,12 +24,15 @@
         <li class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown">YOU'RE AN ADMIN!<span class="caret"></span></a>
             <ul class="dropdown-menu">
+                <li><a href="{{ url_for('replayview.edit_view', id=replay.id) }}">Edit</a></li>
                 <li class="dropdown-header">Job queue</li>
                 <li><a href="{{ url_for('replays.add_gc_job', _id=replay.id) }}">Add GC job</a></li>
                 <li><a href="{{ url_for('replays.add_dl_job', _id=replay.id) }}">Add DL job</a></li>
                 <li class="dropdown-header">WebAPI</li>
                 <li><a href="https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/V001/?match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchDetails</a></li>
                 <li><a href="https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001/?start_at_match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchHistory</a></li>
+                <li class="dropdown-header">Clean up</li>
+                <li><a href="{{ url_for('replays.delete_players', _id=replay.id) }}">Delete players</a></li>
             </ul>
         </li>
         {% endif %}

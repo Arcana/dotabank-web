@@ -139,6 +139,28 @@ def add_dl_job(_id):
     return redirect(request.referrer or url_for("index"))
 
 
+@mod.route("/<int:_id>/delete_players")
+@login_required
+def delete_players(_id):
+    # Check auth
+    if not current_user.is_admin():
+        flash("Only admins can delete a replay's players.", "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    # Check replay exists
+    _replay = Replay.query.filter(Replay.id == _id).first()
+    if _replay is None:
+        flash("Replay {} doesn't exist.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    # Get players
+    for player in _replay.players:
+        db.session.delete(player)
+    db.session.commit()
+
+    return redirect(request.referrer or url_for("index"))
+
+
 @mod.route("/<int:_id>/api_populate/")
 @login_required
 def api_populate(_id):
