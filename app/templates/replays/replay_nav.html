@@ -8,7 +8,7 @@
             <a href="{{ url_for("replays.download", _id=replay.id) }}">Download</a>
         </li>
     </ul>
-    <ul class="nav navbar-nav pull-right">
+    <ul class="nav navbar-nav navbar-right">
         <li>
             View match:
             <div class="btn-group">
@@ -21,18 +21,17 @@
             </div>
         </li>
         {% if current_user.is_admin() %}
-            <li>
-                <div class="btn-group">
-                    <a class="btn btn-default navbar-btn" href="{{ url_for('replays.add_gc_job', _id=replay.id) }}">Add GC job</a>
-                    <a class="btn btn-default navbar-btn" href="{{ url_for('replays.add_dl_job', _id=replay.id) }}">Add DL job</a>
-                </div>
-            </li>
-            <li>
-                <div class="btn-group">
-                    <a class="btn btn-default navbar-btn" href="https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/V001/?match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchDetails</a>
-                    <a class="btn btn-default navbar-btn" href="https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001/?start_at_match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchHistory</a>
-                </div>
-            </li>
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown">YOU'RE AN ADMIN!<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li class="dropdown-header">Job queue</li>
+                <li><a href="{{ url_for('replays.add_gc_job', _id=replay.id) }}">Add GC job</a></li>
+                <li><a href="{{ url_for('replays.add_dl_job', _id=replay.id) }}">Add DL job</a></li>
+                <li class="dropdown-header">WebAPI</li>
+                <li><a href="https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/V001/?match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchDetails</a></li>
+                <li><a href="https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001/?start_at_match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchHistory</a></li>
+            </ul>
+        </li>
         {% endif %}
     </ul>
 </nav>
