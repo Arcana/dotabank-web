@@ -99,31 +99,31 @@
             <tbody>
             <tr>
                 <th>Replays added</th>
-                <td>{{ stats['day']['replays'] }}</td>
-                <td>{{ stats['week']['replays'] }}</td>
-                <td>{{ stats['month']['replays'] }}</td>
-                <td>{{ stats['total']['replays'] }}</td>
+                <td>{{ stats.replays_count(24) }}</td>
+                <td>{{ stats.replays_count(24*7) }}</td>
+                <td>{{ stats.replays_count(24*30) }}</td>
+                <td>{{ stats.replays_count() }} (stats.bucket_size()|formatfilesize)</td>
             </tr>
             <tr>
                 <th>Replays archived</th>
-                <td>{{ stats['day']['archived'] }}</td>
-                <td>{{ stats['week']['archived'] }}</td>
-                <td>{{ stats['month']['archived'] }}</td>
-                <td>{{ stats['total']['archived'] }}</td>
-            </tr>
-            <tr>
-                <th>Users registered</th>
-                <td>{{ stats['day']['users'] }}</td>
-                <td>{{ stats['week']['users'] }}</td>
-                <td>{{ stats['month']['users'] }}</td>
-                <td>{{ stats['total']['users'] }}</td>
+                <td>{{ stats.archived_count(24) }}</td>
+                <td>{{ stats.archived_count(24*7) }}</td>
+                <td>{{ stats.archived_count(24*30) }}</td>
+                <td>{{ stats.archived_count() }}</td>
             </tr>
             <tr>
                 <th>Downloads fulfilled</th>
-                <td>{{ stats['day']['downloads'] }}</td>
-                <td>{{ stats['week']['downloads'] }}</td>
-                <td>{{ stats['month']['downloads'] }}</td>
-                <td>{{ stats['total']['downloads'] }}</td>
+                <td>{{ stats.downloads_count(24) }}</td>
+                <td>{{ stats.downloads_count(24*7) }}</td>
+                <td>{{ stats.downloads_count(24*30) }}</td>
+                <td>{{ stats.downloads_count() }}</td>
+            </tr>
+            <tr>
+                <th>Users registered</th>
+                <td>{{ stats.users_count(24) }}</td>
+                <td>{{ stats.users_count(24*7) }}</td>
+                <td>{{ stats.users_count(24*30) }}</td>
+                <td>{{ stats.users_count() }}</td>
             </tr>
             </tbody>
         </table>

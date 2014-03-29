@@ -2,6 +2,7 @@ from flask import render_template
 from datetime import datetime, timedelta
 
 from app import app, db
+from app.models import Stats
 from app.users.models import User
 from app.replays.models import Replay
 from app.replays.models import ReplayDownload
@@ -23,27 +24,7 @@ def index():
     last_added_replays = Replay.query.order_by(Replay.added_to_site_time.desc()).limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
     last_archived_replays = Replay.query.filter(Replay.state == "ARCHIVED").order_by(Replay.dl_done_time.desc()).limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
 
-    stats = {
-        'total': {
-            'replays': Replay.query.count(),
-            'archived': Replay.query.filter(Replay.local_uri != None).count(),  # Have to use != instead of 'is not' here, because sqlalchemy.
-            'users': User.query.count(),
-            'downloads': ReplayDownload.query.count()
-        }
-    }
-    for key, hours in [
-        ("day", 24),
-        ("week", 24 * 7),
-        ("month", 24 * 30)
-    ]:
-        _time_ago = datetime.utcnow() - timedelta(hours=hours)
-        stats[key] = {
-            'replays': Replay.query.filter(Replay.added_to_site_time >= _time_ago).count(),
-            'archived': Replay.query.filter(Replay.local_uri != None,
-                                            Replay.added_to_site_time >= _time_ago).count(),  # Have to use != instead of 'is not' here, because sqlalchemy.
-            'users': User.query.filter(User.first_seen >= _time_ago).count(),
-            'downloads': ReplayDownload.query.filter(ReplayDownload.created_at >= _time_ago).count()
-        }
+    stats = Stats()
 
     search_form = SearchForm()
 
