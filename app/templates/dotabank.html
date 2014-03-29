@@ -102,14 +102,14 @@
                 <td>{{ stats.replays_count(24) }}</td>
                 <td>{{ stats.replays_count(24*7) }}</td>
                 <td>{{ stats.replays_count(24*30) }}</td>
-                <td>{{ stats.replays_count() }} (stats.bucket_size()|formatfilesize)</td>
+                <td>{{ stats.replays_count() }}</td>
             </tr>
             <tr>
                 <th>Replays archived</th>
                 <td>{{ stats.archived_count(24) }}</td>
                 <td>{{ stats.archived_count(24*7) }}</td>
                 <td>{{ stats.archived_count(24*30) }}</td>
-                <td>{{ stats.archived_count() }}</td>
+                <td>{{ stats.archived_count() }} ({{ stats.bucket_size()|filesizeformat }})</td>
             </tr>
             <tr>
                 <th>Downloads fulfilled</th>
