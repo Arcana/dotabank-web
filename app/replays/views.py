@@ -27,7 +27,9 @@ def replays(page=None):
         page = int(ceil(float(Replay.query.count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
 
     _replays = Replay.query.order_by(Replay.added_to_site_time.asc()).paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
-    return render_template("replays/replays.html", replays=_replays)
+    return render_template("replays/replays.html",
+                           title="Replays - Dotabank",
+                           replays=_replays)
 
 
 @mod.route("/<int:_id>/")
@@ -46,7 +48,11 @@ def replay(_id):
     else:
         building_statuses = None
 
-    return render_template("replays/replay.html", replay=_replay, building_statuses=building_statuses, api_key=current_app.config["STEAM_API_KEY"])
+    return render_template("replays/replay.html",
+                           title= "Replay {} - Dotabank".format(_replay.id),
+                           replay=_replay,
+                           building_statuses=building_statuses,
+                           api_key=current_app.config["STEAM_API_KEY"])
 
 
 @mod.route("/<int:_id>/rate/")
@@ -214,6 +220,7 @@ def download(_id):
         db.session.commit()
 
         return render_template("replays/download_granted.html",
+                               title="Download replay {} - Dotabank".format(_replay.id),
                                replay=_replay,
                                expires_at=expires_at,
                                name=name,
@@ -222,6 +229,7 @@ def download(_id):
                                url=url)
 
     return render_template("replays/download.html",
+                           title="Download replay {} - Dotabank".format(_replay.id),
                            replay=_replay,
                            name=name,
                            md5=md5,

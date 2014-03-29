@@ -35,7 +35,10 @@ def hall_of_fame(week=None):
         player.name = names[player.account_id]
     entry.farmer.name = names[entry.farmer.account_id]
 
-    return render_template("hall_of_fame/hall_of_fame.html", entry=entry, pagination=pagination)
+    return render_template("hall_of_fame/hall_of_fame.html",
+                           title="Hall of Fame - Dotabank",
+                           entry=entry,
+                           pagination=pagination)
 
 
 class HallOfFameAdmin(AdminModelView):
