@@ -185,6 +185,36 @@ def user_downloads(_id, page=None):
                            downloads=_downloads)
 
 
+@mod.route("/<int:_id>/update_name")
+@login_required
+def update_name(_id):
+    # Check auth
+    if not current_user.is_admin():
+        flash("Only admins can force-update user names.", "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    # Get user
+    _user = User.query.filter(User.id == _id).first()
+    if _user is None:
+        flash("User {} not found.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    old_name = _user.name
+    _user.update_steam_name()
+    new_name = _user.name
+
+    current_app.logger.info("Manually triggered a user name update.", extra={
+        'extra': {
+            'old_name': old_name,
+            'new_name': new_name,
+            'actioned_by': current_user.id
+        }
+    })
+
+    flash(u"Updated user {}'s name from {} to {}.".format(_id, old_name, new_name), "success")
+    return redirect(request.referrer or url_for("index"))
+
+
 @mod.route("/<int:_id>/settings/", methods=["POST", "GET"])
 @login_required
 def settings(_id):

@@ -22,5 +22,14 @@
                 {% endif %}
             </div>
         </li>
+        {% if current_user.is_admin() %}
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown">YOU'RE AN ADMIN!<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('userview.edit_view', id=user.id) }}">Edit</a></li>
+                <li><a href="{{ url_for('users.update_name', _id=user.id) }}">Update name from Steam</a></li>
+            </ul>
+        </li>
+        {% endif %}
     </ul>
 </nav>
