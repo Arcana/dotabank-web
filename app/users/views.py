@@ -95,7 +95,7 @@ def user(_id):
     _downloads = _user.downloads.order_by(False).order_by(ReplayDownload.created_at.desc()).limit(limit)
     _ratings = _user.replay_ratings.order_by(False).order_by(ReplayRating.created_at.desc()).limit(limit)
     return render_template("users/user.html",
-                           title="{} - Dotabank".format(_user.name),
+                           title=u"{} - Dotabank".format(_user.name),
                            user=_user,
                            replays=_replays,
                            favourites=_favourites,
@@ -115,7 +115,7 @@ def user_replays(_id, page=None):
         page = int(ceil(float(ReplayPlayer.query.filter(ReplayPlayer.account_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
     _replays = _user.replay_players.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/replays.html",
-                           title="{}'s replays - Dotabank".format(_user.name),
+                           title=u"{}'s replays - Dotabank".format(_user.name),
                            user=_user,
                            replays=_replays)
 
@@ -131,7 +131,7 @@ def user_favourites(_id, page=None):
         page = int(ceil(float(ReplayFavourite.query.filter(ReplayFavourite.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
     _favourites = _user.favourites.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/favourites.html",
-                           title="{}'s favourites - Dotabank".format(_user.name),
+                           title=u"{}'s favourites - Dotabank".format(_user.name),
                            user=_user,
                            favourites=_favourites)
 
@@ -148,7 +148,7 @@ def user_ratings(_id, page=None):
     page = int(ceil(float(ReplayRating.query.filter(ReplayRating.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
     _ratings = _user.replay_ratings.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/ratings.html",
-                           title="{}'s ratings - Dotabank".format(_user.name),
+                           title=u"{}'s ratings - Dotabank".format(_user.name),
                            user=_user,
                            ratings=_ratings)
 
@@ -164,7 +164,7 @@ def user_searches(_id, page=None):
         page = int(ceil(float(Search.query.filter(Search.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
     _searches = _user.searches.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/searches.html",
-                           title="{}'s searches - Dotabank".format(_user.name),
+                           title=u"{}'s searches - Dotabank".format(_user.name),
                            user=_user,
                            searches=_searches)
 
@@ -180,7 +180,7 @@ def user_downloads(_id, page=None):
         page = int(ceil(float(ReplayDownload.query.filter(ReplayDownload.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
     _downloads = _user.downloads.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/downloads.html",
-                           title="{}'s downloads - Dotabank".format(_user.name),
+                           title=u"{}'s downloads - Dotabank".format(_user.name),
                            user=_user,
                            downloads=_downloads)
 
@@ -210,7 +210,7 @@ def settings(_id):
         return redirect(request.args.get("next") or url_for("users.user", _id=_user.id))
 
     return render_template("users/settings.html",
-                           title="Your settings - Dotabank".format(_user.name),
+                           title="Your settings - Dotabank",
                            user=_user,
                            form=form)
 
