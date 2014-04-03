@@ -22,8 +22,8 @@
                     Featured farmer
                 </span>
                 <span class="info">
-                    {{ entry.farmer.name }}
-                    ({{ entry.farmer.gold_per_min }} GPM)
+                        {{ (entry.farmer.hero_id|get_hero_by_id)["localized_name"] }},
+                    {{ entry.farmer.gold_per_min }} GPM
                 </span>
             </div>
         </div>
@@ -34,8 +34,8 @@
                         Featured player
                     </span>
                     <span class="info">
-                        {{ player.name }}
-                        ({{ player.num_games }} games)
+                        {{ (player.hero_id|get_hero_by_id)["localized_name"] }},
+                        {{ player.num_games }} games
                     </span>
                 </div>
             </div>

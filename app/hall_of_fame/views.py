@@ -23,18 +23,6 @@ def hall_of_fame(week=None):
     pagination = HallOfFame.query.paginate(entry.adjusted_week if entry else week, 1, False)
     entry = entry or pagination.items[0]
 
-    # Fetch player names in a batch here rather than in individual requests from the view.
-    player_ids = [player.account_id for player in entry.players]
-    player_ids.append(entry.farmer.account_id)
-
-    # Map names back to account_ids
-    names = {y.id64 & 0xFFFFFFFF: y.persona for y in get_account_by_id(player_ids)}
-
-    # Add names to entry object, for accessing from view.
-    for player in entry.players:
-        player.name = names[player.account_id]
-    entry.farmer.name = names[entry.farmer.account_id]
-
     return render_template("hall_of_fame/hall_of_fame.html",
                            title="Hall of Fame - Dotabank",
                            entry=entry,
