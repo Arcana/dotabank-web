@@ -1,22 +1,29 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
-    <h2>Replays without 10 players</h2>
-    <p>Volvo why isn't year beast its own game mode?</p>
+    <h2>Replays with human_players discrepancy</h2>
     <table class="table">
     <thead>
     <tr>
         <th>Replay ID</th>
-        <th>Player count</th>
+        <th>Human players</th>
+        <th>Player count (excluding bots)</th>
     </tr>
     </thead>
     <tbody>
-    {% for replay in replays_without_ten_players %}
+    {% if human_players_discrepancy|length > 0 %}
+        {% for replay in human_players_discrepancy %}
+            <tr>
+                <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                <td>{{ replay.human_players }}</td>
+                <td>{{ replay.player_count }}</td>
+            </tr>
+        {% endfor %}
+    {% else %}
         <tr>
-            <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
-            <td>{{ replay.player_count }}</td>
+            <td colspan="3" class="text-muted">No broke replays :D</td>
         </tr>
-    {% endfor %}
+    {% endif %}
     </tbody>
     </table>
 {% endblock %}

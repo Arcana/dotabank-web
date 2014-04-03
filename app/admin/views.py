@@ -51,25 +51,26 @@ class AdminIndex(AuthMixin, AdminIndexView):
 class AtypicalReplays(AuthMixin, BaseView):
     @expose('/')
     def index(self):
-        replays_without_ten_players = [x for x in db.engine.execute(
+        human_players_discrepancy = [x for x in db.engine.execute(
             text("""
                 SELECT
                     r.id,
+                    r.human_players,
                     count(*) as player_count
                 FROM {replay_table} r
                 LEFT JOIN {player_table} rp ON rp.replay_id = r.id
                 WHERE
-                    r.game_mode NOT IN (7, 9) # Disgard diretide (7)/greeviling (9)
+                    rp.account_id is not NULL  # Exclude bots from count (though there's the chance we have duplicate entries for bots? fack)
                 GROUP BY rp.replay_id
             """.format(
                 replay_table=Replay.__tablename__,
                 player_table=ReplayPlayer.__tablename__)
             )
-        ) if x.player_count != 10]  # Do the "not-10" check in the app cause idfk how to do it in sql.
+        ) if x.player_count != x.human_players]
 
         return self.render(
             'admin/atypical_replays.html',
-            replays_without_ten_players=replays_without_ten_players
+            human_players_discrepancy=human_players_discrepancy
         )
 
 
