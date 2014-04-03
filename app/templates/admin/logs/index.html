@@ -20,7 +20,7 @@
         <tbody>
         {% if unresolved_logs|length > 0 %}
             {% for log in unresolved_logs %}
-                <tr>
+                <tr class="{{ log.level|log_level_to_class }}">
                     <td>{{ log.id }}</td>
                     <td>{{ log.level }}</td>
                     <td>{{ log.msg }}</td>
@@ -52,7 +52,7 @@
         <tbody>
         {% if resolved_logs|length > 0 %}
             {% for log in resolved_logs %}
-                <tr>
+                <tr class="{{ log.level|log_level_to_class }}">
                     <td>{{ log.id }}</td>
                     <td>{{ log.level }}</td>
                     <td>{{ log.msg }}</td>

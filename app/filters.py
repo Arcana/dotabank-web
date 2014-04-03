@@ -298,3 +298,16 @@ def pagination(pagination_obj, endpoint, endpoint_values={}, size="sm"):
         return Markup(paginated)
     else:
         return ""
+
+
+# Used for colouring log tables
+def log_level_to_class(level):
+    map = {
+        "CRITICAL": "danger",
+        "ERROR": "danger",
+        "WARNING": "warning",
+        "INFO": "info",
+        "DEBUG": "",
+        "NOTSET": ""
+    }
+    return map[level]
