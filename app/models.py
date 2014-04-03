@@ -65,6 +65,8 @@ class Log(db.Model):
     msg = db.Column(db.Text)  # any custom log you may have included
     extra = db.Column(db.Text)  # Any extra data given
     created_at = db.Column(db.DateTime, default=datetime.utcnow)  # the current timestamp
+    resolved_by_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    resolved_at = db.Column(db.DateTime, nullable=True)
 
     def __init__(self, logger=None, level=None, trace=None, msg=None, extra=None):
         self.logger = logger
@@ -78,3 +80,13 @@ class Log(db.Model):
 
     def __repr__(self):
         return "<Log: %s - %s>" % (self.created_at.strftime('%m/%d/%Y-%H:%M:%S'), self.msg[:50])
+
+    def resolve(self, user_id):
+        """ Mark this entry as resolved / at least acknowledge it's been seen. """
+        self.resolved_by_user_id = user_id
+        self.resolved_at = datetime.utcnow()
+
+    @property
+    def resolved(self):
+        return self.resolved_by_user_id is not None
+

@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Resolved logs <small>page {{ logs.page }}</small></h1>
+        {% include "admin/logs/logs_nav.html" %}
+    </div>
+
+    <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Level</th>
+                <th>Message</th>
+                <th>Created at</th>
+                <th>Resolved by</th>
+                <th>Resolved when</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if logs.items|length > 0 %}
+            {% for log in logs.items %}
+                <tr>
+                    <td>{{ log.id }}</td>
+                    <td>{{ log.level }}</td>
+                    <td>{{ log.msg }}</td>
+                    <td>{{ log.created_at }}</td>
+                    <td><a href="{{ url_for('users.user', _id=log.resolved_by_user_id) }}">{{ log.resolved_by_user.name }}</a></td>
+                    <td>{{ log.resolved_at }}</td>
+                    <td><a class="btn btn-xs btn-default" href="{{ url_for('logs.view', _id=log.id) }}">Details</a></td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="6" class="text-muted">No resolved logs</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+    {{logs|pagination("logs.resolved")}}
+{% endblock %}

@@ -1,12 +1,14 @@
-from flask import Blueprint, g, current_app
+from flask import Blueprint, g, current_app, redirect, request, flash, url_for
 from flask.ext.admin import Admin, expose, AdminIndexView, BaseView
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from flask.ext.login import current_user
 
 from sqlalchemy.sql import text
 from datetime import datetime, timedelta
+from math import ceil
 
 from app import db
+from app.models import Log
 from app.gc.models import GCJob, GCWorker
 from app.replays.models import Replay, ReplayPlayer
 
@@ -46,7 +48,7 @@ class AdminIndex(AuthMixin, AdminIndexView):
                            stats=stats)
 
 
-class Reports(BaseView):
+class AtypicalReplays(BaseView):
     @expose('/')
     def index(self):
         replays_without_ten_players = [x for x in db.engine.execute(
@@ -66,12 +68,77 @@ class Reports(BaseView):
         ) if x.player_count != 10]  # Do the "not-10" check in the app cause idfk how to do it in sql.
 
         return self.render(
-            'admin/reports.html',
+            'admin/atypical_replays.html',
             replays_without_ten_players=replays_without_ten_players
         )
 
+
+class Logs(BaseView):
+    @expose('/')
+    def index(self):
+        unresolved_logs = Log.query.filter(Log.resolved_by_user_id == None).limit(current_app.config['LOGS_PER_PAGE']).all()
+        unresolved_count = Log.query.filter(Log.resolved_by_user_id == None).count()
+
+        resolved_logs = Log.query.filter(Log.resolved_by_user_id != None).limit(current_app.config['LOGS_PER_PAGE']).all()
+        resolved_count = Log.query.filter(Log.resolved_by_user_id != None).count()
+
+        return self.render(
+            'admin/logs/index.html',
+            unresolved_logs=unresolved_logs,
+            unresolved_count=unresolved_count,
+            resolved_logs=resolved_logs,
+            resolved_count=resolved_count
+        )
+
+    @expose('/unresolved')
+    @expose('/unresolved/<int:page>')
+    def unresolved(self, page=None):
+        if not page:
+            page = int(ceil(float(Log.query.filter(Log.resolved_by_user_id == None).count() or 1) / float(current_app.config["LOGS_PER_PAGE"])))  # Default to last page
+
+        logs = Log.query.filter(Log.resolved_by_user_id == None).paginate(page, current_app.config["LOGS_PER_PAGE"], False)
+
+        return self.render(
+            'admin/logs/unresolved.html',
+            logs=logs
+        )
+
+    @expose('/resolved')
+    @expose('/resolved/<int:page>')
+    def resolved(self, page=None):
+        if not page:
+            page = int(ceil(float(Log.query.filter(Log.resolved_by_user_id != None).count() or 1) / float(current_app.config["LOGS_PER_PAGE"])))  # Default to last page
+
+        logs = Log.query.filter(Log.resolved_by_user_id != None).paginate(page, current_app.config["LOGS_PER_PAGE"], False)
+
+        return self.render(
+            'admin/logs/resolved.html',
+            logs=logs
+        )
+
+    @expose('/view/<int:_id>')
+    def view(self, _id):
+        log_entry = Log.query.filter(Log.id == _id).first_or_404()
+
+        return self.render(
+            'admin/logs/view.html',
+            log=log_entry
+        )
+
+    @expose('/views/<int:_id>/resolve')
+    def mark_resolved(self, _id):
+        log_entry = Log.query.filter(Log.id == _id).first_or_404()
+
+        log_entry.resolve(current_user.id)
+        db.session.add(log_entry)
+        db.session.commit()
+
+        flash("Log entry {} marked as resolved.".format(log_entry.id), "success")
+        return redirect(request.referrer or url_for("index"))
+
 admin = Admin(name="Dotabank", index_view=AdminIndex())
-admin.add_view(Reports(name='Reports'))
+admin.add_view(AtypicalReplays(name="Atypical Replays", category='Reports'))
+admin.add_view(Logs(name="Logs", category="Reports"))
 
 
 @mod.before_app_request
