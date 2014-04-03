@@ -1,7 +1,7 @@
 from app import cache, steam
 from flask import current_app, url_for
 import json
-import urllib2
+import requests
 from datetime import datetime, timedelta
 from jinja2 import Markup
 
@@ -93,9 +93,16 @@ def fetch_heroes_by_name():
 @cache.cached(timeout=60 * 60, key_prefix="items")
 def fetch_items():
     try:
-        data = json.loads(urllib2.urlopen("http://www.dota2.com/jsfeed/itemdata").read())["itemdata"]
-        return {data[k]["id"]: data[k] for k in data}
-    except urllib2.URLError:
+        request = requests.get("http://www.dota2.com/jsfeed/itemdata")
+
+        if request.status_code == requests.codes.ok:
+            data = request.json()["itemdata"]
+            return {data[k]["id"]: data[k] for k in data}
+
+        else:
+            return {}
+
+    except (requests.exceptions.RequestException, KeyError):
         return {}
 
 

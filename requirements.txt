@@ -1,4 +1,4 @@
-Crypto
+Cython==0.19.1
 Flask==0.10.1
 Flask-Admin==1.0.6
 Flask-Cache==0.12
@@ -14,11 +14,18 @@ SQLAlchemy==0.8.2
 WTForms==1.0.5
 Werkzeug==0.9.4
 argparse==1.2.1
+bitstring==3.1.2
 blinker==1.3
 boto==2.13.3
+crypto==1.1.0
 itsdangerous==0.23
+protobuf==2.5.0
+pyasn1==0.1.7
 pycrypto==2.6
 python-memcached==1.53
 python-openid==2.2.5
+python-snappy==0.5
+requests==2.2.1
+rsa==3.1.2
 steamodd==4.6
 wsgiref==0.1.2
