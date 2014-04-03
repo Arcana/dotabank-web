@@ -48,7 +48,7 @@ class AdminIndex(AuthMixin, AdminIndexView):
                            stats=stats)
 
 
-class AtypicalReplays(BaseView):
+class AtypicalReplays(AuthMixin, BaseView):
     @expose('/')
     def index(self):
         replays_without_ten_players = [x for x in db.engine.execute(
@@ -73,7 +73,7 @@ class AtypicalReplays(BaseView):
         )
 
 
-class Logs(BaseView):
+class Logs(AuthMixin, BaseView):
     @expose('/')
     def index(self):
         unresolved_logs = Log.query.filter(Log.resolved_by_user_id == None).limit(current_app.config['LOGS_PER_PAGE']).all()
