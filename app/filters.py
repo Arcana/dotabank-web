@@ -65,14 +65,23 @@ def get_account_by_id(account_id):
 
         return res
     except steam.api.HTTPFileNotFoundError:
+        current_app.logger.warning('Filter get_account_by_id threw HTTPFileNotFoundError', exc_info=True, extra={
+            'extra': json.dumps({'account_id': account_id})
+        })
         return None
 
 
 # Dota 2 API filters
 @cache.cached(timeout=60 * 60, key_prefix="heroes")
 def fetch_heroes():
-    res = steam.api.interface("IEconDOTA2_570").GetHeroes(language="en_US").get("result")
-    return res.get("heroes")
+    try:
+        res = steam.api.interface("IEconDOTA2_570").GetHeroes(language="en_US").get("result")
+        return res.get("heroes")
+    except steam.api.HTTPError:
+        current_app.logger.warning('Filter fetch_heroes returned with HTTPError', exc_info=True)
+
+    # This will only return on errors / exceptions
+    return {}
 
 
 @cache.cached(timeout=60 * 60, key_prefix="heroes_by_id")
@@ -80,7 +89,10 @@ def fetch_heroes_by_id():
     try:
         return {x["id"]: x for x in fetch_heroes()}
     except steam.api.HTTPError:
-        return {}
+        current_app.logger.warning('Filter fetch_heroes_by_id returned with HTTPError', exc_info=True)
+
+    # This will only return on errors / exceptions
+    return {}
 
 
 @cache.cached(timeout=60 * 60, key_prefix="heroes_by_name")
@@ -88,7 +100,11 @@ def fetch_heroes_by_name():
     try:
         return {x["name"]: x for x in fetch_heroes()}
     except steam.api.HTTPError:
-        return {}
+        current_app.logger.warning('Filter fetch_heroes_by_name returned with HTTPError', exc_info=True)
+
+    # This will only return on errors / exceptions
+    return {}
+
 
 @cache.cached(timeout=60 * 60, key_prefix="items")
 def fetch_items():
@@ -96,14 +112,32 @@ def fetch_items():
         request = requests.get("http://www.dota2.com/jsfeed/itemdata")
 
         if request.status_code == requests.codes.ok:
-            data = request.json()["itemdata"]
-            return {data[k]["id"]: data[k] for k in data}
+            try:
+                data = request.json()["itemdata"]
+                return {data[k]["id"]: data[k] for k in data}
+            except (KeyError, ValueError):
+                current_app.logger.warning('Filter fetch_items threw exception', exc_info=True, extra={
+                    'extra': json.dumps({
+                        'url': request.url,
+                        'text': request.text,
+                        'status_code': request.status_code,
+                    })
+                })
 
         else:
-            return {}
+            current_app.logger.warning('Filter fetch_items returned with non-OK status', extra={
+                'extra': json.dumps({
+                    'url': request.url,
+                    'text': request.text,
+                    'status_code': request.status_code,
+                })
+            })
 
-    except (requests.exceptions.RequestException, KeyError):
-        return {}
+    except requests.exceptions.RequestException:
+        current_app.logger.warning('Filter fetch_items returned with RequestException', exc_info=True)
+
+    # This will only return on errors / exceptions
+    return {}
 
 
 @cache.cached(timeout=60 * 60, key_prefix="leagues")
@@ -111,8 +145,12 @@ def fetch_leagues():
     try:
         res = steam.api.interface("IDOTA2Match_570").GetLeagueListing(language="en_US").get("result")
         return {x["leagueid"]: x for x in res.get("leagues")}
+
     except steam.api.HTTPError:
-        return {}
+        current_app.logger.warning('Filter fetch_leagues returned with HTTPError', exc_info=True)
+
+    # This will only return on errors / exceptions
+    return {}
 
 
 @cache.memoize(timeout=60 * 60)
@@ -148,7 +186,7 @@ def get_hero_by_name(hero_name):
 @cache.memoize(timeout=60 * 60)
 def get_item_by_id(item_id):
     try:
-        return [fetch_items().get(item(x)) for x in item_id]
+        return [fetch_items().get(int(x)) for x in item_id]
     except TypeError:
         return fetch_items().get(int(item_id))
 
@@ -165,10 +203,13 @@ def get_league_by_id(league_id):
 def get_file_by_ugcid(ugcid):
     try:
         file_info = steam.remote_storage.ugc_file(570, ugcid)
-        file_info.url
+        file_info.url  # Access an object so steamodd actually grabs data that we can cache
         return file_info
     except (steam.remote_storage.FileNotFoundError, steam.api.HTTPError):
-        return None
+        current_app.logger.warning('Filter get_file_by_ugcid threw exception', exc_info=True)
+
+    # This will only return on errors / exceptions
+    return None
 
 
 def lobby_type(value):

@@ -113,9 +113,17 @@ if app.debug:
 else:
     import logging
     from logging.handlers import SMTPHandler
+    from app.handlers import SQLAlchemyHandler
+
+    # Email logging for errors
     credentials = None
     if app.config["MAIL_USERNAME"] or app.config["MAIL_PASSWORD"]:
         credentials = (app.config["MAIL_USERNAME"], app.config["MAIL_PASSWORD"])
     mail_handler = SMTPHandler((app.config["MAIL_SERVER"], app.config["MAIL_PORT"]), app.config["MAIL_FROM"], app.config["ADMINS"], 'dotabank failure', credentials, secure=())
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
+
+    # Database logging for warnings
+    db_handler = SQLAlchemyHandler()
+    db_handler.setLevel(logging.WARNING)
+    app.logger.addHandler(db_handler)
