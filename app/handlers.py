@@ -19,6 +19,11 @@ class SQLAlchemyHandler(logging.Handler):
             trace=trace,
             msg=record.__dict__['msg'],
             extra=extra)
+
+        # If we hit an error we need to ROLL THE FUCK BACK so we can save to database.
+        if log.level >= logging.ERROR:
+            db.session.rollback()
+
         db.session.add(log)
         db.session.commit()
 
