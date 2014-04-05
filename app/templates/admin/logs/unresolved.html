@@ -19,7 +19,7 @@
         <tbody>
         {% if logs.items|length > 0 %}
             {% for log in logs.items %}
-                <tr>
+                <tr class="{{ log.level|log_level_to_class }}">
                     <td>{{ log.id }}</td>
                     <td>{{ log.level }}</td>
                     <td>{{ log.msg }}</td>
