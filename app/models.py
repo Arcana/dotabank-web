@@ -68,6 +68,11 @@ class Log(db.Model):
     resolved_by_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     resolved_at = db.Column(db.DateTime, nullable=True)
 
+    # Set default order by
+    __mapper_args__ = {
+        "order_by": [db.asc(created_at)]
+    }
+
     def __init__(self, logger=None, level=None, trace=None, msg=None, extra=None):
         self.logger = logger
         self.level = level

@@ -80,7 +80,10 @@ class Logs(AuthMixin, BaseView):
         unresolved_logs = Log.query.filter(Log.resolved_by_user_id == None).limit(current_app.config['LOGS_PER_PAGE']).all()
         unresolved_count = Log.query.filter(Log.resolved_by_user_id == None).count()
 
-        resolved_logs = Log.query.filter(Log.resolved_by_user_id != None).limit(current_app.config['LOGS_PER_PAGE']).all()
+        resolved_logs = Log.query.filter(Log.resolved_by_user_id != None).\
+            order_by(Log.resolved_at.asc()).\
+            limit(current_app.config['LOGS_PER_PAGE']).\
+            all()
         resolved_count = Log.query.filter(Log.resolved_by_user_id != None).count()
 
         return self.render(
@@ -110,7 +113,9 @@ class Logs(AuthMixin, BaseView):
         if not page:
             page = int(ceil(float(Log.query.filter(Log.resolved_by_user_id != None).count() or 1) / float(current_app.config["LOGS_PER_PAGE"])))  # Default to last page
 
-        logs = Log.query.filter(Log.resolved_by_user_id != None).paginate(page, current_app.config["LOGS_PER_PAGE"], False)
+        logs = Log.query.filter(Log.resolved_by_user_id != None).\
+            order_by(Log.resolved_at.asc())\
+            .paginate(page, current_app.config["LOGS_PER_PAGE"], False)
 
         return self.render(
             'admin/logs/resolved.html',
