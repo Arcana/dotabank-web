@@ -275,17 +275,21 @@ def search():
             # If we don't have match_id in database, check if it's a valid match via the WebAPI and if so add it to DB.
             if not _replay:
                 try:
-                    matchDetails = steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result")
-                    if "error" not in matchDetails.keys():
-                        _replay = Replay(match_id)
-                        db.session.add(_replay)
-                        queued = Replay.add_gc_job(_replay)
-                        if queued:
-                            flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
-                            db.session.commit()
-                        else:
-                            db.session.rollback()
-                            error = True
+                    match_data = steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result")
+                    if "error" not in match_data.keys():
+                        # Use get_or_create in case of race-hazard where another request (e.g. double submit) has already processed this replay while we were waiting for match_data.
+                        _replay, created = Replay.get_or_create(id=match_id, skip_webapi=True)
+
+                        if created:
+                            _replay._populate_from_webapi(match_data)
+                            db.session.add(_replay)
+                            queued = Replay.add_gc_job(_replay)
+                            if queued:
+                                flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
+                                db.session.commit()
+                            else:
+                                db.session.rollback()
+                                error = True
                 except steam.api.HTTPError:
                     error = True
 

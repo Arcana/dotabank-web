@@ -92,23 +92,23 @@ class Replay(db.Model):
         "order_by": [db.desc(added_to_site_time)]
     }
 
-    def __init__(self, _id=None, replay_state="UNKNOWN", state="WAITING_GC", skip_webapi=False):
-        self.id = _id
+    def __init__(self, id=None, replay_state="UNKNOWN", state="WAITING_GC", skip_webapi=False):
+        self.id = id
         self.replay_state = replay_state
         self.state = state
 
         if not skip_webapi:
             self._populate_from_webapi()
 
-
     def __repr__(self):
         return "<Replay {}>".format(self.id)
 
-    def _populate_from_webapi(self):
+    def _populate_from_webapi(self, match_data=None):
         """ Populates a new replay object with data from WebAPI.
         """
         try:
-            match_data = steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=self.id).get("result")
+            if not match_data:
+                match_data = steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=self.id).get("result")
 
             if match_data:
                 self.good_guys_win = match_data.get('radiant_win')
@@ -127,6 +127,17 @@ class Replay(db.Model):
                 self.game_mode = match_data.get('game_mode')
         except steam.api.HTTPError:
             pass
+
+    @classmethod
+    def get_or_create(cls, **kwargs):
+        # Get instance, filter skip_webapi from kwargs as that's the only non-database argument __init__ can take.
+        instance = cls.query.filter_by(**{k: v for k,v in kwargs.iteritems() if k is not "skip_webapi"}).first()
+        if instance:
+            return instance, False
+        else:
+            instance = cls(**kwargs)
+            return instance, True
+
 
     @property
     def url(self):
