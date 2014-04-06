@@ -1,5 +1,6 @@
 from math import ceil
 from datetime import datetime, timedelta
+import re
 
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app, abort
 from flask.ext.login import current_user, login_required
@@ -269,6 +270,16 @@ def search():
         error = False
 
         search_log = Search(current_user.get_id(), match_id, request.access_route[0])
+
+        # Trim whitespace chars
+        match_id = match_id.strip()
+
+        # If not a decimal input, let's try pull match id from inputs we recognise
+        if not unicode.isdecimal(unicode(match_id)):
+            # Dota 2 protocol or dotabuff links
+            search = re.search(r'(?:matchid=|matches\/)([0-9]+)', match_id)
+            if search is not None:
+                match_id = search.group(1)
 
         if unicode.isdecimal(unicode(match_id)):
             _replay = Replay.query.filter(Replay.id == match_id).first()
