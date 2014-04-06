@@ -1,3 +1,4 @@
 *.pyc
 .idea/*
 mysql-connector*
+fallback_data/*.json

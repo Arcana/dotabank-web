@@ -5,6 +5,8 @@ import requests
 from datetime import datetime, timedelta
 from jinja2 import Markup
 
+from app.fs_fallback import fs_fallback
+
 
 # General filters
 def escape_every_character(text):
@@ -15,6 +17,7 @@ def escape_every_character(text):
 
 def timestamp_to_datestring(timestamp):
     return datetime.utcfromtimestamp(int(timestamp)).strftime(current_app.config["DATE_STRING_FORMAT"])
+
 
 def datetime_to_datestring(input):
     if isinstance(input, datetime):
@@ -73,6 +76,7 @@ def get_account_by_id(account_id):
 
 # Dota 2 API filters
 @cache.cached(timeout=60 * 60, key_prefix="heroes")
+@fs_fallback
 def fetch_heroes():
     try:
         res = steam.api.interface("IEconDOTA2_570").GetHeroes(language="en_US").get("result")
@@ -107,6 +111,7 @@ def fetch_heroes_by_name():
 
 
 @cache.cached(timeout=60 * 60, key_prefix="items")
+@fs_fallback
 def fetch_items():
     try:
         request = requests.get("http://www.dota2.com/jsfeed/itemdata")
@@ -141,6 +146,7 @@ def fetch_items():
 
 
 @cache.cached(timeout=60 * 60, key_prefix="leagues")
+@fs_fallback
 def fetch_leagues():
     try:
         res = steam.api.interface("IDOTA2Match_570").GetLeagueListing(language="en_US").get("result")
