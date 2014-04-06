@@ -68,9 +68,21 @@ class AtypicalReplays(AuthMixin, BaseView):
             )
         ) if x.player_count != x.human_players]
 
+        replay_available_download_error = Replay.query.filter(
+            Replay.replay_state == "REPLAY_AVAILABLE",
+            Replay.state == "DOWNLOAD_ERROR"
+        ).all()
+
+        replay_waiting_download_over24hrs = Replay.query.filter(
+            Replay.state == "WAITING_DOWNLOAD",
+            Replay.gc_done_time <= (datetime.utcnow() - timedelta(hours=24))  # Over 24 hrs ago
+        ).all()
+
         return self.render(
             'admin/atypical_replays.html',
-            human_players_discrepancy=human_players_discrepancy
+            human_players_discrepancy=human_players_discrepancy,
+            replay_available_download_error=replay_available_download_error,
+            replay_waiting_download_over24hrs=replay_waiting_download_over24hrs
         )
 
 

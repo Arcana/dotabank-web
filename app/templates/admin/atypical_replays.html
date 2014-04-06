@@ -1,29 +1,109 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
-    <h2>Replays with human_players discrepancy</h2>
-    <table class="table">
-    <thead>
-    <tr>
-        <th>Replay ID</th>
-        <th>Human players</th>
-        <th>Player count (excluding bots)</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% if human_players_discrepancy|length > 0 %}
-        {% for replay in human_players_discrepancy %}
-            <tr>
-                <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
-                <td>{{ replay.human_players }}</td>
-                <td>{{ replay.player_count }}</td>
-            </tr>
-        {% endfor %}
-    {% else %}
-        <tr>
-            <td colspan="3" class="text-muted">No broke replays :D</td>
-        </tr>
-    {% endif %}
-    </tbody>
-    </table>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#human_players" data-toggle="tab">Players wrong ({{ human_players_discrepancy|length }})</a></li>
+      <li><a href="#replay_available_download_error" data-toggle="tab">Available, DL error ( {{ replay_available_download_error|length }})</a></li>
+      <li><a href="#long_waiting_download" data-toggle="tab">Long DL wait ({{ replay_waiting_download_over24hrs|length }})</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div class="tab-pane active" id="human_players">
+            <p>Replays where human_players count does not match the count of ReplayPlayer objects we have in the database.</p>
+
+            <table class="table">
+            <thead>
+                <tr>
+                    <th>Replay ID</th>
+                    <th>Human players</th>
+                    <th>Player count (excluding bots)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if human_players_discrepancy|length > 0 %}
+                    {% for replay in human_players_discrepancy %}
+                        <tr>
+                            <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                            <td>{{ replay.human_players }}</td>
+                            <td>{{ replay.player_count }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-muted">No broke replays :D</td>
+                </tr>
+                {% endif %}
+            </tbody>
+            </table>
+        </div>
+
+        <div class="tab-pane" id="replay_available_download_error">
+            <p>Replays with the status of "REPLAY_AVAILABLE", but which hit a download error.</p>
+
+            <table class="table">
+            <thead>
+                <tr>
+                    <th>Replay ID</th>
+                    <th>State</th>
+                    <th>Replay state</th>
+                    <th>GC done time</th>
+                    <th>Download attempts</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if replay_available_download_error|length > 0 %}
+                    {% for replay in replay_available_download_error %}
+                        <tr>
+                            <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                            <td>{{ replay.state }}</td>
+                            <td>{{ replay.replay_state }}</td>
+                            <td>{{ replay.gc_done_time }}</td>
+                            <td>{{ replay.dl_fails }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-muted">No broke replays :D</td>
+                </tr>
+                {% endif %}
+            </tbody>
+            </table>
+        </div>
+
+        <div class="tab-pane" id="long_waiting_download">
+            <p>Replays which have been WAITING_DOWNLOAD for over 24hrs.</p>
+
+            <table class="table">
+            <thead>
+                <tr>
+                    <th>Replay ID</th>
+                    <th>State</th>
+                    <th>Replay state</th>
+                    <th>GC done time</th>
+                    <th>Download attempts</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if replay_waiting_download_over24hrs|length > 0 %}
+                    {% for replay in replay_waiting_download_over24hrs %}
+                        <tr>
+                            <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                            <td>{{ replay.state }}</td>
+                            <td>{{ replay.replay_state }}</td>
+                            <td>{{ replay.gc_done_time }}</td>
+                            <td>{{ replay.dl_fails }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-muted">No broke replays :D</td>
+                </tr>
+                {% endif %}
+            </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}
