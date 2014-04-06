@@ -25,6 +25,7 @@
                     <td>{{ log.msg }}</td>
                     <td>{{ log.created_at }}</td>
                     <td><a class="btn btn-xs btn-default" href="{{ url_for('logs.view', _id=log.id) }}">Details</a></td>
+                    <td><a class="btn btn-success btn-xs logs-mark-resolved" href="{{ url_for('logs.mark_resolved', _id=log.id) }}">Mark resolved</a></td>
                 </tr>
             {% endfor %}
         {% else %}

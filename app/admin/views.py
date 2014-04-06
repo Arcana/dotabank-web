@@ -1,4 +1,4 @@
-from flask import Blueprint, g, current_app, redirect, request, flash, url_for
+from flask import Blueprint, g, current_app, redirect, request, flash, url_for, jsonify
 from flask.ext.admin import Admin, expose, AdminIndexView, BaseView
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from flask.ext.login import current_user
@@ -153,8 +153,11 @@ class Logs(AuthMixin, BaseView):
         db.session.add(log_entry)
         db.session.commit()
 
-        flash("Log entry {} marked as resolved.".format(log_entry.id), "success")
-        return redirect(request.referrer or url_for("index"))
+        if request.is_xhr:
+            return jsonify(success=True, resolved_by=log_entry.resolved_by_user_id, resolved_at=log_entry.resolved_at)
+        else:
+            flash("Log entry {} marked as resolved.".format(log_entry.id), "success")
+            return redirect(request.referrer or url_for("index"))
 
 admin = Admin(name="Dotabank", index_view=AdminIndex())
 admin.add_view(AtypicalReplays(name="Atypical Replays", category='Reports'))
