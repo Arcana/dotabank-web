@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app, abort
 from flask.ext.login import current_user, login_required
+from sqlalchemy.exc import IntegrityError
 
 from app import steam, db, dotabank_bucket
 from models import Replay, ReplayRating, ReplayFavourite, ReplayDownload, Search
@@ -278,6 +279,7 @@ def search():
                     match_data = steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result")
                     if "error" not in match_data.keys():
                         # Use get_or_create in case of race-hazard where another request (e.g. double submit) has already processed this replay while we were waiting for match_data.
+                        # DOESN'T FIX A FOOKIN THINGA
                         _replay, created = Replay.get_or_create(id=match_id, skip_webapi=True)
 
                         if created:
@@ -286,7 +288,11 @@ def search():
                             queued = Replay.add_gc_job(_replay)
                             if queued:
                                 flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
-                                db.session.commit()
+                                try:
+                                    db.session.commit()
+                                except IntegrityError:
+                                    db.session.rollback()
+                                    pass  # Fucking piece of shit.
                             else:
                                 db.session.rollback()
                                 error = True
