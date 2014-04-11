@@ -32,6 +32,7 @@
                 <li><a href="https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/V001/?match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchDetails</a></li>
                 <li><a href="https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001/?start_at_match_id={{replay.id}}&key={{api_key}}" target="_blank">GetMatchHistory</a></li>
                 <li class="dropdown-header">Clean up</li>
+                <li><a href="{{ url_for('replays.api_populate', _id=replay.id) }}">API (re)populate</a></li>
                 <li><a href="{{ url_for('replays.delete_players', _id=replay.id) }}">Delete players</a></li>
             </ul>
         </li>
