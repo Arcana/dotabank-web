@@ -175,7 +175,7 @@ class Maintenance(AuthMixin, BaseView):
         for replay in Replay.query.all():
             try:
                 replay._populate_from_webapi()
-                db.sesion.add(replay)
+                db.session.add(replay)
                 success.append(replay)
             except steam.api.HTTPError:
                 failed.append(replay)
