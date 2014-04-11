@@ -1,0 +1,8 @@
+{% from "macros.html" import iconic %}
+<nav id="manly-nav" class="navbar navbar-default">
+    <ul class="nav navbar-nav">
+        <li class="{{ "active" if "maintenance.index" == request.endpoint  }}">
+            <a href="{{ url_for("maintenance.index") }}">Manly Home</a>
+        </li>
+    </ul>
+</nav>

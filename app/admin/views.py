@@ -7,7 +7,7 @@ from sqlalchemy.sql import text
 from datetime import datetime, timedelta
 from math import ceil
 
-from app import db
+from app import db, steam
 from app.models import Log
 from app.gc.models import GCJob, GCWorker
 from app.replays.models import Replay, ReplayPlayer
@@ -159,9 +159,39 @@ class Logs(AuthMixin, BaseView):
             flash("Log entry {} marked as resolved.".format(log_entry.id), "success")
             return redirect(request.referrer or url_for("index"))
 
+
+class Maintenance(AuthMixin, BaseView):
+    @expose('/')
+    def index(self):
+        return self.render('admin/maintenance/index.html')
+
+
+    @expose('/replay_repopulate')
+    def replay_repopulate(self):
+        success = []
+        failed = []
+
+        # For each replay, try repopulate from WebAPI.
+        for replay in Replay.query.all():
+            try:
+                replay._populate_from_webapi()
+                db.sesion.add(replay)
+                success.append(replay)
+            except steam.api.HTTPError:
+                failed.append(replay)
+
+        db.session.commit()
+
+        return jsonify(
+            success=True,
+            replays_updated=[replay.id for replay in success],
+            replays_failed=[replay.id for replay in failed]
+        )
+
 admin = Admin(name="Dotabank", index_view=AdminIndex())
 admin.add_view(AtypicalReplays(name="Atypical Replays", category='Reports'))
 admin.add_view(Logs(name="Logs", category="Reports"))
+admin.add_view(Maintenance(name="Maintenance"))
 
 
 @mod.before_app_request

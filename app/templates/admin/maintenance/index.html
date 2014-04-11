@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Maintenance</h1>
+        {% include "admin/maintenance/manly_nav.html" %}
+    </div>
+
+    <h2>Replays</h2>
+    <div id="replay_repopulate">
+        <h3>Re-populate from WebAPI for all replays</h3>
+        <div class="results" style="display:none">
+            <h3>Updated</h3>
+            <pre class="updated"></pre>
+
+            <h3>Failed</h3>
+            <pre class="failed"></pre>
+        </div>
+        <a class="btn btn-default" href="{{ url_for('maintenance.replay_repopulate') }}">MAKE DO</a>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        $(document).ready(function(){
+            $("div#replay_repopulate a.btn").click(function(e){
+                e.preventDefault();
+
+                var $this = $(this);
+                $this.button('loading');
+
+                $.ajax({
+                    content: this,
+                    type: 'GET',
+                    url: this.href,
+                    dataType: 'json',
+                    success: function(data) {
+                        // If successful, populate thing with data
+                        if (data.success == true)
+                        {
+                            $this.parent().find('pre.updated').text(data.replays_updated);
+                            $this.parent().find('pre.failed').text(data.replays_failed);
+                            $this.parent().find('div.results').slideDown()
+                            $this.button('reset');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
