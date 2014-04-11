@@ -237,25 +237,27 @@ def game_mode(value):
         return "Unknown"
     else:
         try:
-            return ["Invalid (0)",
-                    "All Pick",
-                    "Captain's Mode",
-                    "Random Draft",
-                    "Standard Draft",
-                    "All Random",
-                    "Invalid (6)",
-                    "Diretide",
-                    "Reverse Captains Mode",
-                    "The Greeviling",
-                    "Tutorial",
-                    "Mid Only",
-                    "Least Played",
-                    "Limited Heroes",
-                    "Compendium",
-                    "Captains Draft",
-                    "Balanced Draft",
-                    "Invalid (17)",
-                    "Ability Draft"][value]
+            return ["Invalid (0)",              # DOTA_GAMEMODE_NONE = 0;
+                    "All Pick",                 # DOTA_GAMEMODE_AP = 1;
+                    "Captain's Mode",           # DOTA_GAMEMODE_CM = 2;
+                    "Random Draft",             # DOTA_GAMEMODE_RD = 3;
+                    "Standard Draft",           # DOTA_GAMEMODE_SD = 4;
+                    "All Random",               # DOTA_GAMEM ODE_AR = 5;
+                    "Invalid (6)",              # DOTA_GAMEMODE_INTRO = 6;
+                    "Diretide",                 # DOTA_GAMEMODE_HW = 7;
+                    "Reverse Captains Mode",    # DOTA_GAMEMODE_REVERSE_CM = 8;
+                    "The Greeviling",           # DOTA_GAMEMODE_XMAS = 9;
+                    "Tutorial",                 # DOTA_GAMEMODE_TUTORIAL = 10;
+                    "Mid Only",                 # DOTA_GAMEMODE_MO = 11;
+                    "Least Played",             # DOTA_GAMEMODE_LP = 12;
+                    "Limited Heroes",           # DOTA_GAMEMODE_POOL1 = 13;
+                    "Compendium",               # DOTA_GAMEMODE_FH = 14;
+                    "Invalid (15)",             # DOTA_GAMEMODE_CUSTOM = 15;
+                    "Captains Draft",           # DOTA_GAMEMODE_CD = 16;
+                    "Balanced Draft",           # DOTA_GAMEMODE_BD = 17;
+                    "Ability Draft",            # DOTA_GAMEMODE_ABILITY_DRAFT = 18;
+                    "Invalid (19)"              # DOTA_GAMEMODE_EVENT = 19;
+                    ][value]
         except IndexError:
             return "Invalid ({})".format(value)
 
