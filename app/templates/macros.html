@@ -66,3 +66,33 @@
         {% if state %}data-state="{{ state }}"{% endif %}
     />
 {% endmacro %}
+
+{%- macro pagination(pagination_obj, endpoint, endpoint_values={}, size="sm") -%}
+    {% if pagination_obj.pages > 1 %}
+        <ul class="pagination pagination-{{ size }}">
+
+            {# Previous button #}
+            {% if pagination_obj.has_prev %}
+                <li><a class="prev" href="{{ url_for(endpoint, page=pagination_obj.prev_num, **endpoint_values) }}">&#9664;</a></li>
+            {% else %}
+                <li class="disabled"><a class="prev">&#9664;</a></li>
+            {% endif %}
+
+            {# Next button #}
+            {% if pagination_obj.has_next %}
+                <li><a class="next" href="{{ url_for(endpoint, page=pagination_obj.next_num, **endpoint_values) }}">&#9654;</a></li>
+            {% else %}
+                <li class="disabled"><a class="next">&#9654;</a></li>
+            {% endif %}
+
+            {# Individual page links #}
+            {% for page in pagination_obj.iter_pages() %}
+                {% if page %}
+                    <li class="{{ "active" if pagination_obj.page == page }}"><a href="{{ url_for(endpoint, page=page, **endpoint_values) }}">{{ page }}</a></li>
+                {% else %}
+                    <li class="disabled"><a>&hellip;</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endmacro %}

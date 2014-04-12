@@ -384,32 +384,6 @@ def players_to_teams(players):
     return radiant, dire
 
 
-def pagination(pagination_obj, endpoint, endpoint_values={}, size="sm"):
-    # TODO: Make a jinja2 macro.
-    if pagination_obj.pages > 1:
-        paginated = '<ul class="pagination pagination-{size}">'.format(size=size)
-        if pagination_obj.has_prev:
-            paginated += '<li><a class="prev" href="{url}">&#9664;</a></li>'.format(url=url_for(endpoint, page=pagination_obj.prev_num, **endpoint_values))
-        else:
-            paginated += '<li class="disabled"><a class="prev">&#9664;</a></li>'
-        if pagination_obj.has_next:
-            paginated += '<li><a class="next" href="{url}">&#9654;</a></li>'.format(url=url_for(endpoint, page=pagination_obj.next_num, **endpoint_values))
-        else:
-            paginated += '<li class="disabled"><a class="next">&#9654;</a></li>'
-        for page in pagination_obj.iter_pages():
-            if page:
-                if page is not pagination_obj.page:
-                    paginated += '<li><a href="{url}">{page}</a></li>'.format(url=url_for(endpoint, page=page, **endpoint_values), page=page)
-                else:
-                    paginated += '<li class="active"><a>{page}</a></li>'.format(page=page)
-            else:
-                paginated += '<li class="disabled"><a>&hellip;</a></li>'
-        paginated += '</ul>'
-        return Markup(paginated)
-    else:
-        return ""
-
-
 # Used for colouring log tables
 def log_level_to_class(level):
     # TODO: Make a jinja2 macro.

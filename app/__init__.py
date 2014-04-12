@@ -59,7 +59,6 @@ from filters import escape_every_character,\
     lobby_type,\
     game_mode,\
     players_to_teams,\
-    pagination,\
     log_level_to_class
 app.add_template_filter(escape_every_character)
 app.add_template_filter(get_steamid_from_accountid)
@@ -75,7 +74,6 @@ app.add_template_filter(dotabuff_match_link)
 app.add_template_filter(lobby_type)
 app.add_template_filter(game_mode)
 app.add_template_filter(players_to_teams)
-app.add_template_filter(pagination)
 app.add_template_filter(log_level_to_class)
 
 

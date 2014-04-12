@@ -1,4 +1,4 @@
-{% from "macros.html" import iconic %}
+{% from "macros.html" import iconic, pagination %}
 {% extends "layout.html" %}
 
 {% block content %}
@@ -80,5 +80,5 @@
             {% endfor %}
         </tbody>
     </table>
-	{{replays|pagination("replays.replays")}}
+    {{ pagination(replays, "replays.replays") }}
 {% endblock %}

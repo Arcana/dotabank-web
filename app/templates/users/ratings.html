@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from "macros.html" import pagination %}
 
 {% block content %}
     {% include "users/user_nav.html" %}
@@ -38,5 +39,5 @@
         {% endif %}
         </tbody>
     </table>
-	{{ratings|pagination("users.user_ratings", {"_id":user.id})}}
+    {{ pagination(ratings, "users.user_ratings", {"_id":user.id}) }}
 {% endblock %}
