@@ -1,9 +1,8 @@
 from app import cache, steam
-from flask import current_app, url_for
+from flask import current_app
 import json
 import requests
 from datetime import datetime, timedelta
-from jinja2 import Markup
 
 from app.fs_fallback import fs_fallback
 
@@ -23,18 +22,17 @@ def escape_every_character(text):
     return "".join("&#{};".format(ord(x)) for x in text)
 
 
-def timestamp_to_datestring(timestamp):
+def timestamp_to_datestring(timestamp, _format=None):
     """ Take a timestamp and output it in the format specified in the site's config. """
-    # TODO: Allow method call to overwrite format, use config as default.
-    return datetime.utcfromtimestamp(int(timestamp)).strftime(current_app.config["DATE_STRING_FORMAT"])
+    _format = _format or current_app.config["DATE_STRING_FORMAT"]
+    return datetime.utcfromtimestamp(int(timestamp)).strftime(_format)
 
 
-def datetime_to_datestring(_input):
+def datetime_to_datestring(_input, _format=None):
     """ Take a datetime object and output it in the format specified in the site's config. """
-
-    # TODO: Allow method call to overwrite format, use config as default.
+    _format = _format or current_app.config["DATE_STRING_FORMAT"]
     if isinstance(_input, datetime):
-        return _input.strftime(current_app.config["DATE_STRING_FORMAT"])
+        return _input.strftime(_format)
     else:
         return None
 
