@@ -171,7 +171,7 @@ class Logs(AuthMixin, BaseView):
             log=log_entry
         )
 
-    @expose('/views/<int:_id>/resolve')
+    @expose('/view/<int:_id>/resolve')
     def mark_resolved(self, _id):
         """ Mark a log entry as resolved. """
         log_entry = Log.query.filter(Log.id == _id).first_or_404()
