@@ -372,17 +372,6 @@ def game_mode(value):
             return "Invalid ({})".format(value)
 
 
-def building_status(value):
-    # TODO: Make a jinja2 macro.
-    try:
-        if not value or value == "0":
-            return " destroyed"
-        else:
-            return ""
-    except IndexError:
-        return " destroyed"
-
-
 def players_to_teams(players):
     """ Takes a list of players and returns a tuple (radiant, dire) after splitting them into teams. """
     # Sort players by their in-game slot
