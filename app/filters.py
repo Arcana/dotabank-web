@@ -382,17 +382,3 @@ def players_to_teams(players):
     dire = [p for p in players if p.team == "Dire"]  # 8th bit true
 
     return radiant, dire
-
-
-# Used for colouring log tables
-def log_level_to_class(level):
-    # TODO: Make a jinja2 macro.
-    map = {
-        "CRITICAL": "danger",
-        "ERROR": "danger",
-        "WARNING": "warning",
-        "INFO": "info",
-        "DEBUG": "",
-        "NOTSET": ""
-    }
-    return map[level]

@@ -58,8 +58,7 @@ from filters import escape_every_character,\
     dotabuff_match_link,\
     lobby_type,\
     game_mode,\
-    players_to_teams,\
-    log_level_to_class
+    players_to_teams
 app.add_template_filter(escape_every_character)
 app.add_template_filter(get_steamid_from_accountid)
 app.add_template_filter(get_account_by_id)
@@ -74,7 +73,6 @@ app.add_template_filter(dotabuff_match_link)
 app.add_template_filter(lobby_type)
 app.add_template_filter(game_mode)
 app.add_template_filter(players_to_teams)
-app.add_template_filter(log_level_to_class)
 
 
 # Load views

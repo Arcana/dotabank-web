@@ -1,0 +1,9 @@
+{%- macro to_class(value) -%}
+    {{ {"CRITICAL": "danger",
+        "ERROR": "danger",
+        "WARNING": "warning",
+        "INFO": "info",
+        "DEBUG": "",
+        "NOTSET": ""
+       }[value] }}
+{% endmacro %}
