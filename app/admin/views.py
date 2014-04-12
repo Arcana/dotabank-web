@@ -12,22 +12,28 @@ from app.models import Log
 from app.gc.models import GCJob, GCWorker
 from app.replays.models import Replay, ReplayPlayer
 
+# Create blueprint
 mod = Blueprint("dotabank_admin", __name__)
 
 
-#noinspection PyMethodMayBeStatic
 class AuthMixin(object):
+    """ Mixin for admin views to restrict access to only admin users. """
     def is_accessible(self):
         return current_user.is_admin()
 
 
 class AdminModelView(AuthMixin, ModelView):
+    """ Used for setting up admin-only model views """
     pass
 
 
 class AdminIndex(AuthMixin, AdminIndexView):
+    """ Flask-admin index view """
+
     @expose("/")
     def index(self):
+        """ Reports the GCWorker utilization for the past 24 hrs. """
+
         gc_workers = GCWorker.query.all()
 
         stats = []
@@ -49,8 +55,20 @@ class AdminIndex(AuthMixin, AdminIndexView):
 
 
 class AtypicalReplays(AuthMixin, BaseView):
+    """ Views for atypical-replay reports """
+
     @expose('/')
     def index(self):
+        """ Renders a list of replays which are atypical.
+
+        human_players_discrepancy: Replays where their human_player property doesn't match the count of ReplayPlayer
+        objects we have in our database.
+
+        replay_available_download_error: Replays which are available to download, but that our download script failed to
+        retrieve.
+
+        replay_waiting_download_over24hrs: Replays which have been waiting to be downloaded for over 24 hrs.
+        """
         human_players_discrepancy = [x for x in db.engine.execute(
             text("""
                 SELECT
@@ -87,8 +105,13 @@ class AtypicalReplays(AuthMixin, BaseView):
 
 
 class Logs(AuthMixin, BaseView):
+    """ Views for database-stored site logs. """
+
     @expose('/')
     def index(self):
+        """ Renders a list of latest resolved and unresolved log entries, also renders how many entries are in each
+        state - linking to views to see the full list. """
+
         unresolved_logs = Log.query.filter(Log.resolved_by_user_id == None).\
             order_by(Log.created_at.desc()).\
             limit(current_app.config['LOGS_PER_PAGE']).all()
@@ -111,6 +134,7 @@ class Logs(AuthMixin, BaseView):
     @expose('/unresolved')
     @expose('/unresolved/<int:page>')
     def unresolved(self, page=None):
+        """ Paginated view for all unresolved log entries. """
         if not page:
             page = int(ceil(float(Log.query.filter(Log.resolved_by_user_id == None).count() or 1) / float(current_app.config["LOGS_PER_PAGE"])))  # Default to last page
 
@@ -124,6 +148,7 @@ class Logs(AuthMixin, BaseView):
     @expose('/resolved')
     @expose('/resolved/<int:page>')
     def resolved(self, page=None):
+        """ Paginated view for all resolved log entries. """
         if not page:
             page = int(ceil(float(Log.query.filter(Log.resolved_by_user_id != None).count() or 1) / float(current_app.config["LOGS_PER_PAGE"])))  # Default to last page
 
@@ -138,6 +163,7 @@ class Logs(AuthMixin, BaseView):
 
     @expose('/view/<int:_id>')
     def view(self, _id):
+        """ View a specific log entry. """
         log_entry = Log.query.filter(Log.id == _id).first_or_404()
 
         return self.render(
@@ -147,6 +173,7 @@ class Logs(AuthMixin, BaseView):
 
     @expose('/views/<int:_id>/resolve')
     def mark_resolved(self, _id):
+        """ Mark a log entry as resolved. """
         log_entry = Log.query.filter(Log.id == _id).first_or_404()
 
         log_entry.resolve(current_user.id)
@@ -161,13 +188,20 @@ class Logs(AuthMixin, BaseView):
 
 
 class Maintenance(AuthMixin, BaseView):
+    """ Views for maintenance replated functions """
     @expose('/')
     def index(self):
+        """ Renders a list of maintenance actions, and a button to execute each action. """
         return self.render('admin/maintenance/index.html')
 
 
     @expose('/replay_repopulate')
     def replay_repopulate(self):
+        """ AJAX endpoint to repopulate WebAPI data for every replay on the site. """
+        # TODO: Accept a list of replays, rather than executing for all replays.
+        # TODO: Make asyncronous.
+        # TODO: Send progress data back to caller.
+
         success = []
         failed = []
 
@@ -188,6 +222,7 @@ class Maintenance(AuthMixin, BaseView):
             replays_failed=[replay.id for replay in failed]
         )
 
+# Set up flask-admin
 admin = Admin(name="Dotabank", index_view=AdminIndex())
 admin.add_view(AtypicalReplays(name="Atypical Replays", category='Reports'))
 admin.add_view(Logs(name="Logs", category="Reports"))
@@ -196,6 +231,7 @@ admin.add_view(Maintenance(name="Maintenance"))
 
 @mod.before_app_request
 def before_request():
+    """ If logged in user is an admin, add the flask-admin object to the global scope. """
     if current_user.is_admin():
         g.admin = admin  # Only utilized under is_admin condition
 

@@ -1,26 +1,22 @@
 from flask import render_template
-from datetime import datetime, timedelta
-
 from app import app, db
 from app.models import Stats
-from app.users.models import User
 from app.replays.models import Replay
-from app.replays.models import ReplayDownload
 from app.replays.forms import SearchForm
-
-
 from flask.ext.login import current_user
 
 
-# Inject search form into template (CSRF)
 @app.context_processor
 def inject_search_form():
+    """ Inject a search form instance into Jinja2 - for the site-wide search box's CSRF protection. """
     return dict(search_form=SearchForm())
 
 
 # Routes
 @app.route('/')
 def index():
+    """ Home page. Has a jumbotron explaining the site, with a search-box call to action. Lists latest addeed replays,
+    latest archived replays, some public stats about the state of the site. """
     last_added_replays = Replay.query.order_by(Replay.added_to_site_time.desc()).limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
     last_archived_replays = Replay.query.filter(Replay.state == "ARCHIVED").order_by(Replay.dl_done_time.desc()).limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
 
@@ -37,16 +33,19 @@ def index():
 
 @app.route("/privacy/")
 def privacy():
+    """ Our privacy policy. """
     return render_template("privacy.html")
 
 
 @app.route("/tos/")
 def tos():
+    """ Our terms of service. """
     return render_template("tos.html")
 
 
 @app.route("/about/")
 def about():
+    """ Our about-us page. """
     return render_template("about.html")
 
 
@@ -56,6 +55,7 @@ def about():
 @app.errorhandler(500)  # Internal server error.
 # @app.errorhandler(Exception)  # Internal server error.
 def internalerror(error):
+    """ Custom error page, will catch 401, 403, 404, and 500, and output a friendly error message. """
     try:
         if error.code == 401:
             error.description = "I'm sorry Dave, I'm afraid I can't do that.  Try logging in."
@@ -63,10 +63,16 @@ def internalerror(error):
             if current_user.is_authenticated():
                 error.description = "I'm sorry {{ current_user.name }}, I'm afraid I can't do that.  You do not have access to this resource.</p>"
             else:
+                # Shouldn't output 403 unless the user is logged in.
                 error.description = "Hacker."
     except AttributeError:
+        # Rollback the session
         db.session.rollback()
+
+        # E500's don't populate the error object, so we do that here.
         error.code = 500
         error.name = "Internal Server Error"
         error.description = "Whoops! Something went wrong server-side.  Details of the problem has been sent to the Dotabank team for investigation."
+
+    # Render the custom error page.
     return render_template("error.html", error=error, title=error.name), error.code

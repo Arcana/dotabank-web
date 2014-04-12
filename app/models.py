@@ -2,16 +2,17 @@ from app import cache, dotabank_bucket, db
 from app.replays.models import Replay, ReplayDownload
 from app.users.models import User
 from datetime import datetime, timedelta
-import logging
-import traceback
+
 
 class Stats:
+    """ Model used for public stats visible on Dotabank home page """
     def __init__(self):
         pass
 
     @staticmethod
-    @cache.memoize(timeout=60*60)
+    @cache.memoize(timeout=60 * 60)
     def replays_count(hours=None):
+        """ Counts how many replays have been added to the database since `hours` ago, or all-time if `hours` is None. """
         if hours:
             _time_ago = datetime.utcnow() - timedelta(hours=hours)
             return Replay.query.filter(Replay.added_to_site_time >= _time_ago).count()
@@ -19,8 +20,9 @@ class Stats:
             return Replay.query.count()
 
     @staticmethod
-    @cache.memoize(timeout=60*60)
+    @cache.memoize(timeout=60 * 60)
     def archived_count(hours=None):
+        """ Counts how many replays have been archived since `hours` ago, or all-time if `hours` is None. """
         if hours:
             _time_ago = datetime.utcnow() - timedelta(hours=hours)
             return Replay.query.filter(Replay.local_uri != None,
@@ -29,8 +31,9 @@ class Stats:
             return Replay.query.filter(Replay.local_uri != None).count()  # Have to use != instead of 'is not' here, because sqlalchemy.
 
     @staticmethod
-    @cache.memoize(timeout=60*60)
+    @cache.memoize(timeout=60 * 60)
     def downloads_count(hours=None):
+        """ Counts how many times users have initiated a download since `hours` ago, or all-time if `hours` is None. """
         if hours:
             _time_ago = datetime.utcnow() - timedelta(hours=hours)
             return ReplayDownload.query.filter(ReplayDownload.created_at >= _time_ago).count()
@@ -38,8 +41,9 @@ class Stats:
             return ReplayDownload.query.count()
 
     @staticmethod
-    @cache.memoize(timeout=60*60)
+    @cache.memoize(timeout=60 * 60)
     def users_count(hours=None):
+        """ Counts how many users have registered (first login) since `hours` ago, or all-time if `hours` is None. """
         if hours:
             _time_ago = datetime.utcnow() - timedelta(hours=hours)
             return User.query.filter(User.first_seen >= _time_ago).count()
@@ -47,8 +51,9 @@ class Stats:
             return User.query.count()
 
     @staticmethod
-    @cache.memoize(timeout=60*60)
+    @cache.memoize(timeout=60 * 60)
     def bucket_size():
+        """ Sums up and returns how much space we're taking up on our dotabank S3 bucket. """
         total_bytes = 0
         for key in dotabank_bucket:
             total_bytes += key.size
@@ -57,7 +62,9 @@ class Stats:
 
 
 class Log(db.Model):
+    """ Model used for logging to database. """
     __tablename__ = 'logs'
+
     id = db.Column(db.Integer, primary_key=True)  # auto incrementing
     logger = db.Column(db.String(64))  # the name of the logger. (e.g. myapp.views)
     level = db.Column(db.String(16))  # info, debug, or error?
@@ -87,11 +94,13 @@ class Log(db.Model):
         return "<Log: %s - %s>" % (self.created_at.strftime('%m/%d/%Y-%H:%M:%S'), self.msg[:50])
 
     def resolve(self, user_id):
-        """ Mark this entry as resolved / at least acknowledge it's been seen. """
-        self.resolved_by_user_id = user_id
-        self.resolved_at = datetime.utcnow()
+        """ Mark this log as resolved / at least acknowledge it's been seen. """
+        if not self.resolved:
+            self.resolved_by_user_id = user_id
+            self.resolved_at = datetime.utcnow()
 
     @property
     def resolved(self):
+        """ Returns whether this log has been resolved or not. """
         return self.resolved_by_user_id is not None
 

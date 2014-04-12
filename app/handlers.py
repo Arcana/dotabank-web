@@ -7,9 +7,10 @@ import traceback
 
 
 class SQLAlchemyHandler(logging.Handler):
-    # A very basic logger that commits a LogRecord to the SQL Db
-    def emit(self, record):
+    """ Logging handler which commits log entries to the database. """
 
+    def emit(self, record):  # TODO: Store IP and endpoint accessed.
+        """ Catch the log entry, grab any traceback data and any extra data if provided. """
         trace = traceback.format_exc(record.__dict__['exc_info']) if record.__dict__['exc_info'] else None
         extra = json.dumps(record.__dict__['extra']) if "extra" in record.__dict__ else None
 
