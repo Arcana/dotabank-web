@@ -21,7 +21,7 @@ $(function(){
 			left:e.pageX+18,
 			top:e.pageY-16
 		});
-		var class_list = $(this).attr('class').split(/\s+/);
+		var class_list = this.classList;
 		$.each(class_list, function (key, val) {
 			var property = dict[val];
 			if (property.element=="team"){
