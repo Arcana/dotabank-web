@@ -286,3 +286,6 @@ table > tbody > tr > td.item-cell {
 	background-color:#7a32b1;
 	border-color:#4e288e;
 }
+.team-name {
+	line-height:32px !important;
+}

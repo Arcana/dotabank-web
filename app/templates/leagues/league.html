@@ -8,7 +8,7 @@
     <div class="page-header">
         <h1>{{ league.name }}</h1>
         <p class="lead">{{ league.description }}</p>
-        <a class="btn {{'btn-ti4' if league.id==600 else 'btn-primary' }}" href="{{ league.tournament_url }}">Visit tournament website</a>
+        <a class="btn {{'btn-ti4' if league.id==600 else 'btn-primary' }}" href="{{ league.tournament_url }}">{{'View The International 2014 announcement' if league.id==600 else 'Visit tournament website' }}</a>
     </div>
 
 
@@ -17,11 +17,13 @@
         <thead>
             <tr>
                 <th>ID</th>
+				<th>&nbsp;</th>
                 <th>Radiant</th>
                 <th>&nbsp;</th>
+				<th>&nbsp;</th>
                 <th>Dire</th>
 				<th>Played</th>
-                <th>Favourite</th>
+                <th><abbr title="Favourite">Fav.</abbr></th>
                 <th>Rating</th>
                 <th>State</th>
                 {% if current_user.is_authenticated() %}
@@ -35,6 +37,8 @@
                     <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
                     <td>
                         <img src="{{ (replay.radiant_team_logo|get_file_by_ugcid).url }}" style="height:32px">
+					</td>
+					<td class="team-name">
 						{% if replay.radiant_team_id %}
 							<a href="{{url_for('teams.team', _id=replay.radiant_team_id)}}">{{replay.radiant_team_name}}</a>
 						{% else %}
@@ -44,6 +48,8 @@
                     <td>vs</td>
                     <td>
                         <img src="{{ (replay.dire_team_logo|get_file_by_ugcid).url }}" style="height:32px">
+					</td>
+					<td class="team-name">
                         {% if replay.dire_team_id %}
 							<a href="{{url_for('teams.team', _id=replay.dire_team_id)}}">{{replay.dire_team_name}}</a>
 						{% else %}
