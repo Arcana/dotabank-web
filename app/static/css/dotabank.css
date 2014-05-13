@@ -269,3 +269,9 @@ table > tbody > tr > td.item-cell {
     fill: #777;
     stroke: #777;
 }
+
+.alert-ti4 {
+    color: #8f3aab;
+    background-color: #edd7f5;
+    border-color: #e3bdf0;
+}
