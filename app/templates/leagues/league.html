@@ -92,5 +92,5 @@
             {% endfor %}
         </tbody>
     </table>
-    {{ pagination(replays, "replays.replays") }}
+    {{ pagination(replays, "leagues.league", {'_id': league.id}) }}
 {% endblock %}
