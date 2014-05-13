@@ -24,8 +24,11 @@ class League():
             return None
 
         schema = fetch_schema()
-        item_data = schema[self.itemdef]
-        return item_data.icon
+        try:
+            item_data = schema[self.itemdef]
+            return item_data.icon
+        except KeyError:
+            return None
 
     @property
     def image(self):
@@ -33,8 +36,11 @@ class League():
             return None
 
         schema = fetch_schema()
-        item_data = schema[self.itemdef]
-        return item_data.image
+        try:
+            item_data = schema[self.itemdef]
+            return item_data.image
+        except KeyError:
+            return None
 
     @staticmethod
     def get_all():
