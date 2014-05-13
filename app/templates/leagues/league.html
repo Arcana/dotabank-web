@@ -36,7 +36,7 @@
                 <tr>
                     <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
                     <td>
-                        <img src="{{ (replay.radiant_team_logo|get_file_by_ugcid).url }}" style="height:32px">
+                        <img src="{{ (replay.radiant_team_logo|get_file_by_ugcid).url }}" class="team-logo">
 					</td>
 					<td class="team-name">
 						{% if replay.radiant_team_id %}
@@ -47,7 +47,7 @@
                     </td>
                     <td>vs</td>
                     <td>
-                        <img src="{{ (replay.dire_team_logo|get_file_by_ugcid).url }}" style="height:32px">
+                        <img src="{{ (replay.dire_team_logo|get_file_by_ugcid).url }}" class="team-logo">
 					</td>
 					<td class="team-name">
                         {% if replay.dire_team_id %}

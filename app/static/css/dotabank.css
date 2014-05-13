@@ -289,3 +289,12 @@ table > tbody > tr > td.item-cell {
 .team-name {
 	line-height:32px !important;
 }
+.team-logo {
+	display: inline-block;
+	width: 53px;
+	height: 32px;
+	background: lightgray;
+	vertical-align: bottom;
+	border-radius: 3px;
+	margin: 2px 2px 2px 2px;
+}
