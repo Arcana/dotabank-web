@@ -12,6 +12,7 @@
         <div class="collapse navbar-collapse"  id="site-nav-items">
             <ul class="nav navbar-nav navbar-left">
                 <li class="{{ "active" if "replays" == request.endpoint  }}"><a href="{{ url_for("replays.replays") }}">Replays</a></li>
+                <li class="{{ "active" if "leagues" == request.endpoint  }}"><a href="{{ url_for("leagues.leagues") }}">Leagues</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li>

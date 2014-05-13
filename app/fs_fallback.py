@@ -3,6 +3,8 @@ from functools import wraps
 from flask import current_app
 import os
 import json
+# For temporary schema object store
+import cPickle as pickle
 from time import time
 
 

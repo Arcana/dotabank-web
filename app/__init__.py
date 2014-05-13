@@ -82,9 +82,11 @@ import views
 from app.admin.views import mod as admin_module
 from app.users.views import mod as users_module
 from app.replays.views import mod as replays_module
+from app.leagues.views import mod as leagues_module
 app.register_blueprint(admin_module)
 app.register_blueprint(users_module)
 app.register_blueprint(replays_module)
+app.register_blueprint(leagues_module)
 
 # Set up flask-admin views
 from app.admin.views import admin, AdminModelView

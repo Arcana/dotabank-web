@@ -1,0 +1,98 @@
+{% from "macros.html" import iconic, pagination %}
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="pull-right thumbnail">
+        <img src="{{ league.icon }}" alt="{{ league.name }}"/>
+    </div>
+    <div class="page-header">
+        <h1>{{ league.name }}</h1>
+        <p class="lead">{{ league.description }}</p>
+        <a class="btn btn-primary" href="{{ league.tournament_url }}">Visit tournament website</a>
+    </div>
+
+
+    <h2>Replays archived from this league</h2>
+    <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <td>ID</td>
+                <td>Radiant</td>
+                <td>&nbsp;</td>
+                <td>Dire</td>
+                <td>Favourite</td>
+                <td>Rating</td>
+                <td>State</td>
+                <td>DLs</td>
+                {% if current_user.is_authenticated() %}
+                <td>&nbsp;</td>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for replay in replays.items %}
+                <tr>
+                    <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                    <td>
+                        <img src="{{ (replay.radiant_team_logo|get_file_by_ugcid).url }}" style="height:32px">
+                        {{ replay.radiant_team_name or "Radiant" }}
+                    </td>
+                    <td>vs</td>
+                    <td>
+                        <img src="{{ (replay.dire_team_logo|get_file_by_ugcid).url }}" style="height:32px">
+                        {{ replay.dire_team_name or "Dire" }}
+                    </td>
+                    {% if current_user.is_authenticated() %}
+                    <td>
+                        <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
+                            <span class="{{"" if replay.user_favourite() else "text-muted" }}">
+                                {{ iconic('star', class='iconic-sm') }}
+                                <sub>({{ replay.favourites|list|length }})</sub>
+                            </span>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=1) }}">
+                            <span class="{{"" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }}">
+                                {{ iconic('thumb', state="up", class='iconic-sm') }}
+                                <sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub>
+                            </span>
+                        </a>&nbsp;
+                        <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=0) }}">
+                            <span class="{{"" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }}">
+                                {{ iconic('thumb', state="down", class='iconic-sm') }}
+                                <sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub>
+                            </span>
+                        </a>
+                    </td>
+                    {% else %}
+                    <td>
+                        <span class="text-muted">
+                            {{ iconic('star', class='iconic-sm') }}
+                            <sub>({{ replay.favourites|list|length }})</sub>
+                        </span>
+                    </td>
+                    <td>
+                        <span class="text-muted">
+                            {{ iconic('thumb', state="up", class='iconic-sm') }}
+                            <sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub>
+                        </span>&nbsp;
+                        <span class="text-muted">
+                            {{ iconic('thumb', state="down", class='iconic-sm') }}
+                            <sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub>
+                        </span>
+                    </td>
+                    {% endif %}
+                    <td>{{ replay.state }}</td>
+                    <td>{{ replay.downloads.count() }}</td>
+                    {% if current_user.is_authenticated() %}
+                    <td>
+                        <a class="btn btn-default btn-xs {{ "disabled" if not replay.local_uri else "" }}" href="{{ url_for("replays.download", _id=replay.id) }}">Download</a>
+                    </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {{ pagination(replays, "replays.replays") }}
+{% endblock %}

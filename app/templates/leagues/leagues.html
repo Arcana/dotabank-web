@@ -1,0 +1,35 @@
+{% from "macros.html" import iconic, pagination %}
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Leagues</h1>
+    </div>
+
+    <p>Leagues which do not have any matches archived on Dotabank are excluded from this list.</p>
+
+    <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Replays archived</th>
+                <th>Tournament link</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for league in leagues %}
+                <tr>
+                    <td><a class="thumbnail" href="{{ url_for("leagues.league", _id=league.id) }}">
+                        <img src="{{ league.icon }}" alt="{{ league.name }}"/>
+                    </a></td>
+                    <td><a href="{{ url_for("leagues.league", _id=league.id) }}">{{ league.name }}</a></td>
+                    <td>{{ league.description }}</td>
+                    <td>{{ league.count }}</td>
+                    <td><a class="btn btn-default btn-sm" href="{{ league.tournament_url }}">Tournament site</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
