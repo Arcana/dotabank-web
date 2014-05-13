@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app, abort
 from app.replays.models import Replay
-from app import cache
+from app import db, cache
 from models import League
+from sqlalchemy.sql import text
 
 
 mod = Blueprint("leagues", __name__, url_prefix="/leagues")
@@ -12,10 +13,24 @@ mod = Blueprint("leagues", __name__, url_prefix="/leagues")
 def leagues():
     _leagues = League.get_all()
 
+    replay_counts = {x.league_id: x.count for x in db.engine.execute(
+        text("""
+            SELECT
+                r.league_id as league_id,
+                count(*) as count
+            FROM {replay_table} r
+            WHERE
+                r.league_id in ({league_id_csv}) AND
+                r.state = "ARCHIVED"
+            GROUP BY r.league_id
+            """.format(replay_table=Replay.__tablename__, league_id_csv=",".join(str(x.id) for x in _leagues))
+        )
+    )}
+
     leagues_with_replays = []
     for _league in _leagues:
-        _league.count = Replay.query.filter(Replay.league_id == _league.id, Replay.state == "ARCHIVED").count()
-        if _league.count > 0:
+        if replay_counts.get(_league.id) > 0:
+            _league.count = replay_counts.get(_league.id)
             leagues_with_replays.append(_league)
 
     # Sort by archived count
