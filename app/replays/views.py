@@ -233,7 +233,7 @@ def download(_id):
     name = key.name
     md5 = key.etag.replace("\"", "")
     filesize = key.size
-    if form.validate_on_submit():
+    if form.validate_on_submit() or _replay.league_id in current_app.config['CAPTCHA_LEAGUE_EXCEPTIONS']:
         url = key.generate_url(current_app.config["REPLAY_DOWNLOAD_TIMEOUT"])
 
         download_log_entry = ReplayDownload(
