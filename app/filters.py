@@ -326,14 +326,14 @@ def get_file_by_ugcid(ugcid):
 
     Returns:
         A steam.remote_storage.ugc_file object.
-        None if there was an error retrieving the file (FileNotFoundError or HTTPError).
+        None if there was an error retrieving the file (steam.api.Exception).
     """
     try:
         file_info = steam.remote_storage.ugc_file(570, ugcid)
         file_info.url  # Access an object so steamodd actually grabs data that we can cache
         return file_info
-    except (steam.remote_storage.FileNotFoundError, steam.api.HTTPError):
-        current_app.logger.warning('Filter get_file_by_ugcid threw exception', exc_info=True)
+    except steam.api.HTTPError:
+        pass
 
     # This will only return on errors / exceptions
     return None
