@@ -1,4 +1,4 @@
-from app import db
+from app import db, steam
 from flask.ext.login import AnonymousUserMixin
 import datetime
 from calendar import timegm as to_timestamp
@@ -71,12 +71,15 @@ class User(db.Model):
 
     def update_steam_name(self):
         # Called every page load for current_user (API is cached)
-        steam_account_info = get_account_by_id(self.id)
-        if steam_account_info is not None:
-            if self.name is not steam_account_info.persona:
-                self.name = steam_account_info.persona
-                db.session.add(self)
-                db.session.commit()
+        try:
+            steam_account_info = get_account_by_id(self.id)
+            if steam_account_info is not None:
+                if self.name is not steam_account_info.persona:
+                    self.name = steam_account_info.persona
+                    db.session.add(self)
+                    db.session.commit()
+        except steam.api.HTTPError:
+            pass
 
     def allows_ads(self):
         return self.show_ads
