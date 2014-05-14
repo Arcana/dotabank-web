@@ -8,7 +8,7 @@ from sqlalchemy.sql import text
 mod = Blueprint("leagues", __name__, url_prefix="/leagues")
 
 
-@cache.cached(timeout=60 * 60)
+@cache.cached(timeout=60 * 60, key_prefix="leagues_data")
 def _leagues_data():
     _leagues = League.get_all()
 
