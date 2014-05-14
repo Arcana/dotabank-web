@@ -332,7 +332,7 @@ def get_file_by_ugcid(ugcid):
         file_info = steam.remote_storage.ugc_file(570, ugcid)
         file_info.url  # Access an object so steamodd actually grabs data that we can cache
         return file_info
-    except steam.api.HTTPError:
+    except steam.api.SteamError:
         pass
 
     # This will only return on errors / exceptions
