@@ -11,36 +11,46 @@ class League():
     image_url = None
     image_url_large = None
 
-    def __init__(self, _id=None, name=None, description=None, tournament_url=None, itemdef=None):
+    _schema = fetch_schema()
+
+    def __init__(self, _id=None, name=None, description=None, tournament_url=None, itemdef=None, fetch_images=True):
         self.id = _id
         self.name = name
         self.description = description
         self.tournament_url = tournament_url
         self.itemdef = itemdef
 
+        if fetch_images:
+            self.fetch_images()
+
+    def fetch_images(self):
+        if self.itemdef is None:
+            return False
+
+        try:
+            item_data = League._schema[self.itemdef]
+            self.image_url = item_data.icon
+            self.image_url_large = item_data.image
+            return True
+        except KeyError:
+            return False
+
+
     @property
     def icon(self):
-        if self.itemdef is None:
-            return None
+        if self.image_url is None:
+            if self.fetch_images() is False:
+                return None
 
-        schema = fetch_schema()
-        try:
-            item_data = schema[self.itemdef]
-            return item_data.icon
-        except KeyError:
-            return None
+        return self.image_url
 
     @property
     def image(self):
-        if self.itemdef is None:
-            return None
+        if self.image_url_large is None:
+            if self.fetch_images() is False:
+                return None
 
-        schema = fetch_schema()
-        try:
-            item_data = schema[self.itemdef]
-            return item_data.image
-        except KeyError:
-            return None
+        return self.image_url_large
 
     @staticmethod
     def get_all():
