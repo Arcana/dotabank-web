@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app, abort
+from flask import Blueprint, render_template, current_app, abort
 from app.replays.models import Replay
 from app import db, cache
 from models import League
@@ -8,9 +8,8 @@ from sqlalchemy.sql import text
 mod = Blueprint("leagues", __name__, url_prefix="/leagues")
 
 
-@mod.route("/")
 @cache.cached(timeout=60 * 60)
-def leagues():
+def _leagues_data():
     _leagues = League.get_all()
 
     replay_counts = {x.league_id: x.count for x in db.engine.execute(
@@ -34,11 +33,15 @@ def leagues():
             leagues_with_replays.append(_league)
 
     # Sort by archived count
-    leagues_with_replays = sorted(leagues_with_replays, key=lambda r: r.count, reverse=True)
+    return sorted(leagues_with_replays, key=lambda r: r.count, reverse=True)
 
+
+@mod.route("/")
+def leagues():
+    _leagues = _leagues_data()
     return render_template("leagues/leagues.html",
                            title="Leagues - Dotabank",
-                           leagues=leagues_with_replays)
+                           leagues=_leagues)
 
 
 @mod.route("/<int:_id>/")
