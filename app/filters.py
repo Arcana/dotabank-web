@@ -300,18 +300,44 @@ def get_hero_by_name(hero_name):
 def get_item_by_id(item_id):
     """ Returns an item object for the given item id. """
     try:
-        return [fetch_items().get(int(x)) for x in item_id]
+        item = [fetch_items().get(int(x)) for x in item_id]
     except TypeError:
-        return fetch_items().get(int(item_id))
+        item = fetch_items().get(int(item_id))
+        
+    # Return dummy ofjbect if no match is found.
+    return item or {
+      "id": item_id,
+      "img": None,
+      "dname": str(item_id),
+      "qual": None,
+      "cost": None,
+      "desc": None,
+      "notes": None,
+      "attrib": None,
+      "mc": None,
+      "cd": None,
+      "lore": None,
+      "components": None,
+      "created": None
+    },
 
 
 @cache.memoize(timeout=60 * 60)
 def get_league_by_id(league_id):
     """ Returns a league object for the given league id. """
     try:
-        return [fetch_leagues().get(int(x)) for x in league_id]
+        league = [fetch_leagues().get(int(x)) for x in league_id]
     except TypeError:
-        return fetch_leagues().get(int(league_id))
+        league = fetch_leagues().get(int(league_id))
+        
+    # Return dummy object if no match is found.
+    return league or {
+        "name": str(league_id),
+        "leagueid": league_id,
+		"description": None,
+		"tournament_url": None,
+		"itemdef": None
+	}
 
 
 @cache.memoize(timeout=60 * 60)
