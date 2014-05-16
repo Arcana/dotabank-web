@@ -41,7 +41,7 @@ def replay(_id):
         abort(404)
         
     key = dotabank_bucket.get_key(_replay.local_uri)
-    name = key.name
+    filename = key.name
     md5 = key.etag.replace("\"", "")
     filesize = key.size
 
