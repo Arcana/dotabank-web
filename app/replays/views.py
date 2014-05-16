@@ -41,9 +41,12 @@ def replay(_id):
         abort(404)
         
     key = dotabank_bucket.get_key(_replay.local_uri)
-    filename = key.name
-    md5 = key.etag.replace("\"", "")
-    filesize = key.size
+    s3_data = None
+    
+    if key:
+        s3_data.filename = key.name
+        s3_data.md5 = key.etag.replace("\"", "")
+        s3_data.filesize = key.size
 
     # Split bitmasks into a simple object store.
     if _replay.radiant_tower_status is not None\
@@ -60,9 +63,7 @@ def replay(_id):
                            replay=_replay,
                            building_statuses=building_statuses,
                            api_key=current_app.config["STEAM_API_KEY"],  #TODO: Wtf is this?  We can access config straight from jinja2.
-                           filename=filename,
-                           md5=md5,
-                           filesize=filesize
+                           s3_data=s3_data
                            )
 
 
