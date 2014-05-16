@@ -333,6 +333,7 @@ def get_league_by_id(league_id):
     # Return dummy object if no match is found.
     return league or {
         "name": str(league_id),
+        "localized_name": str(league_id),
         "leagueid": league_id,
 		"description": None,
 		"tournament_url": None,
