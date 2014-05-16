@@ -73,11 +73,11 @@
                 {% if s3_data: %}
                 <dl class="dl-horizontal">
                     <dt>filename</dt>
-                    <dd>{{ s3_data.filename }}</dd>
+                    <dd>{{ s3_data.get("filename") }}</dd>
                     <dt>md5</dt>
-                    <dd>{{ s3_data.md5 }}</dd>
+                    <dd>{{ s3_data.get("md5") }}</dd>
                     <dt>filesize</dt>
-                    <dd>{{ s3_data.filesize|filesizeformat }}</dd>
+                    <dd>{{ s3_data.get("filesize")|filesizeformat }}</dd>
                 </dl>
                 {% endif %}
 
