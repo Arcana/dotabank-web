@@ -44,9 +44,11 @@ def replay(_id):
     s3_data = None
     
     if key:
-        s3_data.filename = key.name
-        s3_data.md5 = key.etag.replace("\"", "")
-        s3_data.filesize = key.size
+        s3_data = {
+            "filename": key.name,
+            "md5": key.etag.replace("\"", ""),
+            "filesize": key.size
+        }
 
     # Split bitmasks into a simple object store.
     if _replay.radiant_tower_status is not None\
