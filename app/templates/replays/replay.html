@@ -69,6 +69,15 @@
                     <dt>downloads</dt>
                     <dd>{{ replay.downloads.count() }}</dd>
                 </dl>
+                
+                <dl>
+                    <dt>filename</dt>
+                    <dd>{{ filename }}</dd>
+                    <dt>md5</dt>
+                    <dd>{{ md5 }}</dd>
+                    <dt>filesize</dt>
+                    <dd>{{ filesize }}</dd>
+                </dl>
 
                 {% for team_players in replay.players|players_to_teams %}
                     {% if team_players|length > 0 %}
