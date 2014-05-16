@@ -319,7 +319,7 @@ def get_item_by_id(item_id):
       "lore": None,
       "components": None,
       "created": None
-    },
+    }
 
 
 @cache.memoize(timeout=60 * 60)
