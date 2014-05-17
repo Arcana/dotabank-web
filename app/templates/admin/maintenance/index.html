@@ -10,13 +10,23 @@
     <div id="replay_repopulate">
         <h3>Re-populate from WebAPI for all replays</h3>
         <div class="results" style="display:none">
-            <h3>Updated</h3>
+            <h4>Updated</h4>
             <pre class="updated"></pre>
 
-            <h3>Failed</h3>
+            <h4>Failed</h4>
             <pre class="failed"></pre>
         </div>
-        <a class="btn btn-default" href="{{ url_for('maintenance.replay_repopulate') }}">MAKE DO</a>
+        <a class="btn btn-default" href="{{ url_for('maintenance.replay_repopulate') }}">Repopulate from WebAPI</a>
+    </div>
+
+    <div id="small_replay_exodus">
+        <h3>Clean up small replays <small><a href="{{ url_for('atypicalreplays.index') }}#small_replays">Associated report</a></small></h3>
+        <p>Delete them from S3, clear associated meta-data, and re-add to DL queue.</p>
+        <div class="results" style="display: none">
+            <h4>Replays removed</h4>
+            <pre class="removed"></pre>
+        </div>
+        <a class="btn btn-default" href="{{ url_for('maintenance.small_replay_exodus') }}">Clean up small replays</a>
     </div>
 
 {% endblock %}
@@ -42,6 +52,30 @@
                         {
                             $this.parent().find('pre.updated').text(data.replays_updated);
                             $this.parent().find('pre.failed').text(data.replays_failed);
+                            $this.parent().find('div.results').slideDown()
+                            $this.button('reset');
+                        }
+                    }
+                });
+            });
+
+
+            $("div#small_replay_exodus a.btn").click(function(e){
+                e.preventDefault();
+
+                var $this = $(this);
+                $this.button('loading');
+
+                $.ajax({
+                    content: this,
+                    type: 'GET',
+                    url: this.href,
+                    dataType: 'json',
+                    success: function(data) {
+                        // If successful, populate thing with data
+                        if (data.success == true)
+                        {
+                            $this.parent().find('pre.removed').text(data.replays_removed);
                             $this.parent().find('div.results').slideDown()
                             $this.button('reset');
                         }

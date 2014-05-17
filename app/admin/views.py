@@ -7,7 +7,7 @@ from sqlalchemy.sql import text
 from datetime import datetime, timedelta
 from math import ceil
 
-from app import db, steam
+from app import db, steam, dotabank_bucket
 from app.models import Log
 from app.gc.models import GCJob, GCWorker
 from app.replays.models import Replay, ReplayPlayer
@@ -96,11 +96,16 @@ class AtypicalReplays(AuthMixin, BaseView):
             Replay.gc_done_time <= (datetime.utcnow() - timedelta(hours=24))  # Over 24 hrs ago
         ).all()
 
+        small_replay_files = {replay_file.key[8:-8]: replay_file.size for replay_file in dotabank_bucket.list() if replay_file.key[:8] == "replays/" and replay_file.size < (1024 * 1024)}
+        small_replays = Replay.query.filter(Replay.id.in_(small_replay_files.keys())).all()
+
         return self.render(
             'admin/atypical_replays.html',
             human_players_discrepancy=human_players_discrepancy,
             replay_available_download_error=replay_available_download_error,
-            replay_waiting_download_over24hrs=replay_waiting_download_over24hrs
+            replay_waiting_download_over24hrs=replay_waiting_download_over24hrs,
+            small_replays=small_replays,
+            small_replay_files=small_replay_files
         )
 
 
@@ -220,6 +225,39 @@ class Maintenance(AuthMixin, BaseView):
             success=True,
             replays_updated=[replay.id for replay in success],
             replays_failed=[replay.id for replay in failed]
+        )
+
+    @expose('/small_replay_exodus')
+    def small_replay_exodus(self):
+        small_replay_files = {replay_file.key[8:-8]: replay_file.size for replay_file in dotabank_bucket.list() if replay_file.key[:8] == "replays/" and replay_file.size < (1024 * 1024)}
+        small_replays = Replay.query.filter(Replay.id.in_(small_replay_files.keys())).all()
+
+        replays_removed = []  # IDs of removed replays
+        for replay in small_replays:
+            # Save local URI so we can remove the file from S3 after we've changed the databose.
+            local_uri = replay.local_uri
+
+            # Clean up metadata associated with an archived replay.
+            replay.dl_done_time = None
+            replay.local_uri = None
+            replay.state = "WAITING_DOWNLOAD"
+
+            # Save ne state to database
+            db.session.add(replay)
+            db.session.commit()
+
+            # Remove bad file from S3.
+            dotabank_bucket.delete_key(local_uri or "replays/{}.dem.bz2".format(replay.id))
+
+            # Add a new download job
+            Replay.add_dl_job(replay)
+
+            # Note that we've done things to this replay.
+            replays_removed.append(replay.id)
+
+        return jsonify(
+            success=True,
+            replays_removed=replays_removed
         )
 
 # Set up flask-admin

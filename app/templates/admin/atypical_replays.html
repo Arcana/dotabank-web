@@ -7,6 +7,7 @@
       <li class="active"><a href="#human_players" data-toggle="tab">Players wrong ({{ human_players_discrepancy|length }})</a></li>
       <li><a href="#replay_available_download_error" data-toggle="tab">Available, DL error ( {{ replay_available_download_error|length }})</a></li>
       <li><a href="#long_waiting_download" data-toggle="tab">Long DL wait ({{ replay_waiting_download_over24hrs|length }})</a></li>
+      <li><a href="#small_replays" data-toggle="tab">Small replays ({{ small_replays|length }})</a></li>
     </ul>
 
     <!-- Tab panes -->
@@ -95,6 +96,39 @@
                             <td>{{ replay.replay_state }}</td>
                             <td>{{ replay.gc_done_time }}</td>
                             <td>{{ replay.dl_fails }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-muted">No broke replays :D</td>
+                </tr>
+                {% endif %}
+            </tbody>
+            </table>
+        </div>
+
+        <div class="tab-pane" id="small_replays">
+            <p>Replays which are less than 1M in size</p>
+
+            <table class="table">
+            <thead>
+                <tr>
+                    <th>Replay ID</th>
+                    <th>State</th>
+                    <th>Replay state</th>
+                    <th>GC done time</th>
+                    <th>Filesize</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if small_replays|length > 0 %}
+                    {% for replay in small_replays %}
+                        <tr>
+                            <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                            <td>{{ replay.state }}</td>
+                            <td>{{ replay.replay_state }}</td>
+                            <td>{{ replay.gc_done_time }}</td>
+                            <td>{{ small_replay_files[replay.id|string]|filesizeformat }}</td>
                         </tr>
                     {% endfor %}
                 {% else %}
