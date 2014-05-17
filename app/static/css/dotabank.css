@@ -277,24 +277,24 @@ table > tbody > tr > td.item-cell {
 }
 
 .btn-ti4 {
-	background-color: #9c42ca;
-	border-color:#7835bd;
-	color:#FFF;
+    background-color: #9c42ca;
+    border-color:#7835bd;
+    color:#FFF;
 }
 .btn-ti4:hover {
-	color:#FFF;
-	background-color:#7a32b1;
-	border-color:#4e288e;
+    color:#FFF;
+    background-color:#7a32b1;
+    border-color:#4e288e;
 }
 .team-name {
-	line-height:32px !important;
+    line-height:32px !important;
 }
 .team-logo {
-	display: inline-block;
-	width: 53px;
-	height: 32px;
-	background: lightgray;
-	vertical-align: bottom;
-	border-radius: 3px;
-	margin: 2px 2px 2px 2px;
+    display: inline-block;
+    width: 53px;
+    height: 32px;
+    background: lightgray;
+    vertical-align: bottom;
+    border-radius: 3px;
+    margin: 2px 2px 2px 2px;
 }

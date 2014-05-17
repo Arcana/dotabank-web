@@ -2,20 +2,20 @@
 {% extends "layout.html" %}
 
 {% block content %}
-	<div class="pull-right thumbnail">
+    <div class="pull-right thumbnail">
         <img src="{{ (team.logo|get_file_by_ugcid).url }}" alt="{{ team.name }}"/>
     </div>
-	<h2>Replays archived containing {{team.name}}</h2>
+    <h2>Replays archived containing {{team.name}}</h2>
     <table class="table table-condensed table-striped">
         <thead>
             <tr>
                 <th>ID</th>
-				<th>&nbsp;</th>
+                <th>&nbsp;</th>
                 <th>Radiant</th>
                 <th>&nbsp;</th>
-				<th>&nbsp;</th>
+                <th>&nbsp;</th>
                 <th>Dire</th>
-				<th>Played</th>
+                <th>Played</th>
                 <th><abbr title="Favourite">Fav.</abbr></th>
                 <th>Rating</th>
                 <th>State</th>
@@ -30,27 +30,27 @@
                     <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
                     <td>
                         <img src="{{ (replay.radiant_team_logo|get_file_by_ugcid).url }}" class="team-logo">
-					</td>
-					<td class="team-name">
-						{% if replay.radiant_team_name %}
-							<a href="{{url_for('teams.team', _id=replay.radiant_team_id)}}">{{replay.radiant_team_name}}</a>
-						{% else %}
-							Radiant
-						{% endif %}
+                    </td>
+                    <td class="team-name">
+                        {% if replay.radiant_team_name %}
+                            <a href="{{url_for('teams.team', _id=replay.radiant_team_id)}}">{{replay.radiant_team_name}}</a>
+                        {% else %}
+                            Radiant
+                        {% endif %}
                     </td>
                     <td>vs</td>
                     <td>
                         <img src="{{ (replay.dire_team_logo|get_file_by_ugcid).url }}" class="team-logo">
-					</td>
-					<td class="team-name">
-                        {% if replay.radiant_team_name %}
-							<a href="{{url_for('teams.team', _id=replay.dire_team_id)}}">{{replay.dire_team_name}}</a>
-						{% else %}
-							Dire
-						{% endif %}
                     </td>
-					<td>
-						{{replay.start_time|timestamp_to_datestring}}
+                    <td class="team-name">
+                        {% if replay.radiant_team_name %}
+                            <a href="{{url_for('teams.team', _id=replay.dire_team_id)}}">{{replay.dire_team_name}}</a>
+                        {% else %}
+                            Dire
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{replay.start_time|timestamp_to_datestring}}
                     </td>
                     {% if current_user.is_authenticated() %}
                     <td>
@@ -103,5 +103,5 @@
             {% endfor %}
         </tbody>
     </table>
-	{{ pagination(replays, "teams.team", {'_id': team.id}) }}
+    {{ pagination(replays, "teams.team", {'_id': team.id}) }}
 {% endblock %}

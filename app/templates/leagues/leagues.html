@@ -22,12 +22,12 @@
             {% for league in leagues %}
                 <tr>
                     <td>
-						{% if league.icon %}
-							<a class="thumbnail" href="{{ url_for("leagues.league", _id=league.id) }}">
-								<img src="{{ league.icon }}" alt="{{ league.name }}"/>
-							</a>
-						{% endif %}
-					</td>
+                        {% if league.icon %}
+                            <a class="thumbnail" href="{{ url_for("leagues.league", _id=league.id) }}">
+                                <img src="{{ league.icon }}" alt="{{ league.name }}"/>
+                            </a>
+                        {% endif %}
+                    </td>
                     <td><a href="{{ url_for("leagues.league", _id=league.id) }}">{{ league.name }}</a></td>
                     <td>{{ league.description }}</td>
                     <td>{{ league.count }}</td>

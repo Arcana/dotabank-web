@@ -1,207 +1,207 @@
 #map {
-	width:500px;
-	height:500px;
-	background-size: 500px 500px;
-	position:relative;
+    width:500px;
+    height:500px;
+    background-size: 500px 500px;
+    position:relative;
 }
 #hover_box {
-	font: normal 13px/150% Arial, Helvetica, sans-serif;
-	color:white;
-	text-align:center;
-	background:rgba(1,1,1,0.6);
-	border-radius:5px;
-	padding:2px 6px 2px 6px;
-	float:left;
-	display:none;
-	position:absolute;
-	z-index:999;
+    font: normal 13px/150% Arial, Helvetica, sans-serif;
+    color:white;
+    text-align:center;
+    background:rgba(1,1,1,0.6);
+    border-radius:5px;
+    padding:2px 6px 2px 6px;
+    float:left;
+    display:none;
+    position:absolute;
+    z-index:999;
 }
 #hover_box #building_team.dire {
-	color:red;
-	background:none;
+    color:red;
+    background:none;
 }
 #hover_box #building_team.radiant {
-	color:limegreen;
-	background:none;
+    color:limegreen;
+    background:none;
 }
 .tower, .barracks, .ancient {
-	position:absolute;
-	box-sizing:border-box;
-	border:2px solid black;
+    position:absolute;
+    box-sizing:border-box;
+    border:2px solid black;
 }
 .destroyed {
-	display:none;
+    display:none;
 }
 .dire {
-	background:red;
+    background:red;
 }
 .radiant {
-	background:limegreen;
+    background:limegreen;
 }
 .tower {
-	width:15px;
-	height:15px;
-	z-index:1;
+    width:15px;
+    height:15px;
+    z-index:1;
 }
 .barracks {
-	width:10px;
-	height:10px;
-	z-index:0;
+    width:10px;
+    height:10px;
+    z-index:0;
 }
 .ancient {
-	border-radius:100%;
-	width:25px;
-	height:25px;
-	z-index:2;
+    border-radius:100%;
+    width:25px;
+    height:25px;
+    z-index:2;
 }
 .mid, .anc {
-	transform:rotate(45deg);
-	-ms-transform: rotate(45deg);
-	-webkit-transform:rotate(45deg);
+    transform:rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -webkit-transform:rotate(45deg);
 }
 
 .dire.ancient {
-	right:68px;
-	top:82px;
+    right:68px;
+    top:82px;
 }
 .dire.anc.top {
-	top:95px;
-	right:92px;
+    top:95px;
+    right:92px;
 }
 .dire.anc.bot {
-	top:106px;
-	right:81px;
+    top:106px;
+    right:81px;
 }
 .dire.top.tier_1 {
-	top:55px;
-	left:98px;
+    top:55px;
+    left:98px;
 }
 .dire.top.tier_2 {
-	top:55px;
-	left:242px;
+    top:55px;
+    left:242px;
 }
 .dire.top.tier_3 {
-	top:63px;
-	left:350px;
+    top:63px;
+    left:350px;
 }
 .dire.mid.tier_1 {
-	top:232px;
-	left:272px;
+    top:232px;
+    left:272px;
 }
 .dire.mid.tier_2 {
-	top:177px;
-	left:319px;
+    top:177px;
+    left:319px;
 }
 .dire.mid.tier_3 {
-	top:128px;
-	left:370px;
+    top:128px;
+    left:370px;
 }
 .dire.bot.tier_1{
-	top:295px;
-	right:56px;
+    top:295px;
+    right:56px;
 }
 .dire.bot.tier_2{
-	top:236px;
-	right:52px;
+    top:236px;
+    right:52px;
 }
 .dire.bot.tier_3{
-	top:150px;
-	right:51px;
+    top:150px;
+    right:51px;
 }
 .dire.barracks.top.melee {
-	top:75px;
-	right:127px;
+    top:75px;
+    right:127px;
 }
 .dire.barracks.top.ranged {
-	top:58px;
-	right:127px;
+    top:58px;
+    right:127px;
 }
 .dire.barracks.mid.melee {
-	top:129px;
-	right:103px;
+    top:129px;
+    right:103px;
 }
 .dire.barracks.mid.ranged {
-	top:117px;
-	right:114px;
+    top:117px;
+    right:114px;
 }
 .dire.barracks.bot.melee {
-	top:142px;
-	right:46px;
+    top:142px;
+    right:46px;
 }
 .dire.barracks.bot.ranged {
-	top:142px;
-	right:62px;
+    top:142px;
+    right:62px;
 }
 
 .radiant.ancient {
-	left:58px;
-	bottom:72px;
+    left:58px;
+    bottom:72px;
 }
 .radiant.top.tier_1 {
-	top:186px;
-	left:57px;
+    top:186px;
+    left:57px;
 }
 .radiant.top.tier_2 {
-	top:270px;
-	left:56px;
+    top:270px;
+    left:56px;
 }
 .radiant.top.tier_3 {
-	top:344px;
-	left:41px;
+    top:344px;
+    left:41px;
 }
 .radiant.mid.tier_1 {
-	bottom:199px;
-	left:197px;
+    bottom:199px;
+    left:197px;
 }
 .radiant.mid.tier_2 {
-	bottom:156px;
-	left:136px;
+    bottom:156px;
+    left:136px;
 }
 .radiant.mid.tier_3 {
-	bottom:119px;
-	left:103px;
+    bottom:119px;
+    left:103px;
 }
 .radiant.bot.tier_1 {
-	bottom:58px;
-	right:92px;
+    bottom:58px;
+    right:92px;
 }
 .radiant.bot.tier_2 {
-	bottom:56px;
-	left:226px;
+    bottom:56px;
+    left:226px;
 }
 .radiant.bot.tier_3 {
-	bottom:56px;
-	left:125px;
+    bottom:56px;
+    left:125px;
 }
 .radiant.anc.top {
-	bottom: 97px;
-	left: 71px;
+    bottom: 97px;
+    left: 71px;
 }
 .radiant.anc.bot {
-	bottom: 86px;
-	left: 82px;
+    bottom: 86px;
+    left: 82px;
 }
 .radiant.barracks.top.melee {
-	bottom:131px;
-	left:51px;
+    bottom:131px;
+    left:51px;
 }
 .radiant.barracks.top.ranged {
-	bottom:131px;
-	left:36px;
+    bottom:131px;
+    left:36px;
 }
 .radiant.barracks.mid.melee {
-	bottom:106px;
-	left:103px;
+    bottom:106px;
+    left:103px;
 }
 .radiant.barracks.mid.ranged {
-	bottom:117px;
-	left:92px;
+    bottom:117px;
+    left:92px;
 }
 .radiant.barracks.bot.melee {
-	bottom:51px;
-	left:116px;
+    bottom:51px;
+    left:116px;
 }
 .radiant.barracks.bot.ranged {
-	bottom:67px;
-	left:116px;
+    bottom:67px;
+    left:116px;
 }

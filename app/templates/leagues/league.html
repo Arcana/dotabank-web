@@ -17,12 +17,12 @@
         <thead>
             <tr>
                 <th>ID</th>
-				<th>&nbsp;</th>
+                <th>&nbsp;</th>
                 <th>Radiant</th>
                 <th>&nbsp;</th>
-				<th>&nbsp;</th>
+                <th>&nbsp;</th>
                 <th>Dire</th>
-				<th>Played</th>
+                <th>Played</th>
                 <th><abbr title="Favourite">Fav.</abbr></th>
                 <th>Rating</th>
                 <th>State</th>
@@ -37,28 +37,28 @@
                     <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
                     <td>
                         <img src="{{ (replay.radiant_team_logo|get_file_by_ugcid).url }}" class="team-logo">
-					</td>
-					<td class="team-name">
-						{% if replay.radiant_team_id %}
-							<a href="{{url_for('teams.team', _id=replay.radiant_team_id)}}">{{replay.radiant_team_name}}</a>
-						{% else %}
-							Radiant
-						{% endif %}
+                    </td>
+                    <td class="team-name">
+                        {% if replay.radiant_team_id %}
+                            <a href="{{url_for('teams.team', _id=replay.radiant_team_id)}}">{{replay.radiant_team_name}}</a>
+                        {% else %}
+                            Radiant
+                        {% endif %}
                     </td>
                     <td>vs</td>
                     <td>
                         <img src="{{ (replay.dire_team_logo|get_file_by_ugcid).url }}" class="team-logo">
-					</td>
-					<td class="team-name">
-                        {% if replay.dire_team_id %}
-							<a href="{{url_for('teams.team', _id=replay.dire_team_id)}}">{{replay.dire_team_name}}</a>
-						{% else %}
-							Dire
-						{% endif %}
                     </td>
-					<td>
-						{{replay.start_time|timestamp_to_datestring}}
-					</td>
+                    <td class="team-name">
+                        {% if replay.dire_team_id %}
+                            <a href="{{url_for('teams.team', _id=replay.dire_team_id)}}">{{replay.dire_team_name}}</a>
+                        {% else %}
+                            Dire
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{replay.start_time|timestamp_to_datestring}}
+                    </td>
                     {% if current_user.is_authenticated() %}
                     <td>
                         <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
