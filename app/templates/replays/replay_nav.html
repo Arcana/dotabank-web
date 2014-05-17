@@ -34,6 +34,8 @@
                 <li class="dropdown-header">Clean up</li>
                 <li><a href="{{ url_for('replays.api_populate', _id=replay.id) }}">API (re)populate</a></li>
                 <li><a href="{{ url_for('replays.delete_players', _id=replay.id) }}">Delete players</a></li>
+                <li class="dropdown-header">Misc</li>
+                <li><a href="{{ replay.url }}">Replay URL</a></li>
             </ul>
         </li>
         {% endif %}
