@@ -161,6 +161,11 @@ class Replay(db.Model):
 
     @staticmethod
     def add_gc_job(_replay):
+        # Reset gc fails
+        _replay.gc_fails = 0
+        db.session.add(_replay)
+        db.session.commit()
+
         # Write to SQS
         msg = sqsMessage()
         msg.set_body(str(_replay.id))
@@ -168,6 +173,11 @@ class Replay(db.Model):
 
     @staticmethod
     def add_dl_job(_replay):
+        # Reset dl fails
+        _replay.dl_fails = 0
+        db.session.add(_replay)
+        db.session.commit()
+
         # Write to SQS
         msg = sqsMessage()
         msg.set_body(str(_replay.id))

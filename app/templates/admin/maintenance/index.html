@@ -29,6 +29,15 @@
         <a class="btn btn-default" href="{{ url_for('maintenance.small_replay_exodus') }}">Clean up small replays</a>
     </div>
 
+    <div id="requeue_waiting_downloads">
+        <h3>Requeue waiting downloads</h3>
+        <div class="results" style="display:none">
+            <h4>Readded</h4>
+            <pre class="readded"></pre>
+        </div>
+        <a class="btn btn-default" href="{{ url_for('maintenance.requeue_waiting_downloads') }}">Requeue waiting downloads</a>
+    </div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -76,6 +85,30 @@
                         if (data.success == true)
                         {
                             $this.parent().find('pre.removed').text(data.replays_removed);
+                            $this.parent().find('div.results').slideDown()
+                            $this.button('reset');
+                        }
+                    }
+                });
+            });
+
+
+            $("div#requeue_waiting_downloads a.btn").click(function(e){
+                e.preventDefault();
+
+                var $this = $(this);
+                $this.button('loading');
+
+                $.ajax({
+                    content: this,
+                    type: 'GET',
+                    url: this.href,
+                    dataType: 'json',
+                    success: function(data) {
+                        // If successful, populate thing with data
+                        if (data.success == true)
+                        {
+                            $this.parent().find('pre.readded').text(data.readded);
                             $this.parent().find('div.results').slideDown()
                             $this.button('reset');
                         }

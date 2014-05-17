@@ -260,6 +260,20 @@ class Maintenance(AuthMixin, BaseView):
             replays_removed=replays_removed
         )
 
+    @expose('/requeue_waiting_downloads')
+    def requeue_waiting_downloads(self):
+        waiting_downloads = Replay.query.filter(Replay.state == "WAITING_DOWNLOAD").all()
+
+        done = []
+        for replay in waiting_downloads:
+            if Replay.add_dl_job(replay):
+                done.append(replay.id)
+
+        return jsonify(
+            success=True,
+            readded=done
+        )
+
 # Set up flask-admin
 admin = Admin(name="Dotabank", index_view=AdminIndex())
 admin.add_view(AtypicalReplays(name="Atypical Replays", category='Reports'))
