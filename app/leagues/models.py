@@ -1,8 +1,6 @@
 from flask import current_app
-from app import steam, mem_cache, fs_cache
-from app.filters import fetch_schema
-
-ITEM_SCHEMA = fetch_schema()  # TODO: Don't fetch at init-time.
+from app import steam, fs_cache
+from app.dota.models import Schema
 
 
 class League():
@@ -13,6 +11,8 @@ class League():
     itemdef = None
     image_url = None
     image_url_large = None
+
+    _leagues = None
 
     def __init__(self, _id=None, name=None, description=None, tournament_url=None, itemdef=None, fetch_images=True):
         self.id = _id
@@ -40,7 +40,7 @@ class League():
 
     @classmethod
     @fs_cache.cached(timeout=60 * 60, key_prefix="leagues")
-    def get_all(cls):
+    def fetch_leagues(cls):
         """ Fetch a list of leagues from the Dota 2 WebAPI.
 
         Uses steamodd to interface with the WebAPI.  Falls back to data stored on the file-system in case of a HTTPError
@@ -65,7 +65,13 @@ class League():
             return list()
 
     @classmethod
-    @mem_cache.memoize(timeout=60 * 60)
+    def get_all(cls):
+        if cls._leagues is None:
+            cls._leagues = cls.fetch_leagues()
+
+        return cls._leagues
+
+    @classmethod
     def get_by_id(cls, _id):
         """ Returns a league object for the given league id. """
         for league in cls.get_all():
@@ -75,11 +81,9 @@ class League():
         return None
 
     @staticmethod
-    @mem_cache.memoize(timeout=60 * 60)
     def fetch_images(itemdef=None):
-
         try:
-            item_data = ITEM_SCHEMA[itemdef]
+            item_data = Schema.get_by_id(itemdef)
             return item_data.icon, item_data.image
         except KeyError:
             return None, None

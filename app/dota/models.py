@@ -1,4 +1,4 @@
-from app import steam, mem_cache, fs_cache
+from app import steam, fs_cache
 from flask import current_app
 import requests
 import json
@@ -11,6 +11,8 @@ class Hero:
     name = None
     localized_name = None
 
+    _heroes = None
+
     def __init__(self, _id, name, localized_name=None):
         self.id = _id
         self.name = name
@@ -18,7 +20,7 @@ class Hero:
 
     @classmethod
     @fs_cache.cached(timeout=60 * 60, key_prefix="heroes")
-    def get_all(cls):
+    def fetch_heroes(cls):
         """ Fetch a list of heroes from the Dota 2 WebAPI.
 
         Uses steamodd to interface with the WebAPI.  Falls back to data stored on the file-system in case of a HTTPError
@@ -41,7 +43,13 @@ class Hero:
             return list()
 
     @classmethod
-    @mem_cache.memoize(timeout=60 * 60)
+    def get_all(cls):
+        if cls._heroes is None:
+            cls._heroes = cls.fetch_heroes()
+
+        return cls._heroes
+
+    @classmethod
     def get_by_id(cls, _id):
         """ Returns a Hero object for the given hero id. """
         for hero in cls.get_all():
@@ -51,7 +59,6 @@ class Hero:
         return None
 
     @classmethod
-    @mem_cache.memoize(timeout=60 * 60)
     def get_by_name(cls, name):
         """ Returns a Hero object for the given hero name. """
         for hero in cls.get_all():
@@ -78,6 +85,8 @@ class Item:
     lore = None
     _components = None  # List of component names
     created = None      # Whether or not this item is built from components
+
+    _items = None
 
     def __init__(
             self,
@@ -117,7 +126,7 @@ class Item:
 
     @classmethod
     @fs_cache.cached(timeout=60 * 60, key_prefix="items")
-    def get_all(cls):
+    def fetch_items(cls):
         """ Fetch a list of items from a non-public JSON feed.
 
         Falls back to data stored on the file-system in case of any problems fetching the data.
@@ -177,7 +186,13 @@ class Item:
         return list()
 
     @classmethod
-    @mem_cache.memoize(timeout=60 * 60)
+    def get_all(cls):
+        if cls._items is None:
+            cls._items = cls.fetch_items()
+
+        return cls._items
+
+    @classmethod
     def get_by_id(cls, _id):
         """ Returns an Item object for the given item id. """
         for item in cls.get_all():
@@ -187,7 +202,6 @@ class Item:
         return None
 
     @classmethod
-    @mem_cache.memoize(timeout=60 * 60)
     def get_by_name(cls, name):
         """ Returns an Item object for the given item name. """
         for item in cls.get_all():
@@ -195,3 +209,45 @@ class Item:
                 return item
 
         return None
+
+
+class Schema():
+    """ Schema wrapper with added caching """
+
+    _schema = None
+
+    @staticmethod
+    @fs_cache.cached(timeout=60 * 60, key_prefix="schema")
+    def fetch_schema():
+        """ Fetches the Dota 2 item schema
+
+        Uses steamodd to interface with the WebAPI.  Falls back to data stored on the file-system in case of a HTTPError
+        when interfacing with the WebAPI.
+
+        Returns:
+            A steam.items.schema object.
+            None if there was a HTTPError fetching the data and we did not have a file-system fallback.
+        """
+        try:
+            schema = steam.items.schema(570)
+            schema.client_url  # Touch things so steamdeeb caching actually loads data
+            return schema
+
+        except steam.api.HTTPError:
+            current_app.logger.warning('Schema.fetch_schema returned with HTTPError', exc_info=True)
+
+        # This will only return on errors / exceptions
+        return None
+
+    @classmethod
+    def get_schema(cls):
+        print "Got get_schema call"
+        if cls._schema is None:
+            print "Got fetch_schema call"
+            cls._schema = cls.fetch_schema()
+
+        return cls._schema
+
+    @classmethod
+    def get_by_id(cls, _id):
+        return cls.get_schema()[_id]

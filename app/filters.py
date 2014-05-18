@@ -82,8 +82,10 @@ def fetch_schema():
     return None
 
 
-@mem_cache.memoize(timeout=60 * 60)
+# TODO: Refactor the FUCKING SHIT outa this.
+#@mem_cache.memoize(timeout=60 * 60)
 def get_file_by_ugcid(ugcid):
+    return None
     """ Returns a steam remote-storage file matching the given ugcid.
 
     Uses steamodd to interface with the WebAPI. Accesses a property in the returned object to ensure steamodd loads
