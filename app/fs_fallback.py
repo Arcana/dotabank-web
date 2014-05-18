@@ -2,13 +2,12 @@ __author__ = 'rjackson'
 from functools import wraps
 from flask import current_app
 import os
-import json
 # For temporary schema object store
 import cPickle as pickle
 from time import time
 
 
-def fs_fallback(func):
+def fs_fallback(func):  # TODO: Rewrite and reimplement as FS cache
     """ File-system fallback for external data dependencies.  Will read from filesystem if the external data provided is
     trash.  Will write to filesystem if the external data differs from what we already have stored (archiving the
     previous data) """
@@ -23,7 +22,7 @@ def fs_fallback(func):
         fallback_filepath = os.path.join(
             current_app.config['APP_DIR'],
             'fallback_data',
-            func.__name__ + '.json'
+            "{}.{}.pickle".format(func.__module__, func.__name__)
         )
 
         # If data is shit, try get from FS
@@ -31,7 +30,7 @@ def fs_fallback(func):
             # If we have a file, return the data stored in the file.
             if os.path.exists(fallback_filepath):
                 with open(fallback_filepath, 'r') as f:
-                    return json.loads(f.read())
+                    return pickle.load(f)
             # Otherwise return the (trash) data from the function
             else:
                 return data
@@ -44,7 +43,7 @@ def fs_fallback(func):
             if os.path.exists(fallback_filepath):
                 with open(fallback_filepath, 'r') as f:
                     # The data on file is the same as the new data, we don't need to write to FS.
-                    if f.read() == json.dumps(data):
+                    if f.read() == pickle.dumps(data):
                         save_to_file = False
                     # The data difers, we need to archive the old data. New data will be written because `save_to_file`
                     # will be True already.
@@ -54,7 +53,7 @@ def fs_fallback(func):
             # Writing to file if we have new data.
             if save_to_file:
                 with open(fallback_filepath, 'w') as f:
-                        f.write(json.dumps(data))
+                        pickle.dump(data, f)
 
             # Give data back to caller.
             return data
