@@ -39,10 +39,10 @@ class League():
 
         return self.image_url_large
 
-    @staticmethod
+    @classmethod
     @cache.cached(timeout=60 * 60, key_prefix="leagues")
     @fs_fallback
-    def get_all():
+    def get_all(cls):
         """ Fetch a list of leagues from the Dota 2 WebAPI.
 
         Uses steamodd to interface with the WebAPI.  Falls back to data stored on the file-system in case of a HTTPError
@@ -54,7 +54,7 @@ class League():
         try:
             res = steam.api.interface("IDOTA2Match_570").GetLeagueListing(language="en_US").get("result")
             return list(
-                League(
+                cls(
                     _league.get("leagueid"),
                     _league.get("name"),
                     _league.get("description"),
@@ -66,11 +66,11 @@ class League():
             current_app.logger.warning('League.get_all returned with HTTPError', exc_info=True)
             return list()
 
-    @staticmethod
+    @classmethod
     @cache.memoize(timeout=60 * 60)
-    def get_by_id(_id):
+    def get_by_id(cls, _id):
         """ Returns a league object for the given league id. """
-        for league in League.get_all():
+        for league in cls.get_all():
             if league.id == _id:
                 return league
 

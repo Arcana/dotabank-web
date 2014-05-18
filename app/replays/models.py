@@ -4,6 +4,7 @@ import datetime
 from boto.sqs.message import RawMessage as sqsMessage
 from app import steam
 from app.leagues.models import League
+from app.dota.models import Hero, Item
 
 
 # noinspection PyShadowingBuiltins
@@ -394,13 +395,17 @@ class ReplayPlayer(db.Model):
     @property
     def items(self):
         return [
-            self.item_0,
-            self.item_1,
-            self.item_2,
-            self.item_3,
-            self.item_4,
-            self.item_5
+            Item.get_by_id(self.item_0),
+            Item.get_by_id(self.item_1),
+            Item.get_by_id(self.item_2),
+            Item.get_by_id(self.item_3),
+            Item.get_by_id(self.item_4),
+            Item.get_by_id(self.item_5)
         ]
+
+    @property
+    def hero(self):
+        return Hero.get_by_id(self.hero_id)
 
     def __repr__(self):
         return "<ReplayPlayer {}>".format(self.id)
