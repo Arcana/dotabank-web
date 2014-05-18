@@ -92,11 +92,11 @@
                 {% for team_players in replay.team_players %}
                     {% if team_players|length > 0 %}
                         {% set team_name =  replay.radiant_team_name if team_players[0].team == "Radiant" else replay.dire_team_name %}
-                        {% set team_logo = replay["{}_team_logo".format(team_players[0].team.lower())] %}
+                        {% set team_logo = replay["{}_logo".format(team_players[0].team.lower())] %}
                         <h4>
                             {% if team_name is not none %}
-                                {% if team_logo and (team_logo|get_file_by_ugcid) %}
-                                    <img src="{{ (team_logo|get_file_by_ugcid).url }}" style="height:32px">
+                                {% if team_logo %}
+                                    <img src="{{ team_logo }}" style="height:32px">
                                 {% endif %}
                                 {{ team_name }}
                                 -

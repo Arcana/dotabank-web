@@ -49,7 +49,6 @@ if app.debug:
 from filters import escape_every_character,\
     timestamp_to_datestring,\
     datetime_to_datestring,\
-    get_file_by_ugcid,\
     seconds_to_time,\
     dota_wiki_link,\
     dotabuff_hero_link,\
@@ -58,7 +57,6 @@ from filters import escape_every_character,\
 app.add_template_filter(escape_every_character)
 app.add_template_filter(timestamp_to_datestring)
 app.add_template_filter(datetime_to_datestring)
-app.add_template_filter(get_file_by_ugcid)
 app.add_template_filter(seconds_to_time)
 app.add_template_filter(dota_wiki_link)
 app.add_template_filter(dotabuff_hero_link)

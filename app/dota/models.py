@@ -241,9 +241,7 @@ class Schema():
 
     @classmethod
     def get_schema(cls):
-        print "Got get_schema call"
         if cls._schema is None:
-            print "Got fetch_schema call"
             cls._schema = cls.fetch_schema()
 
         return cls._schema

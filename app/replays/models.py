@@ -66,12 +66,14 @@ class Replay(db.Model):
     radiant_team_logo = db.Column(db.BigInteger())  # optional uint64 radiant_team_logo = 25;
     radiant_team_tag = db.Column(db.String(80))  # optional string radiant_team_tag = 37;
     radiant_team_complete = db.Column(db.Boolean())  # optional uint32 radiant_team_complete = 27;
+    radiant_team_logo_url = db.Column(db.String(140))
 
     dire_team_id = db.Column(db.Integer())  # optional uint32 dire_team_id = 21;
     dire_team_name = db.Column(db.String(80))  # optional string dire_team_name = 24;
     dire_team_logo = db.Column(db.BigInteger())  # optional uint64 dire_team_logo = 26;
     dire_team_tag = db.Column(db.String(80))  # optional string dire_team_tag = 38;
     dire_team_complete = db.Column(db.Boolean())  # optional uint32 dire_team_complete = 28;
+    dire_team_logo_url = db.Column(db.String(140))
 
     radiant_guild_id = db.Column(db.Integer())  # optional uint32 radiant_guild_id = 35;
     dire_guild_id = db.Column(db.Integer())  # optional uint32 dire_guild_id = 36;
@@ -177,6 +179,20 @@ class Replay(db.Model):
                 self.human_players = match_data.get('human_players')
                 self.league_id = match_data.get('leagueid')
                 self.game_mode = match_data.get('game_mode')
+
+                # Team info
+                self.radiant_team_id = match_data.get('radiant_team_id')
+                self.radiant_team_name = match_data.get('radiant_name')
+                self.radiant_team_logo = match_data.get('radiant_logo')
+                self.radiant_team_complete = match_data.get('radiant_team_complete')
+
+                self.dire_team_id = match_data.get('dire_team_id')
+                self.dire_team_name = match_data.get('dire_name')
+                self.dire_team_logo = match_data.get('dire_logo')
+                self.dire_team_complete = match_data.get('dire_team_complete')
+
+                self.radiant_team_logo_url = self.get_logo(self.radiant_team_logo)
+                self.dire_team_logo_url = self.get_logo(self.dire_team_logo)
         except steam.api.HTTPError:
             pass
 
@@ -221,6 +237,36 @@ class Replay(db.Model):
         if self.league_id:
             return League.get_by_id(self.league_id)
         return None
+
+    @staticmethod
+    def get_logo(ugcid):
+        try:
+            file_info = steam.remote_storage.ugc_file(570, ugcid)
+            return file_info.url  # Access an object so steamodd actually grabs data that we can cache
+        except steam.api.SteamError:
+            return None
+
+    @property
+    def radiant_logo(self):
+        if self.radiant_team_logo_url is None and self.radiant_team_logo is not None:
+            logo_url = self.get_logo(self.radiant_team_logo)
+            if logo_url:
+                self.radiant_team_logo_url = logo_url
+                db.session.add(self)
+                db.session.commit()
+
+        return self.radiant_team_logo_url
+
+    @property
+    def dire_logo(self):
+        if self.dire_team_logo_url is None and self.dire_team_logo is not None:
+            logo_url = self.get_logo(self.dire_team_logo)
+            if logo_url:
+                self.dire_team_logo_url = logo_url
+                db.session.add(self)
+                db.session.commit()
+
+        return self.dire_team_logo_url
 
     # TODO: What is this?
     def user_rating(self):
