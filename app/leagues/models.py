@@ -1,5 +1,9 @@
+from flask import current_app
 from app import steam, cache
-from app.filters import fetch_leagues, get_league_by_id, fetch_schema
+from app.filters import fetch_schema
+from app.fs_fallback import fs_fallback
+
+ITEM_SCHEMA = fetch_schema()  # TODO: Don't fetch at init-time.
 
 
 class League():
@@ -11,8 +15,6 @@ class League():
     image_url = None
     image_url_large = None
 
-    _schema = fetch_schema()
-
     def __init__(self, _id=None, name=None, description=None, tournament_url=None, itemdef=None, fetch_images=True):
         self.id = _id
         self.name = name
@@ -21,59 +23,65 @@ class League():
         self.itemdef = itemdef
 
         if fetch_images:
-            self.fetch_images()
-
-    def fetch_images(self):
-        if self.itemdef is None:
-            return False
-
-        try:
-            item_data = League._schema[self.itemdef]
-            self.image_url = item_data.icon
-            self.image_url_large = item_data.image
-            return True
-        except KeyError:
-            return False
-
+            self.image_url, self.image_url_large = League.fetch_images(self.itemdef)
 
     @property
     def icon(self):
         if self.image_url is None:
-            if self.fetch_images() is False:
-                return None
+            self.image_url, self.image_url_large = League.fetch_images(self.itemdef)
 
         return self.image_url
 
     @property
     def image(self):
         if self.image_url_large is None:
-            if self.fetch_images() is False:
-                return None
+            self.image_url, self.image_url_large = League.fetch_images(self.itemdef)
 
         return self.image_url_large
 
     @staticmethod
+    @cache.cached(timeout=60 * 60, key_prefix="leagues")
+    @fs_fallback
     def get_all():
-        _leagues = fetch_leagues()
-        return list(
-            League(
-                k,
-                v.get("name"),
-                v.get("description"),
-                v.get("tournament_url"),
-                v.get("itemdef")
-            ) for k, v in _leagues.iteritems())
+        """ Fetch a list of leagues from the Dota 2 WebAPI.
+
+        Uses steamodd to interface with the WebAPI.  Falls back to data stored on the file-system in case of a HTTPError
+        when interfacing with the WebAPI.
+
+        Returns:
+            An array of League objects.
+        """
+        try:
+            res = steam.api.interface("IDOTA2Match_570").GetLeagueListing(language="en_US").get("result")
+            return list(
+                League(
+                    _league.get("leagueid"),
+                    _league.get("name"),
+                    _league.get("description"),
+                    _league.get("tournament_url"),
+                    _league.get("itemdef")
+                ) for _league in res.get("leagues"))
+
+        except steam.api.HTTPError:
+            current_app.logger.warning('League.get_all returned with HTTPError', exc_info=True)
+            return list()
 
     @staticmethod
+    @cache.memoize(timeout=60 * 60)
     def get_by_id(_id):
-        data = get_league_by_id(_id)
-        if data:
-            return League(
-                data["leagueid"],
-                data["name"],
-                data["description"],
-                data["tournament_url"],
-                data["itemdef"],
-            )
-        else:
-            return None
+        """ Returns a league object for the given league id. """
+        for league in League.get_all():
+            if league.id == _id:
+                return league
+
+        return None
+
+    @staticmethod
+    @cache.memoize(timeout=60 * 60)
+    def fetch_images(itemdef=None):
+
+        try:
+            item_data = ITEM_SCHEMA[itemdef]
+            return item_data.icon, item_data.image
+        except KeyError:
+            return None, None

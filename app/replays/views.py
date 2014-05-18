@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from app import steam, db, dotabank_bucket
 from models import Replay, ReplayRating, ReplayFavourite, ReplayDownload, Search
 from app.admin.views import AdminModelView
-from app.filters import get_hero_by_id, get_hero_by_name, get_item_by_id, get_league_by_id
+from app.filters import get_hero_by_id, get_hero_by_name, get_item_by_id
 from forms import DownloadForm, SearchForm
 
 
@@ -18,7 +18,6 @@ mod = Blueprint("replays", __name__, url_prefix="/replays")
 mod.add_app_template_filter(get_hero_by_id)
 mod.add_app_template_filter(get_hero_by_name)
 mod.add_app_template_filter(get_item_by_id)
-mod.add_app_template_filter(get_league_by_id)
 
 
 @mod.route("/")

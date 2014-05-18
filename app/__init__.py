@@ -46,8 +46,6 @@ if app.debug:
 
 # Set up jinja2 filters.
 from filters import escape_every_character,\
-    get_steamid_from_accountid,\
-    get_account_by_id,\
     timestamp_to_datestring,\
     datetime_to_datestring,\
     get_file_by_ugcid,\
@@ -55,13 +53,8 @@ from filters import escape_every_character,\
     dota_wiki_link,\
     dotabuff_hero_link,\
     dotabuff_item_link,\
-    dotabuff_match_link,\
-    lobby_type,\
-    game_mode,\
-    players_to_teams
+    dotabuff_match_link
 app.add_template_filter(escape_every_character)
-app.add_template_filter(get_steamid_from_accountid)
-app.add_template_filter(get_account_by_id)
 app.add_template_filter(timestamp_to_datestring)
 app.add_template_filter(datetime_to_datestring)
 app.add_template_filter(get_file_by_ugcid)
@@ -70,9 +63,6 @@ app.add_template_filter(dota_wiki_link)
 app.add_template_filter(dotabuff_hero_link)
 app.add_template_filter(dotabuff_item_link)
 app.add_template_filter(dotabuff_match_link)
-app.add_template_filter(lobby_type)
-app.add_template_filter(game_mode)
-app.add_template_filter(players_to_teams)
 
 
 # Load views

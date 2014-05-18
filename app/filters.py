@@ -3,7 +3,6 @@ from flask import current_app
 import json
 import requests
 from datetime import datetime, timedelta
-
 from app.fs_fallback import fs_fallback
 
 
@@ -42,6 +41,7 @@ def seconds_to_time(seconds):
     return str(timedelta(seconds=seconds or 0))
 
 
+# TODO: Make macros
 def dota_wiki_link(text):
     """ Returns a Dota 2 Wiki link to the articled titled `text`. """
     return "http://dota2.gamepedia.com/{}".format(text.replace(" ", "_"))
@@ -62,60 +62,7 @@ def dotabuff_match_link(matchid):
     return "http://dotabuff.com/matches/{}".format(matchid)
 
 
-# Generic API filters
-@cache.memoize()
-def get_steamid_from_accountid(account_id):
-    """ Takes a single or many account IDs, and constructs the steam ID for those account ids.
 
-    If `account_id` is a list, it is parsed recursively.
-
-    Args:
-        account_id: An Integer representing an account id, or an array of the same.
-
-    Returns:
-        A Long reprsenting a steam id, or an array of the same.
-
-    Raises:
-        TypeError: An error occured adding the given `account_id` and the integer required to form a Steam ID, because
-        `account_id` is not an integer.
-    """
-    if isinstance(account_id, list):
-        return [get_steamid_from_accountid(_account_id) for _account_id in account_id]
-    else:
-        return account_id + 76561197960265728
-
-
-@cache.memoize(timeout=60 * 60)
-def get_account_by_id(account_id):
-    """ Takes a single or many account IDs, and returns a populated steam.user.profile object for each account id.app
-
-    Gets the steam id for the given account id(s), and uses steamodd to create steam.user.profile objects for each
-    account.  Accesses a property in each object to ensure steamodd loads external data, which we can then cache.
-
-    Args:
-        account_id: An integer representing an account id, or a list of the same.
-
-    Returns:
-        A list of steamodd.user.profile objects.
-        None, if there was a problem fetching objects.
-    """
-    try:
-        if isinstance(account_id, list):
-            steam_ids = get_steamid_from_accountid(account_id)
-            res = steam.user.profile_batch(steam_ids)
-            for account in res:
-                account.id64
-        else:
-            steam_id = get_steamid_from_accountid(account_id)
-            res = steam.user.profile(steam_id)
-            res.id64
-
-        return res
-    except steam.api.HTTPFileNotFoundError:
-        current_app.logger.warning('Filter get_account_by_id threw HTTPFileNotFoundError', exc_info=True, extra={
-            'extra': json.dumps({'account_id': account_id})
-        })
-        return None
 
 
 # Dota 2 API filters
@@ -191,29 +138,6 @@ def fetch_items():
 
     except requests.exceptions.RequestException:
         current_app.logger.warning('Filter fetch_items returned with RequestException', exc_info=True)
-
-    # This will only return on errors / exceptions
-    return {}
-
-
-@cache.cached(timeout=60 * 60, key_prefix="leagues")
-@fs_fallback
-def fetch_leagues():
-    """ Fetch a list of leagues from the Dota 2 WebAPI.
-
-    Uses steamodd to interface with the WebAPI.  Falls back to data stored on the file-system in case of a HTTPError
-    when interfacing with the WebAPI.
-
-    Returns:
-        A dict containing data on Dota 2 leagues, mapped by their league id..
-        An empty dict if there was a HTTPError fetching the data and we did not have a file-system fallback.
-    """
-    try:
-        res = steam.api.interface("IDOTA2Match_570").GetLeagueListing(language="en_US").get("result")
-        return {x["leagueid"]: x for x in res.get("leagues")}
-
-    except steam.api.HTTPError:
-        current_app.logger.warning('Filter fetch_leagues returned with HTTPError', exc_info=True)
 
     # This will only return on errors / exceptions
     return {}
@@ -306,39 +230,20 @@ def get_item_by_id(item_id):
         
     # Return dummy ofjbect if no match is found.
     return item or {
-      "id": item_id,
-      "img": None,
-      "dname": str(item_id),
-      "qual": None,
-      "cost": None,
-      "desc": None,
-      "notes": None,
-      "attrib": None,
-      "mc": None,
-      "cd": None,
-      "lore": None,
-      "components": None,
-      "created": None
+        "id": item_id,
+        "img": None,
+        "dname": str(item_id),
+        "qual": None,
+        "cost": None,
+        "desc": None,
+        "notes": None,
+        "attrib": None,
+        "mc": None,
+        "cd": None,
+        "lore": None,
+        "components": None,
+        "created": None
     }
-
-
-@cache.memoize(timeout=60 * 60)
-def get_league_by_id(league_id):
-    """ Returns a league object for the given league id. """
-    try:
-        league = [fetch_leagues().get(int(x)) for x in league_id]
-    except TypeError:
-        league = fetch_leagues().get(int(league_id))
-        
-    # Return dummy object if no match is found.
-    return league or {
-        "name": str(league_id),
-        "localized_name": str(league_id),
-        "leagueid": league_id,
-		"description": None,
-		"tournament_url": None,
-		"itemdef": None
-	}
 
 
 @cache.memoize(timeout=60 * 60)
@@ -364,69 +269,3 @@ def get_file_by_ugcid(ugcid):
 
     # This will only return on errors / exceptions
     return None
-
-
-def lobby_type(value):
-    """ Returns a human-friendly string for the lobby type id given.
-
-    Lobby data interpreted from the game's protobufs:
-        https://github.com/SteamRE/SteamKit/blob/master/Resources/Protobufs/dota/dota_gcmessages_common.proto#L803
-    """
-    try:
-        return ["Public Matchmaking",
-         "Practice Game",
-         "Tournament Game",
-         "Tutorial",
-         "Co-op Bot",
-         "Team Matchmaking",
-         "Solo Matchmaking",
-         "Ranked Match"][value]
-    except (IndexError, TypeError):
-        return "Invalid ({})".format(value)
-
-
-def game_mode(value):
-    """ Returns a human-friendly string for the game mode id given.
-
-    Game mode data interpreted from the game's protobufs:
-        https://github.com/SteamRE/SteamKit/blob/master/Resources/Protobufs/dota/dota_gcmessages_common.proto#L407
-    """
-    if not value or value == 0:
-        return "Unknown"
-    else:
-        try:
-            return ["Invalid (0)",              # DOTA_GAMEMODE_NONE = 0;
-                    "All Pick",                 # DOTA_GAMEMODE_AP = 1;
-                    "Captain's Mode",           # DOTA_GAMEMODE_CM = 2;
-                    "Random Draft",             # DOTA_GAMEMODE_RD = 3;
-                    "Standard Draft",           # DOTA_GAMEMODE_SD = 4;
-                    "All Random",               # DOTA_GAMEM ODE_AR = 5;
-                    "Invalid (6)",              # DOTA_GAMEMODE_INTRO = 6;
-                    "Diretide",                 # DOTA_GAMEMODE_HW = 7;
-                    "Reverse Captains Mode",    # DOTA_GAMEMODE_REVERSE_CM = 8;
-                    "The Greeviling",           # DOTA_GAMEMODE_XMAS = 9;
-                    "Tutorial",                 # DOTA_GAMEMODE_TUTORIAL = 10;
-                    "Mid Only",                 # DOTA_GAMEMODE_MO = 11;
-                    "Least Played",             # DOTA_GAMEMODE_LP = 12;
-                    "Limited Heroes",           # DOTA_GAMEMODE_POOL1 = 13;
-                    "Compendium",               # DOTA_GAMEMODE_FH = 14;
-                    "Invalid (15)",             # DOTA_GAMEMODE_CUSTOM = 15;
-                    "Captains Draft",           # DOTA_GAMEMODE_CD = 16;
-                    "Balanced Draft",           # DOTA_GAMEMODE_BD = 17;
-                    "Ability Draft",            # DOTA_GAMEMODE_ABILITY_DRAFT = 18;
-                    "Invalid (19)"              # DOTA_GAMEMODE_EVENT = 19;
-                    ][value]
-        except IndexError:
-            return "Invalid ({})".format(value)
-
-
-def players_to_teams(players):
-    """ Takes a list of players and returns a tuple (radiant, dire) after splitting them into teams. """
-    # Sort players by their in-game slot
-    players = sorted(players, key=lambda x: x.player_slot)
-
-    # Split players into teams
-    radiant = [p for p in players if p.team == "Radiant"]  # 8th bit false
-    dire = [p for p in players if p.team == "Dire"]  # 8th bit true
-
-    return radiant, dire

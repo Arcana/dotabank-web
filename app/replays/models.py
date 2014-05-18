@@ -3,11 +3,16 @@ from flask.ext.login import current_user
 import datetime
 from boto.sqs.message import RawMessage as sqsMessage
 from app import steam
+from app.leagues.models import League
 
 
 # noinspection PyShadowingBuiltins
 class Replay(db.Model):
     __tablename__ = "replays"
+
+    #################
+    # Table columns #
+    #################
 
     id = db.Column(db.Integer, primary_key=True)  # optional uint32 match_id = 6;
     local_uri = db.Column(db.String(128))
@@ -78,6 +83,10 @@ class Replay(db.Model):
     # optional uint32 positive_votes = 29;  # Variable, not worth serializing to DB.  Perhaps memcached with websockets GC reqs
     # optional uint32 negative_votes = 30;  # Variable, not worth serializing to DB.
 
+    #################
+    # Relationships #
+    #################
+
     # GC relationships
     players = db.relationship('ReplayPlayer', backref="replay", lazy="dynamic", cascade="all, delete-orphan")  # repeated .CMsgDOTAMatch.Player players = 5;
     # repeated .CMatchHeroSelectEvent picks_bans = 32;  # TODO
@@ -86,6 +95,48 @@ class Replay(db.Model):
     ratings = db.relationship('ReplayRating', backref='replay', lazy='joined', cascade="all, delete-orphan")
     favourites = db.relationship('ReplayFavourite', backref='replay', lazy='joined', cascade="all, delete-orphan")
     downloads = db.relationship('ReplayDownload', backref="replay", lazy="dynamic", cascade="all, delete-orphan")
+
+    ###############
+    # Static data #
+    ###############
+
+    # Game mode data interpreted from the game's protobufs:
+    # https://github.com/SteamRE/SteamKit/blob/master/Resources/Protobufs/dota/dota_gcmessages_common.proto#L407
+    game_mode_strings = [
+        "Invalid (0)",              # DOTA_GAMEMODE_NONE = 0;
+        "All Pick",                 # DOTA_GAMEMODE_AP = 1;
+        "Captain's Mode",           # DOTA_GAMEMODE_CM = 2;
+        "Random Draft",             # DOTA_GAMEMODE_RD = 3;
+        "Standard Draft",           # DOTA_GAMEMODE_SD = 4;
+        "All Random",               # DOTA_GAMEM ODE_AR = 5;
+        "Invalid (6)",              # DOTA_GAMEMODE_INTRO = 6;
+        "Diretide",                 # DOTA_GAMEMODE_HW = 7;
+        "Reverse Captains Mode",    # DOTA_GAMEMODE_REVERSE_CM = 8;
+        "The Greeviling",           # DOTA_GAMEMODE_XMAS = 9;
+        "Tutorial",                 # DOTA_GAMEMODE_TUTORIAL = 10;
+        "Mid Only",                 # DOTA_GAMEMODE_MO = 11;
+        "Least Played",             # DOTA_GAMEMODE_LP = 12;
+        "Limited Heroes",           # DOTA_GAMEMODE_POOL1 = 13;
+        "Compendium",               # DOTA_GAMEMODE_FH = 14;
+        "Invalid (15)",             # DOTA_GAMEMODE_CUSTOM = 15;
+        "Captains Draft",           # DOTA_GAMEMODE_CD = 16;
+        "Balanced Draft",           # DOTA_GAMEMODE_BD = 17;
+        "Ability Draft",            # DOTA_GAMEMODE_ABILITY_DRAFT = 18;
+        "Invalid (19)"              # DOTA_GAMEMODE_EVENT = 19;
+    ]
+
+    # Lobby data interpreted from the game's protobufs:
+    # https://github.com/SteamRE/SteamKit/blob/master/Resources/Protobufs/dota/dota_gcmessages_common.proto#L803
+    lobby_type_strings = [
+        "Public Matchmaking",
+         "Practice Game",
+         "Tournament Game",
+         "Tutorial",
+         "Co-op Bot",
+         "Team Matchmaking",
+         "Solo Matchmaking",
+         "Ranked Match"
+    ]
 
     # Set default order by
     __mapper_args__ = {
@@ -128,6 +179,62 @@ class Replay(db.Model):
         except steam.api.HTTPError:
             pass
 
+    @property
+    def url(self):
+        return "http://replay{}.valve.net/570/{}_{}.dem.bz2".format(
+            self.replay_cluster,
+            self.id,
+            self.replay_salt
+        )
+
+    @property
+    def lobby_type_string(self):
+        """ Returns a human-friendly string for the replay's lobby type. """
+        try:
+            return Replay.lobby_type_strings[self.lobby_type]
+        except (IndexError, TypeError):
+            return "Invalid ({})".format(self.lobby_type)
+
+    @property
+    def game_mode_string(self):
+        """ Returns a human-friendly string for the replay's game mode. """
+        try:
+            return Replay.game_mode_strings[self.game_mode]
+        except IndexError:
+            return "Invalid ({})".format(self.game_mode)
+
+    @property
+    def team_players(self):
+        """ Returns a tuple (radiant, dire) after splitting the replays players into teams. """
+        # Sort players by their in-game slot
+        players = sorted(self.players, key=lambda x: x.player_slot)
+
+        # Split players into teams
+        radiant = [p for p in players if p.team == "Radiant"]  # 8th bit false
+        dire = [p for p in players if p.team == "Dire"]  # 8th bit true
+
+        return radiant, dire
+
+    @property
+    def league(self):
+        if self.league_id:
+            return League.get_by_id(self.league_id)
+        return None
+
+    # TODO: What is this?
+    def user_rating(self):
+        if current_user.is_authenticated():
+            return next((rating for rating in self.ratings if rating.user_id == current_user.id), None)
+        else:
+            return None
+
+    # TODO: What is this?
+    def user_favourite(self):
+        if current_user.is_authenticated():
+            return next((favourite for favourite in self.favourites if favourite.user_id == current_user.id), False)
+        else:
+            return False
+
     @classmethod
     def get_or_create(cls, **kwargs):
         # Get instance, filter skip_webapi from kwargs as that's the only non-database argument __init__ can take.
@@ -137,27 +244,6 @@ class Replay(db.Model):
         else:
             instance = cls(**kwargs)
             return instance, True
-
-
-    @property
-    def url(self):
-        return "http://replay{}.valve.net/570/{}_{}.dem.bz2".format(
-            self.replay_cluster,
-            self.id,
-            self.replay_salt
-        )
-
-    def user_rating(self):
-        if current_user.is_authenticated():
-            return next((rating for rating in self.ratings if rating.user_id == current_user.id), None)
-        else:
-            return None
-
-    def user_favourite(self):
-        if current_user.is_authenticated():
-            return next((favourite for favourite in self.favourites if favourite.user_id == current_user.id), False)
-        else:
-            return False
 
     @staticmethod
     def add_gc_job(_replay):

@@ -2,7 +2,7 @@ from app import db, steam
 from flask.ext.login import AnonymousUserMixin
 import datetime
 from calendar import timegm as to_timestamp
-from app.filters import get_account_by_id
+
 
 # noinspection PyMethodMayBeStatic
 class AnonymousUser(AnonymousUserMixin):
@@ -40,6 +40,8 @@ class User(db.Model):
         "order_by": [db.asc(first_seen)]
     }
 
+    ACCOUNT_ID_TO_STEAM_ID_CORRECTION = 76561197960265728
+
     def __init__(self, _id=None, name=None, enabled=True):
         self.id = _id
         self.name = name
@@ -71,8 +73,8 @@ class User(db.Model):
 
     def update_steam_name(self):
         # Called every page load for current_user (API is cached)
+        steam_account_info = steam.user.profile(self.steam_id)
         try:
-            steam_account_info = get_account_by_id(self.id)
             if steam_account_info is not None:
                 if self.name is not steam_account_info.persona:
                     self.name = steam_account_info.persona
@@ -91,6 +93,10 @@ class User(db.Model):
         ).first()
 
         return bool(subscription)
+
+    @property
+    def steam_id(self):
+        return self.id + User.ACCOUNT_ID_TO_STEAM_ID_CORRECTION
 
 
 class Subscription(db.Model):

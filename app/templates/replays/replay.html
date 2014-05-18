@@ -45,9 +45,17 @@
         </div>
     {% endif %}
 
-    {% if replay.league_id%}
-        <h2>{{ (replay.league_id|get_league_by_id)["name"] }}</h2>
-        <p class="lead">{{ (replay.league_id|get_league_by_id)["description"] }}</p>
+    {% if replay.league %}
+        {% if replay.league.icon %}
+            <div class="pull-right thumbnail">
+                <img src="{{ replay.league.icon }}" alt="{{ replay.league.name }}"/>
+            </div>
+        {% endif %}
+        <div>
+            <h2>{{ replay.league.name }}</h2>
+            <p class="lead">{{ replay.league.description }}</p>
+            <a class="btn {{'btn-ti4' if replay.league.id==600 else 'btn-primary' }}" href="{{ replay.league.tournament_url }}" target="_blank">Visit tournament website</a>
+        </div>
     {% endif %}
 
     <div class="tabbable">
@@ -81,7 +89,7 @@
                 </dl>
                 {% endif %}
 
-                {% for team_players in replay.players|players_to_teams %}
+                {% for team_players in replay.team_players %}
                     {% if team_players|length > 0 %}
                         {% set team_name =  replay.radiant_team_name if team_players[0].team == "Radiant" else replay.dire_team_name %}
                         {% set team_logo = replay["{}_team_logo".format(team_players[0].team.lower())] %}
@@ -198,9 +206,9 @@
                     <dt>First blood time</dt>
                     <dd>{{ replay.first_blood_time|seconds_to_time }}</dd>
                     <dt>Lobby type</dt>
-                    <dd>{{ replay.lobby_type|lobby_type }}</dd>
+                    <dd>{{ replay.lobby_type_string }}</dd>
                     <dt>Game mode</dt>
-                    <dd>{{ replay.game_mode|game_mode }}</dd>
+                    <dd>{{ replay.game_mode_string }}</dd>
                     <dt>Human players</dt>
                     <dd>{{ replay.human_players }}</dd>
                     {% if replay.radiant_team_id %}
