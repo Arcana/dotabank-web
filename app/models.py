@@ -1,4 +1,4 @@
-from app import cache, dotabank_bucket, db
+from app import mem_cache, dotabank_bucket, db
 from app.replays.models import Replay, ReplayDownload
 from app.users.models import User
 from datetime import datetime, timedelta
@@ -10,7 +10,7 @@ class Stats:
         pass
 
     @staticmethod
-    @cache.memoize(timeout=60 * 60)
+    @mem_cache.memoize(timeout=60 * 60)
     def replays_count(hours=None):
         """ Counts how many replays have been added to the database since `hours` ago, or all-time if `hours` is None. """
         if hours:
@@ -20,7 +20,7 @@ class Stats:
             return Replay.query.count()
 
     @staticmethod
-    @cache.memoize(timeout=60 * 60)
+    @mem_cache.memoize(timeout=60 * 60)
     def archived_count(hours=None):
         """ Counts how many replays have been archived since `hours` ago, or all-time if `hours` is None. """
         if hours:
@@ -31,7 +31,7 @@ class Stats:
             return Replay.query.filter(Replay.local_uri != None).count()  # Have to use != instead of 'is not' here, because sqlalchemy.
 
     @staticmethod
-    @cache.memoize(timeout=60 * 60)
+    @mem_cache.memoize(timeout=60 * 60)
     def downloads_count(hours=None):
         """ Counts how many times users have initiated a download since `hours` ago, or all-time if `hours` is None. """
         if hours:
@@ -41,7 +41,7 @@ class Stats:
             return ReplayDownload.query.count()
 
     @staticmethod
-    @cache.memoize(timeout=60 * 60)
+    @mem_cache.memoize(timeout=60 * 60)
     def users_count(hours=None):
         """ Counts how many users have registered (first login) since `hours` ago, or all-time if `hours` is None. """
         if hours:
@@ -51,7 +51,7 @@ class Stats:
             return User.query.count()
 
     @staticmethod
-    @cache.memoize(timeout=60 * 60)
+    @mem_cache.memoize(timeout=60 * 60)
     def bucket_size():
         """ Sums up and returns how much space we're taking up on our dotabank S3 bucket. """
         total_bytes = 0

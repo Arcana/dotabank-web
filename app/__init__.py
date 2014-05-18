@@ -12,7 +12,8 @@ app = Flask(__name__)
 app.config.from_object("settings")
 
 # Load extensions
-cache = Cache(app)
+mem_cache = Cache(app, config=app.config["CACHE_MEMCACHED"])
+fs_cache = Cache(app, config=app.config["CACHE_FS"])
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 oid = OpenID(app)

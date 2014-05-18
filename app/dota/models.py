@@ -1,5 +1,4 @@
-from app import steam, cache
-from app.fs_fallback import fs_fallback
+from app import steam, mem_cache, fs_cache
 from flask import current_app
 import requests
 import json
@@ -18,8 +17,7 @@ class Hero:
         self.localized_name = localized_name
 
     @classmethod
-    @cache.cached(timeout=60 * 60, key_prefix="heroes")
-    @fs_fallback
+    @fs_cache.cached(timeout=60 * 60, key_prefix="heroes")
     def get_all(cls):
         """ Fetch a list of heroes from the Dota 2 WebAPI.
 
@@ -43,7 +41,7 @@ class Hero:
             return list()
 
     @classmethod
-    @cache.memoize(timeout=60 * 60)
+    @mem_cache.memoize(timeout=60 * 60)
     def get_by_id(cls, _id):
         """ Returns a Hero object for the given hero id. """
         for hero in cls.get_all():
@@ -53,7 +51,7 @@ class Hero:
         return None
 
     @classmethod
-    @cache.memoize(timeout=60 * 60)
+    @mem_cache.memoize(timeout=60 * 60)
     def get_by_name(cls, name):
         """ Returns a Hero object for the given hero name. """
         for hero in cls.get_all():
@@ -118,8 +116,7 @@ class Item:
         return "http://media.steampowered.com/apps/dota2/images/items/{}".format(self.image_filename)
 
     @classmethod
-    @cache.cached(timeout=60 * 60, key_prefix="items")
-    @fs_fallback
+    @fs_cache.cached(timeout=60 * 60, key_prefix="items")
     def get_all(cls):
         """ Fetch a list of items from a non-public JSON feed.
 
@@ -180,7 +177,7 @@ class Item:
         return list()
 
     @classmethod
-    @cache.memoize(timeout=60 * 60)
+    @mem_cache.memoize(timeout=60 * 60)
     def get_by_id(cls, _id):
         """ Returns an Item object for the given item id. """
         for item in cls.get_all():
@@ -190,7 +187,7 @@ class Item:
         return None
 
     @classmethod
-    @cache.memoize(timeout=60 * 60)
+    @mem_cache.memoize(timeout=60 * 60)
     def get_by_name(cls, name):
         """ Returns an Item object for the given item name. """
         for item in cls.get_all():

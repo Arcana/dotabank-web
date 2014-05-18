@@ -1,4 +1,4 @@
-from app import cache, steam
+from app import mem_cache, fs_cache, steam
 from flask import current_app
 from datetime import datetime, timedelta
 
@@ -59,7 +59,7 @@ def dotabuff_match_link(matchid):
     return "http://dotabuff.com/matches/{}".format(matchid)
 
 
-@cache.cached(timeout=60 * 60, key_prefix="schema")
+@fs_cache.cached(timeout=60 * 60, key_prefix="schema")
 def fetch_schema():
     """ Fetches the Dota 2 item schema
 
@@ -82,7 +82,7 @@ def fetch_schema():
     return None
 
 
-@cache.memoize(timeout=60 * 60)
+@mem_cache.memoize(timeout=60 * 60)
 def get_file_by_ugcid(ugcid):
     """ Returns a steam remote-storage file matching the given ugcid.
 

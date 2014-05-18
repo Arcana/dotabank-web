@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, current_app, abort
 from app.replays.models import Replay
-from app import db, cache
+from app import db, mem_cache
 from models import League
 from sqlalchemy.sql import text
 
@@ -8,7 +8,7 @@ from sqlalchemy.sql import text
 mod = Blueprint("leagues", __name__, url_prefix="/leagues")
 
 
-@cache.cached(timeout=60 * 60, key_prefix="leagues_data")
+@mem_cache.cached(timeout=60 * 60, key_prefix="leagues_data")
 def _leagues_data():
     _leagues = League.get_all()
 

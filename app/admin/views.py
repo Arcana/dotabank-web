@@ -289,4 +289,4 @@ def before_request():
 
 
 # TODO: Toolbar stuffs
-# - DebugToolbar kinda things; cpu time, sql queries, cache speed (though we don't cache anything yet)
+# - DebugToolbar kinda things; cpu time, sql queries, mem_cache speed (though we don't mem_cache anything yet)

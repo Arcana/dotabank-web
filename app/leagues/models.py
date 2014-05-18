@@ -1,7 +1,6 @@
 from flask import current_app
-from app import steam, cache
+from app import steam, mem_cache, fs_cache
 from app.filters import fetch_schema
-from app.fs_fallback import fs_fallback
 
 ITEM_SCHEMA = fetch_schema()  # TODO: Don't fetch at init-time.
 
@@ -40,8 +39,7 @@ class League():
         return self.image_url_large
 
     @classmethod
-    @cache.cached(timeout=60 * 60, key_prefix="leagues")
-    @fs_fallback
+    @fs_cache.cached(timeout=60 * 60, key_prefix="leagues")
     def get_all(cls):
         """ Fetch a list of leagues from the Dota 2 WebAPI.
 
@@ -67,7 +65,7 @@ class League():
             return list()
 
     @classmethod
-    @cache.memoize(timeout=60 * 60)
+    @mem_cache.memoize(timeout=60 * 60)
     def get_by_id(cls, _id):
         """ Returns a league object for the given league id. """
         for league in cls.get_all():
@@ -77,7 +75,7 @@ class League():
         return None
 
     @staticmethod
-    @cache.memoize(timeout=60 * 60)
+    @mem_cache.memoize(timeout=60 * 60)
     def fetch_images(itemdef=None):
 
         try:
