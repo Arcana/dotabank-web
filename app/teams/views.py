@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, current_app, abort
+from flask import Blueprint, render_template, current_app, abort, url_for
 from app.replays.models import Replay
 from sqlalchemy import or_
 
@@ -15,7 +15,7 @@ def team(_id, page=1):
     _team = {
         'id': _id,
         'name': _replays.items[0].radiant_team_name if _replays.items[0].radiant_team_id == _id else _replays.items[0].dire_team_name,
-        'logo': _replays.items[0].radiant_logo if _replays.items[0].radiant_team_id == _id else _replays.items[0].dire_logo
+        'logo': url_for('ugcfile', _id=_replays.items[0].radiant_team_logo) if _replays.items[0].radiant_team_id == _id else url_for('ugcfile', _id=_replays.items[0].dire_team_logo)
     }
 
     return render_template("teams/team.html",

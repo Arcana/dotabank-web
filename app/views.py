@@ -1,10 +1,11 @@
-from flask import render_template
+from flask import render_template, abort, Response, stream_with_context
 from app import app, db
-from app.models import Stats
+from app.models import Stats, UGCFile
 from app.replays.models import Replay
 from app.replays.forms import SearchForm
 from flask.ext.login import current_user
-
+from werkzeug.wsgi import wrap_file
+import requests
 
 @app.context_processor
 def inject_search_form():
@@ -29,6 +30,20 @@ def index():
                            last_archived_replays=last_archived_replays,
                            stats=stats,
                            search_form=search_form)
+
+
+@app.route('/ugcfile/<int:_id>')
+def ugcfile(_id):
+    _ugcfile = UGCFile.query.filter(UGCFile.id == _id).first()
+    if not _ugcfile:
+        _ugcfile = UGCFile(_id)
+        db.session.add(_ugcfile)
+        db.session.commit()
+
+    if _ugcfile.url:
+        req = requests.get(_ugcfile.url, stream=True)
+        return Response(stream_with_context(req.iter_content()), content_type = req.headers['content-type'])
+    abort(404)
 
 
 @app.route("/privacy/")

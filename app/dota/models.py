@@ -1,4 +1,4 @@
-from app import steam, fs_cache
+from app import steam, fs_cache, db
 from flask import current_app
 import requests
 import json

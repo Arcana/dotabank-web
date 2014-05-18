@@ -3,7 +3,7 @@
 
 {% block content %}
     <div class="pull-right thumbnail">
-        <img src="{{ (team.logo|get_file_by_ugcid).url }}" alt="{{ team.name }}"/>
+        <img src="{{ team.logo }}" alt="{{ team.name }}"/>
     </div>
     <h2>Replays archived containing {{team.name}}</h2>
     <table class="table table-condensed table-striped">
@@ -29,7 +29,7 @@
                 <tr>
                     <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
                     <td>
-                        <img src="{{ replay.radiant_logo }}" class="team-logo">
+                        <img src="{{ url_for('ugcfile', _id=replay.radiant_team_logo) }}" class="team-logo">
                     </td>
                     <td class="team-name">
                         {% if replay.radiant_team_id %}
@@ -40,7 +40,7 @@
                     </td>
                     <td>vs</td>
                     <td>
-                        <img src="{{ replay.dire_logo }}" class="team-logo">
+                        <img src="{{ url_for('ugcfile', _id=replay.dire_team_logo) }}" class="team-logo">
                     </td>
                     <td class="team-name">
                         {% if replay.dire_team_id %}

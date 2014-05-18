@@ -80,30 +80,3 @@ def fetch_schema():
 
     # This will only return on errors / exceptions
     return None
-
-
-# TODO: Refactor the FUCKING SHIT outa this.
-#@mem_cache.memoize(timeout=60 * 60)
-def get_file_by_ugcid(ugcid):
-    return None
-    """ Returns a steam remote-storage file matching the given ugcid.
-
-    Uses steamodd to interface with the WebAPI. Accesses a property in the returned object to ensure steamodd loads
-    the object's data, so we can cache it properly.
-
-    Args:
-        ugcid: A unique id representing a file stored in Steam's remote storage
-
-    Returns:
-        A steam.remote_storage.ugc_file object.
-        None if there was an error retrieving the file (steam.api.Exception).
-    """
-    try:
-        file_info = steam.remote_storage.ugc_file(570, ugcid)
-        file_info.url  # Access an object so steamodd actually grabs data that we can cache
-        return file_info
-    except steam.api.SteamError:
-        pass
-
-    # This will only return on errors / exceptions
-    return None

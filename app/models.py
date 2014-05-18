@@ -1,4 +1,4 @@
-from app import mem_cache, dotabank_bucket, db
+from app import mem_cache, dotabank_bucket, db, steam
 from app.replays.models import Replay, ReplayDownload
 from app.users.models import User
 from datetime import datetime, timedelta
@@ -104,3 +104,29 @@ class Log(db.Model):
         """ Returns whether this log has been resolved or not. """
         return self.resolved_by_user_id is not None
 
+
+class UGCFile(db.Model):
+    __tablename__ = "ugcfiles"
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    filename = db.Column(db.String(80))
+    size = db.Column(db.Integer)
+    url = db.Column(db.String(140))
+
+    def __init__(self, _id, filename=None, size=None, url=None):
+        self.id = _id
+        self.filename = filename
+        self.size = size
+        self.url = url
+
+        if filename is None or size is None or url is None:
+            self._populate_from_webapi()
+
+    def _populate_from_webapi(self):
+        try:
+            file_info = steam.remote_storage.ugc_file(570, self.id)
+            self.filename = file_info.filename
+            self.size = file_info.size
+            self.url = file_info.url
+        except steam.api.SteamError:
+            pass
