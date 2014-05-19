@@ -57,26 +57,3 @@ def dotabuff_item_link(text):
 def dotabuff_match_link(matchid):
     """ Returns a Dotabuff match link, to the match id specified """
     return "http://dotabuff.com/matches/{}".format(matchid)
-
-
-@fs_cache.cached(timeout=60 * 60, key_prefix="schema")
-def fetch_schema():
-    """ Fetches the Dota 2 item schema
-
-    Uses steamodd to interface with the WebAPI.  Falls back to data stored on the file-system in case of a HTTPError
-    when interfacing with the WebAPI.
-
-    Returns:
-        A steam.items.schema object.
-        None if there was a HTTPError fetching the data and we did not have a file-system fallback.
-    """
-    try:
-        schema = steam.items.schema(570, lang='en_US')  # TODO: Remove lang when steamodd is fixed (lang should be optional, but throws exception on some systems)
-        schema.client_url  # Touch things so steamdeeb caching actually loads data
-        return schema
-
-    except steam.api.HTTPError:
-        current_app.logger.warning('Filter fetch_leagues returned with HTTPError', exc_info=True)
-
-    # This will only return on errors / exceptions
-    return None
