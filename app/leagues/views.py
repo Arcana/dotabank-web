@@ -51,7 +51,7 @@ def league(_id, page=1):
     if _league is None:
         abort(404)
 
-    _replays = Replay.query.filter(Replay.league_id == _id, Replay.state == "ARCHIVED").paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
+    _replays = Replay.query.filter(Replay.league_id == _id).paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
 
     return render_template("leagues/league.html",
                            title="{} - Dotabank".format(_league.name),
