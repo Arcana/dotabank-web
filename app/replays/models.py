@@ -127,16 +127,16 @@ class Replay(db.Model):
     ]
 
     # Lobby data interpreted from the game's protobufs:
-    # https://github.com/SteamRE/SteamKit/blob/master/Resources/Protobufs/dota/dota_gcmessages_common.proto#L803
+    # https://github.com/SteamRE/SteamKit/blob/master/Resources/Protobufs/dota/dota_gcmessages_common.proto#L824
     lobby_type_strings = [
         "Public Matchmaking",
-         "Practice Game",
-         "Tournament Game",
-         "Tutorial",
-         "Co-op Bot",
-         "Team Matchmaking",
-         "Solo Matchmaking",
-         "Ranked Match"
+        "Practice Game",
+        "Tournament Game",
+        "Invalid (3)",
+        "Co-op Bot",
+        "Team Matchmaking",
+        "Solo Matchmaking",
+        "Ranked Match"
     ]
 
     # Set default order by
@@ -203,7 +203,10 @@ class Replay(db.Model):
     def lobby_type_string(self):
         """ Returns a human-friendly string for the replay's lobby type. """
         try:
-            return Replay.lobby_type_strings[self.lobby_type]
+            if self.lobby_type and self.lobby_type < len(Replay.lobby_type_strings):
+                return Replay.lobby_type_strings[self.lobby_type]
+            else:
+                return "Invalid ({})".format(self.lobby_type)
         except (IndexError, TypeError):
             return "Invalid ({})".format(self.lobby_type)
 
@@ -211,7 +214,10 @@ class Replay(db.Model):
     def game_mode_string(self):
         """ Returns a human-friendly string for the replay's game mode. """
         try:
-            return Replay.game_mode_strings[self.game_mode]
+            if self.game_mode and self.game_mode < len(Replay.game_mode_strings):
+                return Replay.game_mode_strings[self.game_mode]
+            else:
+                return "Invalid ({})".format(self.game_mode)
         except IndexError:
             return "Invalid ({})".format(self.game_mode)
 
