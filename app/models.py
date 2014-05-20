@@ -2,6 +2,8 @@ from app import mem_cache, dotabank_bucket, db, steam
 from app.replays.models import Replay, ReplayDownload
 from app.users.models import User
 from datetime import datetime, timedelta
+from flask import current_app
+import os
 
 
 class Stats:
@@ -128,5 +130,10 @@ class UGCFile(db.Model):
             self.filename = file_info.filename
             self.size = file_info.size
             self.url = file_info.url
+
         except steam.api.SteamError:
             pass
+
+    @property
+    def local_uri(self):
+        return os.path.join(current_app.config['UGC_FILES_DIR'], str(self.id))

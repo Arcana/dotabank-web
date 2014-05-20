@@ -1,6 +1,7 @@
 import os
 
 APP_DIR = os.path.abspath(os.path.dirname(__file__))
+UGC_FILES_DIR = os.path.join(APP_DIR, 'ugcfiles')
 
 STEAM_API_KEY = ""  # TODO
 DEBUG = False

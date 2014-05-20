@@ -1,11 +1,12 @@
-from flask import render_template, abort, Response, stream_with_context
+from flask import render_template, abort, send_file
 from app import app, db
 from app.models import Stats, UGCFile
 from app.replays.models import Replay
 from app.replays.forms import SearchForm
 from flask.ext.login import current_user
-from werkzeug.wsgi import wrap_file
 import requests
+import os
+
 
 @app.context_processor
 def inject_search_form():
@@ -37,12 +38,26 @@ def ugcfile(_id):
     _ugcfile = UGCFile.query.filter(UGCFile.id == _id).first()
     if not _ugcfile:
         _ugcfile = UGCFile(_id)
-        db.session.add(_ugcfile)
-        db.session.commit()
 
+        # Only save if we actually have data
+        if _ugcfile.url:
+            db.session.add(_ugcfile)
+            db.session.commit()
+
+    # If we already have on disk, serve it.
+    if os.path.exists(_ugcfile.local_uri):
+        return send_file(_ugcfile.local_uri)
+
+    # Otherwise fetch, save to disk, then serve it.
     if _ugcfile.url:
-        req = requests.get(_ugcfile.url, stream=True)
-        return Response(stream_with_context(req.iter_content()), content_type = req.headers['content-type'])
+        with open(_ugcfile.local_uri, 'w') as f:
+            req = requests.get(_ugcfile.url, stream=True)
+            if req.ok:
+                for block in req.iter_content(1024):
+                    f.write(block)
+            return send_file(_ugcfile.local_uri)
+
+    # If all of the above fails, throw 404.
     abort(404)
 
 
