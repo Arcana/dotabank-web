@@ -153,7 +153,7 @@
                     {% for replay_player in replays %}
                         <tr>
                             <td>{{ replay_player.replay.start_time|timestamp_to_datestring }}</td>
-                            <td>{{ replay_player.hero.localized_name }}</td>
+                            <td>{{ replay_player.hero.localized_name if replay_player.hero else 'No hero' }}</td>
                             <td>{{ replay_player.replay_id }}</td>
                             <td>{{ replay_player.replay.state }}</td>
                             <td><a href="{{ url_for("replays.replay", _id=replay_player.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
