@@ -41,19 +41,19 @@ def seconds_to_time(seconds):
 # TODO: Make macros
 def dota_wiki_link(text):
     """ Returns a Dota 2 Wiki link to the articled titled `text`. """
-    return "http://dota2.gamepedia.com/{}".format(text.replace(" ", "_"))
+    return u"http://dota2.gamepedia.com/{}".format(text.replace(" ", "_"))
 
 
 def dotabuff_hero_link(text):
     """ Returns a Dotabuff hero link, to the name specificed in `text` """
-    return "http://dotabuff.com/heroes/{}".format(text.replace(" ", "-").lower())
+    return u"http://dotabuff.com/heroes/{}".format(text.replace(" ", "-").lower())
 
 
 def dotabuff_item_link(text):
     """ Returns a Dotabuff item link, to the name specified in `text` """
-    return "http://dotabuff.com/items/{}".format(text.replace(" ", "-").lower())
+    return u"http://dotabuff.com/items/{}".format(text.replace(" ", "-").lower())
 
 
 def dotabuff_match_link(matchid):
     """ Returns a Dotabuff match link, to the match id specified """
-    return "http://dotabuff.com/matches/{}".format(matchid)
+    return u"http://dotabuff.com/matches/{}".format(matchid)
