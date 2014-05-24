@@ -29,13 +29,6 @@ for nginx and uwsgi:
 
 ### nginx
 ```
-upstream dotabank {
-        uwsgi_pass      unix:///run/uwsgi/app/dotabank.com/dotabank.com.socket;
-        include uwsgi_params;
-        uwsgi_param     UWSGI_SCHEME $scheme;
-        uwsgi_param     SERVER_SOFTWARE nginx/$nginx_version;
-}
-
 server {
         listen 80 default_server;
         listen [::]:80 default_server ipv6only=on;
@@ -51,8 +44,14 @@ server {
         gzip_types text/plain text/html text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript text/x-js;
         gzip_buffers 16 8k;
 
-        location / {
-                proxy_pass @dotabank;
+        root /srv/www/dotabank.com/public_html;
+        try_files $uri $uri/ @dotabank;
+
+        location @dotabank {
+                uwsgi_pass      unix:///run/uwsgi/app/dotabank.com/dotabank.com.socket;
+                include uwsgi_params;
+                uwsgi_param     UWSGI_SCHEME $scheme;
+                uwsgi_param     SERVER_SOFTWARE nginx/$nginx_version;
         }
 
         location /static {
