@@ -99,13 +99,17 @@ class AtypicalReplays(AuthMixin, BaseView):
         small_replay_files = {replay_file.key[8:-8]: replay_file.size for replay_file in dotabank_bucket.list() if replay_file.key[:8] == "replays/" and replay_file.size < (1024 * 1024)}
         small_replays = Replay.query.filter(Replay.id.in_(small_replay_files.keys())).all()
 
+        all_s3_replay_ids = [replay_file.key[8:-8] for replay_file in dotabank_bucket.list() if replay_file.key[:8] == "replays/"]
+        archived_replays_no_file = Replay.query.filter(Replay.state == 'ARCHIVED', Replay.id.notin_(all_s3_replay_ids)).all()
+
         return self.render(
             'admin/atypical_replays.html',
             human_players_discrepancy=human_players_discrepancy,
             replay_available_download_error=replay_available_download_error,
             replay_waiting_download_over24hrs=replay_waiting_download_over24hrs,
             small_replays=small_replays,
-            small_replay_files=small_replay_files
+            small_replay_files=small_replay_files,
+            archived_replays_no_file=archived_replays_no_file
         )
 
 

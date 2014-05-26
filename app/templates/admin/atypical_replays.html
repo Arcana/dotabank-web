@@ -8,6 +8,7 @@
       <li><a href="#replay_available_download_error" data-toggle="tab">Available, DL error ( {{ replay_available_download_error|length }})</a></li>
       <li><a href="#long_waiting_download" data-toggle="tab">Long DL wait ({{ replay_waiting_download_over24hrs|length }})</a></li>
       <li><a href="#small_replays" data-toggle="tab">Small replays ({{ small_replays|length }})</a></li>
+      <li><a href="#archived_replays_no_file" data-toggle="tab">Archived replays w/ missing file ({{ archived_replays_no_file|length }})</a></li>
     </ul>
 
     <!-- Tab panes -->
@@ -129,6 +130,39 @@
                             <td>{{ replay.replay_state }}</td>
                             <td>{{ replay.gc_done_time }}</td>
                             <td>{{ small_replay_files[replay.id|string]|filesizeformat }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-muted">No broke replays :D</td>
+                </tr>
+                {% endif %}
+            </tbody>
+            </table>
+        </div>
+
+        <div class="tab-pane" id="archived_replays_no_file">
+            <p>Replays with the status "Archived", but with no file stored on S3.</p>
+
+            <table class="table">
+            <thead>
+                <tr>
+                    <th>Replay ID</th>
+                    <th>State</th>
+                    <th>Replay state</th>
+                    <th>GC done time</th>
+                    <th>DL done time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if archived_replays_no_file|length > 0 %}
+                    {% for replay in archived_replays_no_file %}
+                        <tr>
+                            <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                            <td>{{ replay.state }}</td>
+                            <td>{{ replay.replay_state }}</td>
+                            <td>{{ replay.gc_done_time }}</td>
+                            <td>{{ replay.dl_done_time }}</td>
                         </tr>
                     {% endfor %}
                 {% else %}
