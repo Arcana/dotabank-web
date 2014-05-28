@@ -6,7 +6,7 @@ from flask import Blueprint, render_template, flash, redirect, request, url_for,
 from flask.ext.login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
 
-from app import steam, db, dotabank_bucket
+from app import steam, db
 from models import Replay, ReplayRating, ReplayFavourite, ReplayDownload, Search
 from app.admin.views import AdminModelView
 from forms import DownloadForm, SearchForm
@@ -34,9 +34,9 @@ def replay(_id):
     if _replay is None:
         abort(404)
         
-    key = dotabank_bucket.get_key(_replay.local_uri)
+    key = _replay.get_s3_file()
     s3_data = None
-    
+
     if key:
         s3_data = {
             "filename": key.name,
@@ -233,7 +233,7 @@ def download(_id):
         return redirect(request.referrer or url_for("index"))
 
     form = DownloadForm()
-    key = dotabank_bucket.get_key(_replay.local_uri)
+    key = _replay.get_s3_file()
 
     expires_at = (datetime.utcnow() + timedelta(seconds=current_app.config["REPLAY_DOWNLOAD_TIMEOUT"])).ctime()
     name = key.name

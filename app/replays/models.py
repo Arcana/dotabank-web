@@ -1,4 +1,4 @@
-from app import db, sqs_gc_queue, sqs_dl_queue, fs_cache
+from app import db, sqs_gc_queue, sqs_dl_queue, fs_cache, dotabank_bucket
 from flask.ext.login import current_user
 import datetime
 from boto.sqs.message import RawMessage as sqsMessage
@@ -238,6 +238,14 @@ class Replay(db.Model):
         if self.league_id:
             return League.get_by_id(self.league_id)
         return None
+
+    def get_s3_file(self):
+        key = None
+        if self.local_uri:
+            key = dotabank_bucket.get_key(self.local_uri)
+
+        return key
+
 
     # TODO: What is this?
     def user_rating(self):
