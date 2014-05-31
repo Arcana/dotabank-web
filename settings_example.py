@@ -28,32 +28,27 @@ CACHE_FS = {
 }
 
 ENCRYPTION_KEY = ""  # 16, 24, or 32 bytes long  # TODO
+
+# Amazon info
 AWS_REGION = ""  # TODO
 AWS_ACCESS_KEY_ID = ""  # "dotabank"  # TODO
 AWS_SECRET_ACCESS_KEY = ""  # TODO
-
 AWS_BUCKET = ""  # TODO
 AWS_SQS_GC = ""  # TODO
 AWS_SQS_DL = ""  # TODO
-REPLAY_DOWNLOAD_TIMEOUT = 60 * 15  # Seconds; 15 minutes.
 
-RECAPTCHA_PUBLIC_KEY = "-m0"  # TODO
+# Recaptcha info
+
+RECAPTCHA_PUBLIC_KEY = ""  # TODO
 RECAPTCHA_PRIVATE_KEY = ""  # TODO
 
-# mail server settings
-# Mail only allowed to & from tehcnical@dotabank.com
-MAIL_SERVER = ''  # TODO
-MAIL_PORT = 25  # TODO
-MAIL_USERNAME = ""  # TODO
-MAIL_PASSWORD = ""  # TODO
-MAIL_FROM = ""  # TODO
-
-# administrator list (for E500 email alerts)
-ADMINS = []  # TODO
-
+# Sentry (getsentry.com) info
+SENTRY_ENABLED = False  # Change to True if you have a sentry account.
+SENTRY_DSN = ""
 
 # General vars
 CONTACT_EMAIL = ""  # TODO
+REPLAY_DOWNLOAD_TIMEOUT = 60 * 15  # Seconds; 15 minutes.
 REPLAYS_PER_PAGE = 32
 USERS_PER_PAGE = 32
 LATEST_REPLAYS_LIMIT = 8

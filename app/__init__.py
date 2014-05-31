@@ -3,6 +3,7 @@ from flask.ext.cache import Cache
 from flask.ext.login import LoginManager
 from flask.ext.openid import OpenID
 from flask.ext.sqlalchemy import SQLAlchemy
+from raven.contrib.flask import Sentry
 import steam
 from boto import sqs
 from boto.s3.connection import S3Connection
@@ -18,6 +19,8 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 oid = OpenID(app)
 
+if app.config['SENTRY_ENABLED']:
+    sentry = Sentry(app)
 
 # Setup steamodd
 steam.api.key.set(app.config['STEAM_API_KEY'])
@@ -107,13 +110,3 @@ from app.handlers import SQLAlchemyHandler
 db_handler = SQLAlchemyHandler()
 db_handler.setLevel(logging.INFO)
 app.logger.addHandler(db_handler)
-
-# Email logging if in production
-if not app.debug:
-    from logging.handlers import SMTPHandler
-    credentials = None
-    if app.config["MAIL_USERNAME"] or app.config["MAIL_PASSWORD"]:
-        credentials = (app.config["MAIL_USERNAME"], app.config["MAIL_PASSWORD"])
-    mail_handler = SMTPHandler((app.config["MAIL_SERVER"], app.config["MAIL_PORT"]), app.config["MAIL_FROM"], app.config["ADMINS"], 'dotabank failure', credentials, secure=())
-    mail_handler.setLevel(logging.ERROR)
-    app.logger.addHandler(mail_handler)
