@@ -203,23 +203,23 @@ class Replay(db.Model):
     def lobby_type_string(self):
         """ Returns a human-friendly string for the replay's lobby type. """
         try:
-            if self.lobby_type and self.lobby_type < len(Replay.lobby_type_strings):
-                return Replay.lobby_type_strings[self.lobby_type]
-            else:
-                return "Invalid ({})".format(self.lobby_type)
+            return Replay.lobby_type_strings[self.lobby_type]
         except (IndexError, TypeError):
-            return "Invalid ({})".format(self.lobby_type)
+            if self.lobby_type:
+                return "Invalid ({})".format(self.lobby_type)
+            else:
+                return "No lobby type specificed"
 
     @property
     def game_mode_string(self):
         """ Returns a human-friendly string for the replay's game mode. """
         try:
-            if self.game_mode and self.game_mode < len(Replay.game_mode_strings):
-                return Replay.game_mode_strings[self.game_mode]
-            else:
-                return "Invalid ({})".format(self.game_mode)
+            return Replay.game_mode_strings[self.game_mode]
         except IndexError:
-            return "Invalid ({})".format(self.game_mode)
+            if self.game_mode:
+                return "Invalid ({})".format(self.game_mode)
+            else:
+                return "No game mode specified"
 
     @property
     def team_players(self):
