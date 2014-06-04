@@ -215,7 +215,7 @@ class Replay(db.Model):
         """ Returns a human-friendly string for the replay's game mode. """
         try:
             return Replay.game_mode_strings[self.game_mode]
-        except IndexError:
+        except (IndexError, TypeError):
             if self.game_mode:
                 return "Invalid ({})".format(self.game_mode)
             else:
