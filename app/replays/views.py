@@ -302,7 +302,7 @@ def search():
                         if created:
                             _replay._populate_from_webapi(match_data)
                             db.session.add(_replay)
-                            queued = Replay.add_gc_job(_replay)
+                            queued = Replay.add_gc_job(_replay, skip_commit=True)
                             if queued:
                                 flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
                                 try:

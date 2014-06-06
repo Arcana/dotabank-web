@@ -272,11 +272,13 @@ class Replay(db.Model):
             return instance, True
 
     @staticmethod
-    def add_gc_job(_replay):
+    def add_gc_job(_replay, skip_commit=False):
         # Reset gc fails
         _replay.gc_fails = 0
         db.session.add(_replay)
-        db.session.commit()
+
+        if not skip_commit:
+            db.session.commit()
 
         # Write to SQS
         msg = sqsMessage()
@@ -284,11 +286,13 @@ class Replay(db.Model):
         return sqs_gc_queue.write(msg)
 
     @staticmethod
-    def add_dl_job(_replay):
+    def add_dl_job(_replay, skip_commit=False):
         # Reset dl fails
         _replay.dl_fails = 0
         db.session.add(_replay)
-        db.session.commit()
+
+        if not skip_commit:
+            db.session.commit()
 
         # Write to SQS
         msg = sqsMessage()
