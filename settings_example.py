@@ -20,7 +20,7 @@ CACHE_MEMCACHED = {
 }
 
 CACHE_FS = {
-    'CACHE_TYPE': "filesystem",
+    'CACHE_TYPE': "app.cache.dotabank_filesystem",
     'CACHE_DIR': APP_DIR + os.sep + '.cache',
     #'CACHE_DEFAULT_TIMEOUT',
     #'CACHE_ARGS',
