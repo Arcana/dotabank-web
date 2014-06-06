@@ -43,7 +43,6 @@ RECAPTCHA_PUBLIC_KEY = ""  # TODO
 RECAPTCHA_PRIVATE_KEY = ""  # TODO
 
 # Sentry (getsentry.com) info
-SENTRY_ENABLED = False  # Change to True if you have a sentry account.
 SENTRY_DSN = ""
 
 # General vars

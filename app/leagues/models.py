@@ -1,7 +1,6 @@
-from flask import current_app
-from app import steam, fs_cache
+from app import steam, fs_cache, sentry
 from app.dota.models import Schema
-
+import sys
 
 class League():
     id = None
@@ -61,8 +60,13 @@ class League():
                 ) for _league in res.get("leagues"))
 
         except steam.api.HTTPError:
-            current_app.logger.warning('League.get_all returned with HTTPError', exc_info=True)
-            return list()
+            sentry.captureMessage('League.get_all returned with HTTPError', exc_info=sys.exc_info)
+
+            # Try to get data from existing cache entry
+            data = fs_cache.cache.get('leagues', ignore_expiry=True)
+
+            # Return data if we have any, else return an empty list
+            return data or list()
 
     @classmethod
     def get_all(cls):

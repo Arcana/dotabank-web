@@ -19,8 +19,7 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 oid = OpenID(app)
 
-if app.config['SENTRY_ENABLED']:
-    sentry = Sentry(app)
+sentry = Sentry(app)
 
 # Setup steamodd
 steam.api.key.set(app.config['STEAM_API_KEY'])
