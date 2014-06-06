@@ -1,8 +1,8 @@
-from app import steam, fs_cache, db
+from app import steam, fs_cache, sentry
 from flask import current_app
 import requests
 import json
-
+import sys
 
 class Hero:
     """ Represents a Dota 2 hero. """
@@ -39,8 +39,13 @@ class Hero:
                 ) for hero in res.get("heroes"))
 
         except steam.api.HTTPError:
-            current_app.logger.warning('Hero.get_all returned with HTTPError', exc_info=True)
-            return list()
+            sentry.captureMessage('Hero.get_all returned with HTTPError', exc_info=sys.exc_info)
+
+            # Try to get data from existing cache entry
+            data = fs_cache.cache.get('heroes', ignore_expiry=True)
+
+            # Return data if we have any, else return an empty list()
+            return data or list()
 
     @classmethod
     def get_all(cls):
@@ -180,10 +185,13 @@ class Item:
                 })
 
         except requests.exceptions.RequestException:
-            current_app.logger.warning('Item.get_all returned with RequestException', exc_info=True)
+            sentry.captureMessage('Item.get_all returned with RequestException', exc_info=sys.exc_info)
 
-        # This will only return on errors / exceptions
-        return list()
+            # Try to get data from existing cache entry
+            data = fs_cache.cache.get('items', ignore_expiry=True)
+
+            # Return data if we have any, else return an empty list
+            return data or list()
 
     @classmethod
     def get_all(cls):
@@ -234,10 +242,13 @@ class Schema():
             return schema
 
         except steam.api.HTTPError:
-            current_app.logger.warning('Schema.fetch_schema returned with HTTPError', exc_info=True)
+            sentry.captureMessage('Schema.fetch_schema returned with HTTPError', exc_info=sys.exc_info)
 
-        # This will only return on errors / exceptions
-        return None
+            # Try to get data from existing cache entry
+            data = fs_cache.cache.get('schema', ignore_expiry=True)
+
+            # Return data if we have any, else return None
+            return data or None
 
     @classmethod
     def get_schema(cls):
