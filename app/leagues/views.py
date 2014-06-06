@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, current_app, abort
 from app.replays.models import Replay
-from app import db, mem_cache
+from app import db, mem_cache, sentry
 from models import League
 from sqlalchemy.sql import text
 
@@ -11,6 +11,10 @@ mod = Blueprint("leagues", __name__, url_prefix="/leagues")
 @mem_cache.cached(timeout=60 * 60, key_prefix="leagues_data")
 def _leagues_data():
     _leagues = League.get_all()
+
+    if len(_leagues) == 0:
+        sentry.captureMessage('Leagues.get_all() returned an empty list.')
+        return []
 
     replay_counts = {x.league_id: x.count for x in db.engine.execute(
         text("""
