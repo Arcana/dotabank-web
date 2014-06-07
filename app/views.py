@@ -93,7 +93,7 @@ def item_icon(item_filename):
     The file should be served by nginx, but will fall back to this code if nginx throws 404. """
     local_path = os.path.join(
         app.static_folder,
-        "images/items/{}.png".format(item_filename)
+        "images/items/{}".format(item_filename)
     )
     volvo_path = "http://media.steampowered.com/apps/dota2/images/items/{}".format(item_filename)
 
