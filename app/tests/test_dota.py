@@ -54,8 +54,7 @@ class ItemTestCase(DotabankTestCase):
         'id': 1,
         'name': 'blink',
         'localized_name': 'Blink Dagger',
-        'image_filename': 'blink_lg.png',
-        'icon': "http://media.steampowered.com/apps/dota2/images/items/blink_lg.png"
+        'image_filename': 'blink_lg.png'
     }
 
     def test_get_all(self):
@@ -74,7 +73,7 @@ class ItemTestCase(DotabankTestCase):
         self.assertEqual(blink_dagger.name, self.BLINK_DAGGER['name'])
         self.assertEqual(blink_dagger.localized_name, self.BLINK_DAGGER['localized_name'])
         self.assertEqual(blink_dagger.image_filename, self.BLINK_DAGGER['image_filename'])
-        self.assertEqual(blink_dagger.icon, self.BLINK_DAGGER['icon'])
+        self.assertEqual(blink_dagger.icon, url_for('item_icon', item_filename=self.BLINK_DAGGER['image_filename']))
 
     def test_get_by_name(self):
         """ Test we can get an item by its name """
@@ -85,7 +84,7 @@ class ItemTestCase(DotabankTestCase):
         self.assertEqual(blink_dagger.name, self.BLINK_DAGGER['name'])
         self.assertEqual(blink_dagger.localized_name, self.BLINK_DAGGER['localized_name'])
         self.assertEqual(blink_dagger.image_filename, self.BLINK_DAGGER['image_filename'])
-        self.assertEqual(blink_dagger.icon, self.BLINK_DAGGER['icon'])
+        self.assertEqual(blink_dagger.icon, url_for('item_icon', item_filename=self.BLINK_DAGGER['image_filename']))
 
 
 class SchemaTestCase(DotabankTestCase):

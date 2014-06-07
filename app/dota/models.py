@@ -132,7 +132,7 @@ class Item:
 
     @property
     def icon(self):
-        return "http://media.steampowered.com/apps/dota2/images/items/{}".format(self.image_filename)
+        return url_for('item_icon', item_filename=self.image_filename)
 
     @classmethod
     @fs_cache.cached(timeout=60 * 60, key_prefix="items")
