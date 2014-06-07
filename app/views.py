@@ -61,7 +61,7 @@ def ugcfile(_id):
     abort(404)
 
 
-@app.route('/static/img/heroes/<hero_name>.png')
+@app.route('/static/images/heroes/<hero_name>.png')
 def hero_image(hero_name):
     """ Attempts to serve a hero's image from the filesystem, downloading and saving the file if possible.
     The file should be served by nginx, but will fall back to this code if nginx throws 404. """
@@ -87,7 +87,7 @@ def hero_image(hero_name):
     abort(404)
 
 
-@app.route('/static/img/items/<item_filename>.png')
+@app.route('/static/images/items/<item_filename>')
 def item_icon(item_filename):
     """ Attempts to serve an item's image from the filesystem, downloading and saving the file if possible.
     The file should be served by nginx, but will fall back to this code if nginx throws 404. """

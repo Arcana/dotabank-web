@@ -59,6 +59,8 @@ server {
                 autoindex off;
                 access_log off;
                 expires max;
+
+                try_files $uri $uri/ @dotabank;
         }
 
         location /ugcfiles {
