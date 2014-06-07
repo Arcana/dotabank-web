@@ -127,7 +127,7 @@
                                             <span>No hero</span>
                                         </td>
                                     {% else %}
-                                        <td class="fancy-hero-background" style="background-image:url('{{ "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format(player.hero.name.replace("npc_dota_hero_", "")) }}')">
+                                        <td class="fancy-hero-background" style="background-image:url('{{ player.hero.image }}')">
                                             <span>{{ player.hero.localized_name }}</span>
     
                                             <div class="btn-group">

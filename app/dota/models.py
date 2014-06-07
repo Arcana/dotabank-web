@@ -1,8 +1,9 @@
 from app import steam, fs_cache, sentry
-from flask import current_app
+from flask import current_app, url_for
 import requests
 import json
 import sys
+
 
 class Hero:
     """ Represents a Dota 2 hero. """
@@ -17,6 +18,10 @@ class Hero:
         self.id = _id
         self.name = name
         self.localized_name = localized_name
+
+    @property
+    def image(self):
+        return url_for('hero_image', hero_name=self.name.replace('npc_dota_hero_', ''))
 
     @classmethod
     @fs_cache.cached(timeout=60 * 60, key_prefix="heroes")

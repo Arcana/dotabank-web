@@ -55,7 +55,33 @@ def ugcfile(_id):
             if req.ok:
                 for block in req.iter_content(1024):
                     f.write(block)
-            return send_file(_ugcfile.local_uri)
+                return send_file(_ugcfile.local_uri)
+
+    # If all of the above fails, throw 404.
+    abort(404)
+
+
+@app.route('/static/img/heroes/<hero_name>.png')
+def hero_image(hero_name):
+    """ Attempts to serve a hero's image from the filesystem, downloading and saving the file if possible.
+    The file should be served by nginx, but will fall back to this code if nginx throws 404. """
+    local_path = os.path.join(
+        app.static_folder,
+        "images/heroes/{}.png".format(hero_name)
+    )
+    volvo_path = "http://media.steampowered.com/apps/dota2/images/heroes/{}_full.png".format(hero_name)
+
+    # If we already have on disk, serve it.
+    if os.path.exists(local_path):
+        return send_file(local_path)
+
+    # Otherwise fetch, save to disk, then serve it.
+    with open(local_path, 'w') as f:
+        req = requests.get(volvo_path, stream=True)
+        if req.ok:
+            for block in req.iter_content(1024):
+                f.write(block)
+            return send_file(local_path)
 
     # If all of the above fails, throw 404.
     abort(404)
