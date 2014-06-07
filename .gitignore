@@ -3,3 +3,10 @@
 mysql-connector*
 fallback_data/*.json
 settings.py
+app/static/images/heroes/*
+app/static/images/items/*
+ugcfiles/*
+.cache/*
+bin
+include
+lib
