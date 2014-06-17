@@ -75,7 +75,7 @@ def replay(_id):
                            building_statuses=building_statuses,
                            api_key=current_app.config["STEAM_API_KEY"],  #TODO: Wtf is this?  We can access config straight from jinja2.
                            s3_data=s3_data,
-                           superlatives=superlatives
+                           superlatives=superlatives,
                            )
 
 
