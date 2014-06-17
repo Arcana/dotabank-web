@@ -10,8 +10,8 @@
     <script src="{{ url_for("static", filename="js/map.js") }}"></script>
 {% endblock %}
 
-{% macro you_want_a_fucking_medal(player, _attr) %}
-    <td>{{ player|attr(_attr) }} {{ iconic('medal', class='iconic-sm') if player.id == superlatives[_attr].id }}</td>
+{% macro attribute_row_medal(player, _attr) %}
+    <td>{{ player|attr(_attr) }} {{ iconic('medal', class='iconic-sm') if player|attr(_attr) == superlatives[_attr]|attr(_attr) }}</td>
 {% endmacro %}
 
 {% block content %}
@@ -140,7 +140,7 @@
                                         </td>
                                     {% endif %}
                                     {% for attr in ["level", "kills", "deaths", "assists"] %}
-                                        {{ you_want_a_fucking_medal(player, attr) }}
+                                        {{ attribute_row_medal(player, attr) }}
                                     {% endfor %}
                                     <td class="item-cell">
                                         <div class="item-boxes">
@@ -158,7 +158,7 @@
                                     </td>
                                     <td>{{ player.gold }}</td>
                                     {% for attr in ["last_hits", "denies", "gold_per_min", "xp_per_min"] %}
-                                        {{ you_want_a_fucking_medal(player, attr) }}
+                                        {{ attribute_row_medal(player, attr) }}
                                     {% endfor %}
                                 </tr>
                                 {% endfor %}

@@ -1,4 +1,5 @@
 {% from "macros.html" import iconic %}
+{% set api_key = config["STEAM_API_KEY"] %}
 <nav id="replay-nav" class="navbar navbar-default">
     <ul class="nav navbar-nav">
         <li class="{{ "active" if "replays.replay" == request.endpoint  }}">

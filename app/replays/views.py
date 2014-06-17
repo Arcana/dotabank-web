@@ -69,13 +69,16 @@ def replay(_id):
             for stat_key, stat_func in superlative_map.iteritems()
         }
 
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(superlatives)
+
     return render_template("replays/replay.html",
                            title="Replay {} - Dotabank".format(_replay.id),
                            replay=_replay,
                            building_statuses=building_statuses,
-                           api_key=current_app.config["STEAM_API_KEY"],  #TODO: Wtf is this?  We can access config straight from jinja2.
                            s3_data=s3_data,
-                           superlatives=superlatives,
+                           superlatives=superlatives
                            )
 
 
