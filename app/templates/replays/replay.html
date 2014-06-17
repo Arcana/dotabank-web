@@ -144,11 +144,11 @@
                                         <div class="item-boxes">
                                         {% for item in player.items %}
                                             {% if not item %}
-                                                <div class="item"></div>
+                                                <div class="item" title="Slot {{ loop.index }}: No item"></div>
                                             {% else %}
                                                 <a href="{{ item.localized_name|dota_wiki_link }}" class="item">
                                                     <img src="{{ item.icon }}"
-                                                         alt="{{ item.localized_name }}" title="{{ item.localized_name }}">
+                                                         alt="{{ item.localized_name }}" title="Slot {{ loop.index }}: {{ item.localized_name }}">
                                                 </a>
                                             {% endif %}
                                         {% endfor %}
