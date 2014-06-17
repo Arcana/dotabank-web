@@ -298,3 +298,9 @@ table > tbody > tr > td.item-cell {
     border-radius: 3px;
     margin: 2px 2px 2px 2px;
 }
+.iconic-medal-medal.iconic-property-fill {
+    fill: #DAA520;
+}
+.iconic-medal-band.iconic-property-fill {
+    fill: #428bca;
+}

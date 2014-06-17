@@ -10,6 +10,10 @@
     <script src="{{ url_for("static", filename="js/map.js") }}"></script>
 {% endblock %}
 
+{% macro you_want_a_fucking_medal(player, _attr) %}
+    <td>{{ player|attr(_attr) }} {{ iconic('medal', class='iconic-sm') if player.id == superlatives[_attr].id }}</td>
+{% endmacro %}
+
 {% block content %}
     <div class="page-header">
         <h1>Replay <small>{{ replay.id }}{% if replay.start_time %}; {{ replay.start_time|timestamp_to_datestring }} UTC{% endif %}</small></h1>
@@ -88,7 +92,6 @@
                     <dd>{{ s3_data.get("filesize")|filesizeformat }}</dd>
                 </dl>
                 {% endif %}
-
                 {% for team_players in replay.team_players %}
                     {% if team_players|length > 0 %}
                         {% set team_name =  replay.radiant_team_name if team_players[0].team == "Radiant" else replay.dire_team_name %}
@@ -136,10 +139,9 @@
                                             </div>
                                         </td>
                                     {% endif %}
-                                    <td>{{ player.level }}</td>
-                                    <td>{{ player.kills }}</td>
-                                    <td>{{ player.deaths }}</td>
-                                    <td>{{ player.assists }}</td>
+                                    {% for attr in ["level", "kills", "deaths", "assists"] %}
+                                        {{ you_want_a_fucking_medal(player, attr) }}
+                                    {% endfor %}
                                     <td class="item-cell">
                                         <div class="item-boxes">
                                         {% for item in player.items %}
@@ -155,10 +157,9 @@
                                         </div>
                                     </td>
                                     <td>{{ player.gold }}</td>
-                                    <td>{{ player.last_hits }}</td>
-                                    <td>{{ player.denies }}</td>
-                                    <td>{{ player.gold_per_min }}</td>
-                                    <td>{{ player.xp_per_min }}</td>
+                                    {% for attr in ["last_hits", "denies", "gold_per_min", "xp_per_min"] %}
+                                        {{ you_want_a_fucking_medal(player, attr) }}
+                                    {% endfor %}
                                 </tr>
                                 {% endfor %}
                             </tbody>

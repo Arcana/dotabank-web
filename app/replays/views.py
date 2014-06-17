@@ -54,12 +54,28 @@ def replay(_id):
     else:
         building_statuses = None
 
+    # Find out which player had the toppest of these and give them an medal
+    superlatives = None
+    if _replay.players.count() > 0:
+        # Map attributes to the function which will filter the various candidates into an winner.
+        superlative_map = {
+            'level': max, 'kills': max, 'deaths': min, 'assists': max, 'last_hits': max,
+            'denies': max, 'gold_per_min': max, 'xp_per_min': max
+        }
+
+        # Do the actual getting of winners
+        superlatives = {
+            stat_key: stat_func(_replay.players, key=lambda x: getattr(x, stat_key))
+            for stat_key, stat_func in superlative_map.iteritems()
+        }
+
     return render_template("replays/replay.html",
-                           title= "Replay {} - Dotabank".format(_replay.id),
+                           title="Replay {} - Dotabank".format(_replay.id),
                            replay=_replay,
                            building_statuses=building_statuses,
                            api_key=current_app.config["STEAM_API_KEY"],  #TODO: Wtf is this?  We can access config straight from jinja2.
-                           s3_data=s3_data
+                           s3_data=s3_data,
+                           superlatives=superlatives
                            )
 
 
