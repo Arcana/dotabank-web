@@ -17,9 +17,7 @@ You will need a database. Set one up with something like this in bash:
 ```
 $ cd /path/to/dotabank-web
 $ source bin/activate
-$ python
->>> from app import db
->>> db.create_all();
+$ alembic upgrade head
 ```
 
 Then just run `run.py` to use Werkzeug's own internal wsgi server.
