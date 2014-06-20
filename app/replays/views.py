@@ -97,6 +97,7 @@ def replay_alias(_id):
         current_alias.alias = alias_form.alias.data
         db.session.add(current_alias)
         db.session.commit()
+        return redirect(request.referrer or url_for("index"))
 
     # Render form
     return render_template('replays/alias.html',

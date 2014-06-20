@@ -20,9 +20,12 @@ def load_user(user_id):
     if _user:
         _user.update_last_seen()
         _user.update_steam_name()
-
-    g.user = _user
     return _user
+
+
+@mod.before_app_request
+def add_user_to_globals():
+    g.user = current_user
 
 
 @mod.route('/login/')
