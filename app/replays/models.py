@@ -248,7 +248,7 @@ class Replay(db.Model):
         return key
 
     def get_alias(self, formatted=True):
-        if current_user.is_anonymous:
+        if current_user.is_anonymous is True:
             return None
 
         replay_alias = self.aliases.filter(ReplayAlias.user_id == current_user.get_id()).first()

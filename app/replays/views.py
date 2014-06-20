@@ -84,9 +84,7 @@ def replay_alias(_id):
     """ Allows a user to set a custom name for a replay. """
 
     # Get replay
-    _replay = Replay.query.filter(Replay.id == _id).first()
-    if _replay is None:
-        abort(404)
+    _replay = Replay.query.filter(Replay.id == _id).first_or_404()
 
     # Get existing or create new alias
     current_alias = ReplayAlias.query.filter(ReplayAlias.replay_id == _id, ReplayAlias.user_id == current_user.get_id()).first() or ReplayAlias(_id, current_user.get_id())
