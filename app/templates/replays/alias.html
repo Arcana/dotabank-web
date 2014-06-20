@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% import "macros.html" as wtf %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Replay <small>{{ replay.id }}</small></h1>
+        {% include "replays/replay_nav.html" %}
+    </div>
+
+
+
+    <form class="form-horizontal" role="form" method="POST">
+        {{ form.hidden_tag() }}
+        {{ wtf.horizontal_field(form.alias) }}
+
+        {{ wtf.horizontal_submit() }}
+    </form>
+{% endblock %}

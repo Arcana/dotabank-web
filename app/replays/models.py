@@ -465,3 +465,26 @@ class Search(db.Model):
     def __repr__(self):
         return "<Search {}/{}>".format(self.replay_id, self.user_id)
 
+
+class ReplayAlias(db.Model):
+    __tablename__ = "replay_alias"
+
+    # Metadata
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
+
+    # Reel data
+    alias = db.Column(db.String(96), nullable=False)
+
+    # Relationships
+    replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+
+    def __init__(self, replay_id=None, user_id=None, alias=None):
+        self.replay_id = replay_id
+        self.user_id = user_id
+        self.alias = alias
+
+    def __repr__(self):
+        return "<ReplayAlias {}/{}>".format(self.replay_id, self.user_id)

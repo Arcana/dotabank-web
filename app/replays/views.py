@@ -7,9 +7,9 @@ from flask.ext.login import current_user, login_required
 from sqlalchemy.exc import IntegrityError
 
 from app import steam, db
-from models import Replay, ReplayRating, ReplayFavourite, ReplayDownload, Search
+from models import Replay, ReplayRating, ReplayFavourite, ReplayDownload, Search, ReplayAlias
 from app.admin.views import AdminModelView
-from forms import DownloadForm, SearchForm
+from forms import DownloadForm, SearchForm, AliasForm
 
 
 mod = Blueprint("replays", __name__, url_prefix="/replays")
@@ -33,7 +33,7 @@ def replay(_id):
     _replay = Replay.query.filter(Replay.id == _id).first()
     if _replay is None:
         abort(404)
-        
+
     key = _replay.get_s3_file()
     s3_data = None
 
@@ -76,6 +76,34 @@ def replay(_id):
                            s3_data=s3_data,
                            superlatives=superlatives
                            )
+
+
+@mod.route("/<int:_id>/alias/", methods=["POST", "GET"])
+@login_required
+def replay_alias(_id):
+    """ Allows a user to set a custom name for a replay. """
+
+    # Get replay
+    _replay = Replay.query.filter(Replay.id == _id).first()
+    if _replay is None:
+        abort(404)
+
+    # Get existing or create new alias
+    current_alias = ReplayAlias.query.filter(ReplayAlias.replay_id == _id, ReplayAlias.user_id == current_user.get_id()).first() or ReplayAlias(_id, current_user.get_id())
+
+    # Get form and set default value
+    alias_form = AliasForm(current_alias)
+
+    # If form validates, save alias
+    if alias_form.validate_on_submit():
+        current_alias.alias = alias_form.alias.data
+        db.session.add(current_alias)
+        db.session.commit()
+
+    # Render form
+    return render_template('replays/alias.html',
+                           replay=_replay,
+                           form=alias_form)
 
 
 @mod.route("/<int:_id>/rate/")
