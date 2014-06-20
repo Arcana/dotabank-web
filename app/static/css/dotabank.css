@@ -304,3 +304,20 @@ table > tbody > tr > td.item-cell {
 .iconic-medal-band.iconic-property-fill {
     fill: #428bca;
 }
+
+.page-header.replay h1 a {
+    color: rgb(51, 51, 51);
+}
+
+.page-header.replay h1 a svg.iconic.iconic-md {
+    width: 24px;
+    height: 24px;
+}
+
+.page-header.replay h1 a .iconic-property-fill {
+    fill: #999;
+}
+
+.page-header.replay h1 a:hover .iconic-property-fill {
+    fill: rgb(51, 51, 51);
+}

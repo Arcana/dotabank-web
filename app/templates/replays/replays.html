@@ -23,7 +23,7 @@
         <tbody>
             {% for replay in replays.items %}
                 <tr>
-                    <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                    <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a></td>
                     <td>{{ replay.added_to_site_time|datetime_to_datestring }}</td>
                     <td>{{ replay.gc_done_time|datetime_to_datestring }}</td>
                     <td>{{ replay.dl_done_time|datetime_to_datestring }}</td>

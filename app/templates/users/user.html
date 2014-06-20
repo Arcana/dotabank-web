@@ -27,7 +27,7 @@
                     {% for favourite in favourites %}
                         <tr>
                             <td>{{ favourite.created_at|datetime_to_datestring }}</td>
-                            <td>{{ favourite.replay_id }}</td>
+                            <td>{{ favourite.replay.get_alias() or favourite.replay_id }}</td>
                             <td><a href="{{ url_for("replays.replay", _id=favourite.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
                     {% endfor %}
@@ -57,7 +57,7 @@
                     {% for rating in ratings %}
                         <tr>
                             <td>{{ rating.created_at|datetime_to_datestring }}</td>
-                            <td>{{ rating.replay_id }}</td>
+                            <td>{{ rating.replay.get_alias() or rating.replay.id }}</td>
                             <td>{{ rating.positive }}</td>
                             <td><a href="{{ url_for("replays.replay", _id=rating.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
@@ -120,7 +120,7 @@
                     {% for download in downloads %}
                         <tr>
                             <td>{{ download.created_at|datetime_to_datestring }}</td>
-                            <td>{{ download.replay_id }}</td>
+                            <td>{{ download.replay.get_alias() or download.replay.id }}</td>
                             <td><a href="{{ url_for("replays.replay", _id=download.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
                     {% endfor %}
@@ -154,7 +154,7 @@
                         <tr>
                             <td>{{ replay_player.replay.start_time|timestamp_to_datestring }}</td>
                             <td>{{ replay_player.hero.localized_name if replay_player.hero else 'No hero' }}</td>
-                            <td>{{ replay_player.replay_id }}</td>
+                            <td>{{ replay_player.replay.get_alias() or replay_player.replay.id }}</td>
                             <td>{{ replay_player.replay.state }}</td>
                             <td><a href="{{ url_for("replays.replay", _id=replay_player.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>

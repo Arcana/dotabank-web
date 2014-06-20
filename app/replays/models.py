@@ -96,6 +96,7 @@ class Replay(db.Model):
     ratings = db.relationship('ReplayRating', backref='replay', lazy='joined', cascade="all, delete-orphan")
     favourites = db.relationship('ReplayFavourite', backref='replay', lazy='joined', cascade="all, delete-orphan")
     downloads = db.relationship('ReplayDownload', backref="replay", lazy="dynamic", cascade="all, delete-orphan")
+    aliases = db.relationship('ReplayAlias', backref="replay", lazy="dynamic", cascade="all, delete-orphan")
 
     ###############
     # Static data #
@@ -246,6 +247,19 @@ class Replay(db.Model):
 
         return key
 
+    def get_alias(self, formatted=True):
+        if current_user.is_anonymous:
+            return None
+
+        replay_alias = self.aliases.filter(ReplayAlias.user_id == current_user.get_id()).first()
+
+        if replay_alias is not None:
+            if formatted:
+                return "\u201C{}\u201D".decode('unicode-escape').format(replay_alias.alias)  # Wrap in curly quotes
+            else:
+                return replay_alias.alias
+
+        return None
 
     # TODO: What is this?
     def user_rating(self):

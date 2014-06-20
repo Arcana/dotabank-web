@@ -1,7 +1,7 @@
 {% from "macros.html" import iconic %}
 
 {% macro replay_header(replay, extras=[] ) %}
-    <div class="page-header">
+    <div class="replay page-header">
         {{ replay_title(replay) }}
 
         {{ replay_nav(replay) }}
@@ -97,7 +97,13 @@
 {% endmacro %}
 
 {% macro replay_title(replay) %}
-    <h1>Replay <small>{{ replay.id }}{% if replay.start_time %}; {{ replay.start_time|timestamp_to_datestring }} UTC{% endif %}</small></h1>
+    <h1>
+        <a href="{{ url_for('replays.replay_alias', _id=replay.id) }}">
+            {{ replay.get_alias() or "Replay" }}
+            {{ iconic("pencil", class="iconic-md") }}
+        </a>
+        <small>{{ replay.id }}{% if replay.start_time %}; {{ replay.start_time|timestamp_to_datestring }} UTC{% endif %}</small>
+    </h1>
 {% endmacro %}
 
 {% macro replay_progress(replay) %}
