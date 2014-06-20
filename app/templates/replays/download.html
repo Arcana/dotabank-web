@@ -1,10 +1,8 @@
 {% extends "layout.html" %}
+{% from "replays/macros.html" import replay_header %}
 
 {% block content %}
-    <div class="page-header">
-        <h1>Replay <small>{{ replay.id }}</small></h1>
-        {% include "replays/replay_nav.html" %}
-    </div>
+    {{ replay_header(replay) }}
 
     <div class="row">
         <div class="col-sm-6">

@@ -1,0 +1,114 @@
+{% from "macros.html" import iconic %}
+
+{% macro replay_header(replay, extras=[] ) %}
+    <div class="page-header">
+        {{ replay_title(replay) }}
+
+        {{ replay_nav(replay) }}
+
+        {% for extra in extras %}
+            {{ extra }}
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% macro replay_nav(replay) %}
+    <nav id="replay-nav" class="navbar navbar-default">
+        <ul class="nav navbar-nav">
+            <li class="{{ "active" if "replays.replay" == request.endpoint }}">
+                <a href="{{ url_for("replays.replay", _id=replay.id) }}">Overview</a>
+            </li>
+            <li class="{{ "active" if "replays.download" == request.endpoint }}">
+                <a href="{{ url_for("replays.download", _id=replay.id) }}">Download</a>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                View match:
+                <div class="btn-group">
+                    <a class="btn btn-default navbar-btn" href="{{ "dota2://match_id={}".format(replay.id) }}">
+                        In-game
+                    </a>
+                    <a class="btn btn-default navbar-btn" href="{{ replay.id|dotabuff_match_link }}">
+                        Dotabuff
+                    </a>
+                </div>
+            </li>
+            {% if g.user.is_admin() %}
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown">YOU'RE AN ADMIN!<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for('replayview.edit_view', id=replay.id) }}">Edit</a></li>
+                        <li class="dropdown-header">Job queue</li>
+                        <li><a href="{{ url_for('replays.add_gc_job', _id=replay.id) }}">Add GC job</a></li>
+                        <li><a href="{{ url_for('replays.add_dl_job', _id=replay.id) }}">Add DL job</a></li>
+                        <li class="dropdown-header">WebAPI</li>
+                        <li>
+                            <a href="https://api.steampowered.com/IDOTA2Match_570/GetMatchDetails/V001/?match_id={{ replay.id }}&key={{ config["STEAM_API_KEY"] }}"
+                               target="_blank">GetMatchDetails</a></li>
+                        <li>
+                            <a href="https://api.steampowered.com/IDOTA2Match_570/GetMatchHistory/V001/?start_at_match_id={{ replay.id }}&key={{ config["STEAM_API_KEY"] }}"
+                               target="_blank">GetMatchHistory</a></li>
+                        <li class="dropdown-header">Clean up</li>
+                        <li><a href="{{ url_for('replays.api_populate', _id=replay.id) }}">API (re)populate</a></li>
+                        <li><a href="{{ url_for('replays.delete_players', _id=replay.id) }}">Delete players</a></li>
+                        <li class="dropdown-header">Misc</li>
+                        <li><a href="{{ replay.url }}">Replay URL</a></li>
+                    </ul>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    <ul>
+        {% if g.user.is_authenticated() %}
+            <li class="{{ "" if replay.user_favourite() else "text-muted" }}">
+                <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
+                    {{ iconic('star', class="iconic-sm") }}
+                    <sub>({{ replay.favourites|list|length }})</sub>
+                </a>
+            </li>
+            <li class="{{ "" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }}">
+                <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=1) }}">
+                    {{ iconic('thumb', state="up", class="iconic-sm") }}
+                    <sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub>
+                </a>
+            </li>
+            <li class="{{ "" if replay.user_rating() and replay.user_rating().positive != True else "text-muted" }}">
+                <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=0) }}">
+                    {{ iconic('thumb', state="down", class="iconic-sm") }}
+                    <sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub>
+                </a>
+            </li>
+        {% else %}
+            <li class="text-muted">
+                {{ iconic('star', class='iconic-sm') }}
+                <sub>({{ replay.favourites|list|length }})</sub>
+            </li>
+            <li class="text-muted">
+                {{ iconic('thumb', state='up', class='iconic-sm') }}
+                <sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub>
+            </li>
+            <li class="text-muted">
+                {{ iconic('thumb', state='down', class='iconic-sm') }}
+                <sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub>
+            </li>
+        {% endif %}
+    </ul>
+{% endmacro %}
+
+{% macro replay_title(replay) %}
+    <h1>Replay <small>{{ replay.id }}{% if replay.start_time %}; {{ replay.start_time|timestamp_to_datestring }} UTC{% endif %}</small></h1>
+{% endmacro %}
+
+{% macro replay_progress(replay) %}
+    <div class="row progress-tracker">
+        <span class="col-xs-4 progress-tracker-{{ "done" if replay.added_to_site_time else "todo" }}">Added to site</span>
+        <span class="col-xs-4 progress-tracker-{{ "done" if replay.gc_done_time else "todo" }}">Get match details</span>
+        <span class="col-xs-4 progress-tracker-{{ "done" if replay.dl_done_time else "todo" }}">Archive replay</span>
+    </div>
+    <div class="row text-muted text-center">
+        <span class="col-xs-4">{{ replay.added_to_site_time }}</span>
+        <span class="col-xs-4">{{ replay.gc_done_time }}</span>
+        <span class="col-xs-4">{{ replay.dl_done_time }}</span>
+    </div>
+{% endmacro %}

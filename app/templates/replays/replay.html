@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from "replays/macros.html" import replay_header, replay_progress %}
 
 {% block style %}
     {{ super() }}
@@ -15,22 +16,7 @@
 {% endmacro %}
 
 {% block content %}
-    <div class="page-header">
-        <h1>Replay <small>{{ replay.id }}{% if replay.start_time %}; {{ replay.start_time|timestamp_to_datestring }} UTC{% endif %}</small></h1>
-
-        {% include "replays/replay_nav.html" %}
-
-        <div class="row progress-tracker">
-            <span class="col-xs-4 progress-tracker-{{ "done" if replay.added_to_site_time else "todo" }}">Added to site</span>
-            <span class="col-xs-4 progress-tracker-{{ "done" if replay.gc_done_time else "todo" }}">Get match details</span>
-            <span class="col-xs-4 progress-tracker-{{ "done" if replay.dl_done_time else "todo" }}">Archive replay</span>
-        </div>
-        <div class="row text-muted text-center">
-            <span class="col-xs-4">{{ replay.added_to_site_time }}</span>
-            <span class="col-xs-4">{{ replay.gc_done_time }}</span>
-            <span class="col-xs-4">{{ replay.dl_done_time }}</span>
-        </div>
-    </div>
+    {{ replay_header(replay, extras=[replay_progress(replay)]) }}
 
     {% if replay.state in ["WAITING_GC", "WAITING_DOWNLOAD", "DOWNLOAD_IN_PROGRESS"] %}
         <div class="alert alert-warning"><strong>I'm not ready!</strong> The replay is in limbo ({{ replay.state }}), check back soon.</div>

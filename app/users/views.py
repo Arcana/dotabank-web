@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app
+from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app, g
 
 from app import oid, steam, db, login_manager
 from models import User, AnonymousUser
@@ -20,6 +20,8 @@ def load_user(user_id):
     if _user:
         _user.update_last_seen()
         _user.update_steam_name()
+
+    g.user = _user
     return _user
 
 
