@@ -94,8 +94,16 @@ def replay_alias(_id):
 
     # If form validates, save alias
     if alias_form.validate_on_submit():
-        current_alias.alias = alias_form.alias.data
-        db.session.add(current_alias)
+        current_alias.alias = alias_form.alias.data.strip()  # Strip any leading or trailing whitespace; we don't like them white folk.
+
+        # If the alias evalutes to true we can save it, otherwise we delete the alias object (user is blanking their alias)
+        if current_alias.alias:
+            flash("Set alias for replay {} to \u201C{}\u201D.".decode('unicode-escape').format(_replay.id, current_alias.alias), "success")
+            db.session.add(current_alias)
+        else:
+            flash("Removed alias for replay {}.".format(_replay.id), "success")
+            db.session.delete(current_alias)
+
         db.session.commit()
         return redirect(request.referrer or url_for("index"))
 
