@@ -486,7 +486,7 @@ class ReplayAlias(db.Model):
     # Metadata
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
     # Reel data
     alias = db.Column(db.String(96), nullable=False)

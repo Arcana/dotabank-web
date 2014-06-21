@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, flash, redirect, request, url_for,
 
 from app import oid, steam, db, login_manager
 from models import User, AnonymousUser
-from app.replays.models import ReplayPlayer, ReplayFavourite, ReplayRating, ReplayDownload, Search
+from app.replays.models import ReplayPlayer, ReplayFavourite, ReplayRating, ReplayDownload, Search, ReplayAlias
 from forms import SettingsForm
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app.admin.views import AdminModelView
@@ -99,6 +99,7 @@ def user(_id):
     _searches = _user.searches.order_by(False).order_by(Search.created_at.desc()).limit(limit)
     _downloads = _user.downloads.order_by(False).order_by(ReplayDownload.created_at.desc()).limit(limit)
     _ratings = _user.replay_ratings.order_by(False).order_by(ReplayRating.created_at.desc()).limit(limit)
+    _aliases = _user.replay_aliases.order_by(False).order_by(ReplayAlias.updated_at.desc()).limit(limit)
     return render_template("users/user.html",
                            title=u"{} - Dotabank".format(_user.name),
                            user=_user,
@@ -106,7 +107,8 @@ def user(_id):
                            favourites=_favourites,
                            searches=_searches,
                            downloads=_downloads,
-                           ratings=_ratings)
+                           ratings=_ratings,
+                           aliases=_aliases)
 
 
 @mod.route("/<int:_id>/replays/")
@@ -117,7 +119,7 @@ def user_replays(_id, page=None):
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
     if not page:
-        page = int(ceil(float(ReplayPlayer.query.filter(ReplayPlayer.account_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
+        page = int(ceil(float(ReplayPlayer.query.filter(ReplayPlayer.account_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"])))  # Default to last page
     _replays = _user.replay_players.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/replays.html",
                            title=u"{}'s replays - Dotabank".format(_user.name),
@@ -133,7 +135,7 @@ def user_favourites(_id, page=None):
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
     if not page:
-        page = int(ceil(float(ReplayFavourite.query.filter(ReplayFavourite.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
+        page = int(ceil(float(ReplayFavourite.query.filter(ReplayFavourite.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"])))  # Default to last page
     _favourites = _user.favourites.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/favourites.html",
                            title=u"{}'s favourites - Dotabank".format(_user.name),
@@ -150,7 +152,7 @@ def user_ratings(_id, page=None):
         return redirect(request.referrer or url_for("index"))
     if not page:
         pass
-    page = int(ceil(float(ReplayRating.query.filter(ReplayRating.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
+    page = int(ceil(float(ReplayRating.query.filter(ReplayRating.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"])))  # Default to last page
     _ratings = _user.replay_ratings.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/ratings.html",
                            title=u"{}'s ratings - Dotabank".format(_user.name),
@@ -166,7 +168,7 @@ def user_searches(_id, page=None):
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
     if not page:
-        page = int(ceil(float(Search.query.filter(Search.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
+        page = int(ceil(float(Search.query.filter(Search.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"])))  # Default to last page
     _searches = _user.searches.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/searches.html",
                            title=u"{}'s searches - Dotabank".format(_user.name),
@@ -182,12 +184,27 @@ def user_downloads(_id, page=None):
         flash("User {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
     if not page:
-        page = int(ceil(float(ReplayDownload.query.filter(ReplayDownload.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"]))) # Default to last page
+        page = int(ceil(float(ReplayDownload.query.filter(ReplayDownload.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"])))  # Default to last page
     _downloads = _user.downloads.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
     return render_template("users/downloads.html",
                            title=u"{}'s downloads - Dotabank".format(_user.name),
                            user=_user,
                            downloads=_downloads)
+
+
+@mod.route("/<int:_id>/aliases/")
+@mod.route("/<int:_id>/aliases/<int:page>/")
+def user_aliases(_id, page=None):
+    _user = User.query.filter(User.id == _id).first_or_404()
+
+    if not page:
+        page = int(ceil(float(ReplayAlias.query.filter(ReplayAlias.user_id == _user.id).count() or 1) / float(current_app.config["REPLAYS_PER_PAGE"])))  # Default to last page
+
+    _aliases = _user.replay_aliases.paginate(page, current_app.config["REPLAYS_PER_PAGE"], False)
+    return render_template("users/aliases.html",
+                           title=u"{}'s aliases - Dotabank".format(_user.name),
+                           user=_user,
+                           aliases=_aliases)
 
 
 @mod.route("/<int:_id>/update_name")

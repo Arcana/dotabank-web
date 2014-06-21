@@ -32,6 +32,7 @@ class User(db.Model):
     subscriptions = db.relationship('Subscription', backref="user", lazy="dynamic", cascade="all")
     searches = db.relationship('Search', backref="user", lazy="dynamic", cascade="all")
     logs_resolved = db.relationship('Log', backref='resolved_by_user', lazy='dynamic', cascade='all')
+    replay_aliases = db.relationship('ReplayAlias', backref='user', lazy='dynamic', cascade="all")
 
     replay_players = db.relationship('ReplayPlayer', backref='user', lazy='dynamic', order_by='ReplayPlayer.replay_id')
 

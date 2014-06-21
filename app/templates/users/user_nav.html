@@ -11,6 +11,7 @@
         <li {{ "class=active" if "users.user_searches" == request.endpoint }}><a href='{{ url_for("users.user_searches", _id = user.id) }}'>Searches</a></li>
         <li {{ "class=active" if "users.user_downloads" == request.endpoint }}><a href='{{ url_for("users.user_downloads", _id = user.id) }}'>Downloads</a></li>
         <li {{ "class=active" if "users.user_replays" == request.endpoint }}><a href='{{ url_for("users.user_replays", _id = user.id) }}'>Replays</a></li>
+        <li {{ "class=active" if "users.user_aliases" == request.endpoint }}><a href='{{ url_for("users.user_aliases", _id = user.id) }}'>Replay Aliases</a></li>
     </ul>
     <ul class="nav navbar-nav pull-right">
         <li>
