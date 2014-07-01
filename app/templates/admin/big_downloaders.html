@@ -1,0 +1,45 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#daily" data-toggle="tab">Daily</a>
+        </li>
+        <li><a href="#weekly" data-toggle="tab">Weelky</a></li>
+        <li><a href="#monthly" data-toggle="tab">Monthly</a>
+        </li>
+        <li><a href="#all_time" data-toggle="tab">All time</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        {% for key, data in [
+        ("daily", daily_downloaders),
+        ("weekly", weekly_downloaders),
+        ("monthly", monthly_downloaders),
+        ("all_time", all_time_downloaders)
+    ] %}
+            <div class="tab-pane {{ "active" if loop.index == 1 }}" id="{{ key }}">
+                <h2>{{ key|upper }}</h2>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Download</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for row, count in data %}
+                        <tr>
+                            <td><a href="{{ url_for("users.user", _id=row.user.id) }}">{{ row.user.name }}</a></td>
+                            <td>{{ count }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

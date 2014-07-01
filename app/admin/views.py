@@ -10,7 +10,7 @@ from math import ceil
 from app import db, steam, dotabank_bucket
 from app.models import Log
 from app.gc.models import GCJob, GCWorker
-from app.replays.models import Replay, ReplayPlayer
+from app.replays.models import Replay, ReplayPlayer, ReplayDownload
 
 # Create blueprint
 mod = Blueprint("dotabank_admin", __name__)
@@ -196,6 +196,39 @@ class Logs(AuthMixin, BaseView):
             return redirect(request.referrer or url_for("index"))
 
 
+class BigDownloaders(AuthMixin, BaseView):
+    """ Views for database-stored site logs. """
+
+    @staticmethod
+    def user_download_count(hours=None):
+        if hours:
+            _time_ago = datetime.utcnow() - timedelta(hours=hours)
+            return db.session.query(ReplayDownload, db.func.count(ReplayDownload.id)).\
+                filter(ReplayDownload.created_at >= _time_ago).\
+                group_by(ReplayDownload.user_id).\
+                order_by(db.func.count(ReplayDownload.replay_id).desc()).\
+                limit(current_app.config['USERS_PER_PAGE']).\
+                all()
+        else:
+            return db.session.query(ReplayDownload, db.func.count(ReplayDownload.id)).\
+                group_by(ReplayDownload.user_id).\
+                order_by(db.func.count(ReplayDownload.replay_id).desc()).\
+                limit(current_app.config['USERS_PER_PAGE']).\
+                all()
+
+    @expose('/')
+    def index(self):
+        """ Renders a list of users who have done an lot of downloads in particular time frames. """
+
+        return self.render(
+            'admin/big_downloaders.html',
+            daily_downloaders=self.user_download_count(24),
+            weekly_downloaders=self.user_download_count(24 * 7),
+            monthly_downloaders=self.user_download_count(24 * 7 * 30),
+            all_time_downloaders=self.user_download_count()
+        )
+
+
 class Maintenance(AuthMixin, BaseView):
     """ Views for maintenance replated functions """
     @expose('/')
@@ -282,6 +315,7 @@ class Maintenance(AuthMixin, BaseView):
 admin = Admin(name="Dotabank", index_view=AdminIndex())
 admin.add_view(AtypicalReplays(name="Atypical Replays", category='Reports'))
 admin.add_view(Logs(name="Logs", category="Reports"))
+admin.add_view(BigDownloaders(name="Big downloaders", category="Reports"))
 admin.add_view(Maintenance(name="Maintenance"))
 
 
