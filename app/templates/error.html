@@ -8,4 +8,8 @@
     <p>
         {{ error.description }}
     </p>
+
+    {% if error.code == 401 %}
+        <a href="{{ url_for("users.login") }}"><img src="{{ url_for('static', filename='images/sits_small.png') }}" alt="Sign in with Steam"/></a>
+    {% endif %}
 {% endblock %}
