@@ -81,7 +81,7 @@ class User(db.Model):
                     self.name = steam_account_info.persona
                     db.session.add(self)
                     db.session.commit()
-        except steam.api.HTTPError:
+        except steam.api.SteamError:
             pass
 
     def allows_ads(self):
