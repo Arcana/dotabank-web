@@ -7,6 +7,7 @@ from forms import SettingsForm
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app.admin.views import AdminModelView
 from math import ceil
+from sqlalchemy.exc import IntegrityError
 
 mod = Blueprint("users", __name__, url_prefix="/users")
 
@@ -49,8 +50,11 @@ def create_or_login(resp):
         _user = User(int(account_id & 0xFFFFFFFF), account_id)
         _user.update_steam_name()
 
-        db.session.add(_user)
-        db.session.commit()
+        try:
+            db.session.add(_user)
+            db.session.commit()
+        except IntegrityError:
+            pass  # User already in database, likely a race condition on registration.
 
     login_attempt = login_user(_user)
     if login_attempt is True:
