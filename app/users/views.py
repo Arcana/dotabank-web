@@ -46,7 +46,8 @@ def create_or_login(resp):
     _user = User.query.filter(User.id == int(account_id & 0xFFFFFFFF)).first()
 
     if not _user:
-        _user = User(int(account_id & 0xFFFFFFFF), steam.user.profile(steam_id).persona or account_id)
+        _user = User(int(account_id & 0xFFFFFFFF), account_id)
+        _user.update_steam_name()
 
         db.session.add(_user)
         db.session.commit()

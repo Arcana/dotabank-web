@@ -74,8 +74,8 @@ class User(db.Model):
 
     def update_steam_name(self):
         # Called every page load for current_user (API is cached)
-        steam_account_info = steam.user.profile(self.steam_id)
         try:
+            steam_account_info = steam.user.profile(self.steam_id)
             if steam_account_info is not None:
                 if self.name is not steam_account_info.persona:
                     self.name = steam_account_info.persona
