@@ -4,7 +4,7 @@ import re
 
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app, abort
 from flask.ext.login import current_user, login_required
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
 from app import steam, db
 from models import Replay, ReplayRating, ReplayFavourite, ReplayDownload, Search, ReplayAlias
@@ -102,7 +102,14 @@ def replay_alias(_id):
             db.session.add(current_alias)
         else:
             flash("Removed alias for replay {}.".format(_replay.id), "success")
-            db.session.delete(current_alias)
+            # If this object doesn't exist in the database, then all we need to do is
+            if current_alias in db.session.new:
+                db.session.expunge(current_alias)
+            else:
+                try:
+                    db.session.delete(current_alias)
+                except InvalidRequestError:
+                    pass  # We tried to delete an object not in the database, whoops.
 
         db.session.commit()
         return redirect(request.referrer or url_for("index"))
