@@ -83,6 +83,58 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-md-6">
+            <div class="most-favs">
+                <h2>Most favourited replays</h2>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Replay ID</th>
+                        <th>Favourites</th>
+                        <th>Added time</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for replay_id, replay_added_time, count in most_favourited_replays %}
+                        <tr>
+                            <td><a href="{{ url_for("replays.replay", _id=replay_id) }}">{{ replay_id }}</a></td>
+                            <td>{{ count }}</td>
+                            <td>{{ replay_added_time|datetime_to_datestring }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-6">
+
+            <div class="most-licks">
+                <h2>Most liked replays</h2>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Replay ID</th>
+                        <th>Likes</th>
+                        <th>Added time</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for replay_id, replay_added_time, count in most_liked_replays %}
+                        <tr>
+                            <td><a href="{{ url_for("replays.replay", _id=replay_id) }}">{{ replay_id }}</a></td>
+                            <td>{{ count }}</td>
+                            <td>{{ replay_added_time|datetime_to_datestring }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <div class="stats">
         <h2>Stats</h2>
 

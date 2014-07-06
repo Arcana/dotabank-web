@@ -1,7 +1,7 @@
 from flask import render_template, abort, send_file
 from app import app, db
 from app.models import Stats, UGCFile
-from app.replays.models import Replay
+from app.replays.models import Replay, ReplayFavourite, ReplayRating
 from app.replays.forms import SearchForm
 from flask.ext.login import current_user
 import requests
@@ -22,6 +22,21 @@ def index():
     last_added_replays = Replay.query.order_by(Replay.added_to_site_time.desc()).limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
     last_archived_replays = Replay.query.filter(Replay.state == "ARCHIVED").order_by(Replay.dl_done_time.desc()).limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
 
+    most_favourited_replays = db.session.query(Replay.id, Replay.added_to_site_time, db.func.count(ReplayFavourite)).\
+        join(ReplayFavourite.replay).\
+        order_by(db.func.count(ReplayFavourite).desc()).\
+        group_by(ReplayFavourite.replay_id).\
+        limit(app.config["LATEST_REPLAYS_LIMIT"]).\
+        all()
+
+    most_liked_replays = db.session.query(Replay.id, Replay.added_to_site_time, db.func.count(ReplayRating)).\
+        filter(ReplayRating.positive == True).\
+        join(ReplayRating.replay).\
+        order_by(db.func.count(ReplayRating).desc()).\
+        group_by(ReplayRating.replay_id).\
+        limit(app.config["LATEST_REPLAYS_LIMIT"]).\
+        all()
+
     stats = Stats()
 
     search_form = SearchForm()
@@ -29,6 +44,8 @@ def index():
     return render_template("dotabank.html",
                            last_added_replays=last_added_replays,
                            last_archived_replays=last_archived_replays,
+                           most_favourited_replays=most_favourited_replays,
+                           most_liked_replays=most_liked_replays,
                            stats=stats,
                            search_form=search_form)
 
