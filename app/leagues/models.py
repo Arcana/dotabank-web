@@ -1,8 +1,9 @@
-from app import steam, fs_cache, sentry
+from app import app, steam, fs_cache, sentry, db
 from app.dota.models import Schema
 import sys
 
-class League():
+
+class League():  # TODO: Persist leagues to database.
     id = None
     name = None
     description = None
@@ -91,3 +92,92 @@ class League():
             return item_data.icon, item_data.image
         except KeyError:
             return None, None
+
+
+class LeagueView(db.Model):
+    """ Saved filters for a league view - allowing league replays to be broken down into sub-views """
+    __tablename__ = "league_views"
+
+    id = db.Column(db.Integer, primary_key=True)
+    league_id = db.Column(db.Integer, primary_key=True, nullable=False)
+
+    name = db.Column(db.String(80), nullable=False)
+    menu_order = db.Column(db.Integer, nullable=False, default=0)
+
+    filters = db.relationship('LeagueViewFilter', backref='league_view', lazy='joined', cascade="all, delete-orphan")
+
+    # Set default order by
+    __mapper_args__ = {
+        "order_by": [db.asc(menu_order)]
+    }
+
+    def __init__(self, league_id=None, name=None):
+        self.league_id = league_id
+        self.name = name
+
+    def get_filters(self):
+        """ Iterate through this object's LeagueViewFilter items and construct an SQLAlchemy filter list. """
+        sqlalchemy_filters = []
+
+        from app.replays.models import Replay
+
+        # Iterate through the filters
+        for _filter in self.filters:
+            if _filter.value == "__true__":
+                _filter.value = True
+            elif _filter.value == "__false__":
+                _filter.value = False
+            elif _filter.value == "__none__":
+                _filter.value = None
+
+            if _filter.operator == "greater_than_equals":
+                sqlalchemy_filters.append(getattr(Replay, _filter.attribute) >= _filter.value)
+            elif _filter.operator == "greater_than":
+                sqlalchemy_filters.append(getattr(Replay, _filter.attribute) > _filter.value)
+            elif _filter.operator == "less_than_equals":
+                sqlalchemy_filters.append(getattr(Replay, _filter.attribute) <= _filter.value)
+            elif _filter.operator == "less_than":
+                sqlalchemy_filters.append(getattr(Replay, _filter.attribute) < _filter.value)
+            elif _filter.operator == "equals":
+                sqlalchemy_filters.append(getattr(Replay, _filter.attribute) == _filter.value)
+            elif _filter.operator == "not_equals":
+                sqlalchemy_filters.append(getattr(Replay, _filter.attribute) != _filter.value)
+            elif _filter.operator == "in":
+                sqlalchemy_filters.append(getattr(Replay, _filter.attribute).in_(_filter.value.split(',')))
+            elif _filter.operator == "not_in":
+                sqlalchemy_filters.append(getattr(Replay, _filter.attribute).not_in_(_filter.value.split(',')))
+
+        return sqlalchemy_filters
+
+
+class LeagueViewFilter(db.Model):
+    """ The filters to apply to a full list of leagues to whittle them down to what you're wanting. """
+
+    id = db.Column(db.Integer, primary_key=True)
+    league_view_id = db.Column(db.ForeignKey('league_views.id'), nullable=False)
+
+    attribute = db.Column(db.String(32), nullable=False)
+    operator = db.Column(db.Enum(
+        'greater_than_equals',
+        'greater_than',
+        'less_than_equals',
+        'less_than',
+        'equals',
+        'not_equals',
+        'in',
+        'not_in'
+    ), nullable=False, default="equals")
+    value = db.Column(db.String(64), nullable=False)
+
+    def __init__(self, attribute=None, operator=None, value=None):
+        self.attribute = attribute
+        self.operator = operator
+
+        if value is True:
+            self.value = "__true__"
+        elif value is False:
+            self.value = "__false__"
+        elif value is None:
+            self.value = "__none__"
+        else:
+            self.value = value

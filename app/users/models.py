@@ -118,7 +118,6 @@ class Subscription(db.Model):
     def created_at_timestamp(self):
         return to_timestamp(self.created_at.utctimetuple())
 
-
     @staticmethod
     def get_valid_subscriptions():
         return Subscription.query.filter(Subscription.expires_at >= datetime.datetime.utcnow()).all()

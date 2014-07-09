@@ -6,6 +6,7 @@ from app.leagues.models import League
 from app.dota.models import Hero, Item
 from app.users.models import User
 
+
 # noinspection PyShadowingBuiltins
 class Replay(db.Model):
     __tablename__ = "replays"

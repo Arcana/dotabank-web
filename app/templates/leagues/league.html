@@ -11,8 +11,22 @@
         <a class="btn {{'btn-ti4' if league.id==600 else 'btn-primary' }}" href="{{ league.tournament_url }}" target="_blank">{{'View The International 2014 announcement' if league.id==600 else 'Visit tournament website' }}</a>
     </div>
 
-
     <h2>Replays archived from this league</h2>
+
+    <nav id="league-view-nav" class="navbar navbar-default">
+        <ul class="nav navbar-nav">
+            <li class="{{ "active" if current_view == None }}">
+                <a href="{{ url_for("leagues.league", _id=league.id, page=page) }}">All replays</a>
+            </li>
+            {% for view in views %}
+                <li class="{{ "active" if current_view != None and view.id == current_view.id }}">
+                    <a href="{{ url_for("leagues.league", _id=league.id, view=view.id, page=page) }}">{{ view.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+
+
     <table class="table table-condensed table-striped">
         <thead>
             <tr>
@@ -122,5 +136,5 @@
             {% endfor %}
         </tbody>
     </table>
-    {{ pagination(replays, "leagues.league", {'_id': league.id}) }}
+    {{ pagination(replays, "leagues.league", {'_id': league.id} if current_view == None else {'_id': league.id, 'view': current_view.id}) }}
 {% endblock %}
