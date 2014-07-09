@@ -291,7 +291,7 @@ table > tbody > tr > td.item-cell {
 }
 .team-logo {
     display: inline-block;
-    width: 53px;
+    width: auto;
     height: 32px;
     background: lightgray;
     vertical-align: bottom;

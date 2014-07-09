@@ -1,11 +1,10 @@
-from app import db, sqs_gc_queue, sqs_dl_queue, fs_cache, dotabank_bucket
+from app import db, sqs_gc_queue, sqs_dl_queue, mem_cache, dotabank_bucket, steam
 from flask.ext.login import current_user
 import datetime
 from boto.sqs.message import RawMessage as sqsMessage
-from app import steam
 from app.leagues.models import League
 from app.dota.models import Hero, Item
-
+from app.users.models import User
 
 # noinspection PyShadowingBuiltins
 class Replay(db.Model):
@@ -434,6 +433,34 @@ class ReplayPlayer(db.Model):
             return "Radiant"
         else:
             return "Dire"
+
+    @mem_cache.memoize(60*60)  # Cache for 1 hour.
+    def get_profile_data(self):
+        """ Gets this user's data from the Web API.
+        TODO: Find a nice elegant way to batch these requests together - on pages showing many ReplayPlayers. """
+        data = steam.user.profile(self.account_id + User.ACCOUNT_ID_TO_STEAM_ID_CORRECTION)
+        data.persona  # Touch an element to ensure steamodd loads some data
+        return data
+
+    @property
+    def name(self):
+        """ Queries the Steam Web API and grabs the name for this player.
+        :return: Unicode - a player's name
+        """
+        try:
+            return self.get_profile_data().persona
+        except steam.api.SteamError:
+            return self.account_id
+
+    @property
+    def avatar(self):
+        """ Queries the Steam Web API and grabs the URL for this player's avatar.
+        :return: Unicode - URL to a player's avatar
+        """
+        try:
+            return self.get_profile_data().avatar_large
+        except steam.api.SteamError:
+            return None
 
     @property
     def items(self):
