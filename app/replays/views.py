@@ -10,6 +10,7 @@ from app import steam, db
 from models import Replay, ReplayRating, ReplayFavourite, ReplayDownload, Search, ReplayAlias
 from app.admin.views import AdminModelView
 from forms import DownloadForm, SearchForm, AliasForm
+from app.filters import timestamp_to_datestring
 
 
 mod = Blueprint("replays", __name__, url_prefix="/replays")
@@ -69,8 +70,26 @@ def replay(_id):
             for stat_key, stat_func in superlative_map.iteritems()
         }
 
+
+    if _replay.league_id is not None:
+        meta_description = "{} vs {} in {}. Played {} GMT; replay ID: {}.".format(
+            _replay.radiant_team_name or "Radiant",
+            _replay.dire_team_name or "Dire",
+            _replay.league.name,
+            timestamp_to_datestring(_replay.start_time),
+            _replay.id
+        )
+    else:
+        meta_description = "{} vs {}. Played {} GMT, replay ID: {}.".format(
+            _replay.radiant_team_name or "Radiant",
+            _replay.dire_team_name or "Dire",
+            timestamp_to_datestring(_replay.start_time),
+            _replay.id
+        )
+
     return render_template("replays/replay.html",
                            title="Replay {} - Dotabank".format(_replay.id),
+                           meta_description=meta_description,
                            replay=_replay,
                            building_statuses=building_statuses,
                            s3_data=s3_data,

@@ -78,6 +78,7 @@ def league(_id, view=None, page=1):
 
     return render_template("leagues/league.html",
                            title="{} - Dotabank".format(_league.name),
+                           meta_description="Replays archived for {}; {} ...".format(_league.name, _league.short_description),
                            league=_league,
                            replays=_replays,
                            current_view=_view,

@@ -20,5 +20,6 @@ def team(_id, page=1):
 
     return render_template("teams/team.html",
                            title="{} replays - Dotabank".format(_team['name']),
+                           meta_description="{} replays archived on Dotabank".format(_team['name']),
                            team=_team,
                            replays=_replays)

@@ -38,6 +38,16 @@ class League():  # TODO: Persist leagues to database.
 
         return self.image_url_large
 
+    @property
+    def short_description(self):
+        """ Trim down the league's description. """
+        short_desc = self.description
+        if len(short_desc) > app.config['SHORT_DESCRIPTION_LENGTH']:
+            short_desc = short_desc[:app.config['SHORT_DESCRIPTION_LENGTH']] + "..."
+        return short_desc
+
+
+
     @classmethod
     @fs_cache.cached(timeout=60 * 60, key_prefix="leagues")
     def fetch_leagues(cls):
