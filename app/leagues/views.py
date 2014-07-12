@@ -77,8 +77,8 @@ def league(_id, view=None, page=1):
     views = LeagueView.query.filter(LeagueView.league_id == _id).all()
 
     return render_template("leagues/league.html",
-                           title="{} - Dotabank".format(_league.name),
-                           meta_description="Replays archived for {}; {} ...".format(_league.name, _league.short_description),
+                           title=u"{} - Dotabank".format(_league.name),
+                           meta_description=u"Replays archived for {}; {} ...".format(_league.name, _league.short_description),
                            league=_league,
                            replays=_replays,
                            current_view=_view,

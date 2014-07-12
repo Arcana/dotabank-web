@@ -72,7 +72,7 @@ def replay(_id):
 
 
     if _replay.league is not None:
-        meta_description = "{} vs {} in {}. Played {} GMT; replay ID: {}.".format(
+        meta_description = u"{} vs {} in {}. Played {} GMT; replay ID: {}.".format(
             _replay.radiant_team_name or "Radiant",
             _replay.dire_team_name or "Dire",
             _replay.league.name,
@@ -80,7 +80,7 @@ def replay(_id):
             _replay.id
         )
     else:
-        meta_description = "{} vs {}. Played {} GMT, replay ID: {}.".format(
+        meta_description = u"{} vs {}. Played {} GMT, replay ID: {}.".format(
             _replay.radiant_team_name or "Radiant",
             _replay.dire_team_name or "Dire",
             timestamp_to_datestring(_replay.start_time),
