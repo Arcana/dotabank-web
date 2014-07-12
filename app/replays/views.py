@@ -71,7 +71,7 @@ def replay(_id):
         }
 
 
-    if _replay.league_id is not None:
+    if _replay.league is not None:
         meta_description = "{} vs {} in {}. Played {} GMT; replay ID: {}.".format(
             _replay.radiant_team_name or "Radiant",
             _replay.dire_team_name or "Dire",
