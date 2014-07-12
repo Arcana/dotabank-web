@@ -148,6 +148,12 @@ def about():
     return render_template("about.html")
 
 
+@app.route("/robots.txt")
+def robots_txt():
+    return """user-agent: *
+disallow: /replays/*/download/"""
+
+
 @app.errorhandler(401)  # Unauthorized
 @app.errorhandler(403)  # Forbidden
 @app.errorhandler(404)  # > Missing middle!
