@@ -8,15 +8,15 @@
     <table class="table table-condensed table-striped">
         <thead>
             <tr>
-                <td>ID</td>
-                <td>Added</td>
-                <td>Got details</td>
-                <td>Downloaded</td>
-                <td>Favourite</td>
-                <td>Rating</td>
-                <td>State</td>
+                <th>ID</th>
+                <th>Added</th>
+                <th>Got details</th>
+                <th>Downloaded</th>
+                <th>Favourite</th>
+                <th>Rating</th>
+                <th>State</th>
                 {% if current_user.is_authenticated() %}
-                <td>&nbsp;</td>
+                <th>&nbsp;</th>
                 {% endif %}
             </tr>
         </thead>

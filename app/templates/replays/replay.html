@@ -95,17 +95,17 @@
                         <table class="table table-striped table-bordered table-condensed endgame-table">
                             <thead>
                                 <tr>
-                                    <td class="col-md-2 col-sm-2">Hero</td>
-                                    <td>Lvl</td>
-                                    <td>K</td>
-                                    <td>D</td>
-                                    <td>A</td>
-                                    <td class="col-md-3 col-sm-3">Items</td>
-                                    <td>Gold</td>
-                                    <td>LH</td>
-                                    <td>DN</td>
-                                    <td>GPM</td>
-                                    <td>XPM</td>
+                                    <th class="col-md-2 col-sm-2">Hero</th>
+                                    <th>Lvl</th>
+                                    <th>K</th>
+                                    <th>D</th>
+                                    <th>A</th>
+                                    <th class="col-md-3 col-sm-3">Items</th>
+                                    <th>Gold</th>
+                                    <th>LH</th>
+                                    <th>DN</th>
+                                    <th>GPM</th>
+                                    <th>XPM</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -151,7 +151,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="2"><em>Totals</em></td>
+                                    <th colspan="2">Totals</th>
                                     <td>{{ team_players|map(attribute="kills")|sum }}</td>
                                     <td>{{ team_players|map(attribute="deaths")|sum }}</td>
                                     <td>{{ team_players|map(attribute="assists")|sum }}</td>
