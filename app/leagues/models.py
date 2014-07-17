@@ -18,11 +18,16 @@ class League():  # TODO: Persist leagues to database.
         self.id = _id
         self.name = name
         self.description = description
-        self.tournament_url = tournament_url
         self.itemdef = itemdef
 
         if fetch_images:
             self.image_url, self.image_url_large = League.fetch_images(self.itemdef)
+
+        if tournament_url is not None and \
+            not (tournament_url.startswith("http://") or tournament_url.startswith("https://")):
+            tournament_url = "http://{}".format(tournament_url)
+
+        self.tournament_url = tournament_url
 
     @property
     def icon(self):
