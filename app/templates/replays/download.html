@@ -1,5 +1,6 @@
 {% extends "layouts/standard.html" %}
 {% from "replays/macros.html" import replay_header %}
+{% from "ads.html" import large_rectangle_ad with context %}
 
 {% block content %}
     {{ replay_header(replay) }}
@@ -14,9 +15,10 @@
                 <p>{{ form.recaptcha }}</p>
                 <button type="submit" class="btn btn-primary">Download</button>
             </form>
-        </div>
-        <div class="col-sm-6 text-center">
-            <dl class="text-muted">
+
+            <hr/>
+
+            <dl class="text-muted text-center">
                 <dt>Name</dt>
                 <dd>{{ name }}</dd>
                 <dt>File size</dt>
@@ -24,6 +26,9 @@
                 <dt>MD5 Checksum</dt>
                 <dd>{{ md5 }}</dd>
             </dl>
+        </div>
+        <div class="col-sm-6 text-center">
+            {{ large_rectangle_ad() }}
         </div>
     </div>
 {% endblock %}
