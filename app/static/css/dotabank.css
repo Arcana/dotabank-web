@@ -321,3 +321,7 @@ table > tbody > tr > td.item-cell {
 .page-header.replay h1 a:hover .iconic-property-fill {
     fill: rgb(51, 51, 51);
 }
+
+.advertisement ins {
+    background-color: pink;
+}

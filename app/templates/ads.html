@@ -1,0 +1,31 @@
+{% macro banner_ad_top() %}
+    <div id="ad_large_top" class="text-center advertisement">
+        {% if current_user.allows_ads() %}
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- Dotabank Large Ad Top -->
+            <ins class="adsbygoogle"
+                 style="display:inline-block;width:728px;height:90px"
+                 data-ad-client="ca-pub-0889116873012495"
+                 data-ad-slot="5210604642"></ins>
+            <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro banner_ad_bottom() %}
+    <div id="ad_large_bottom" class="text-center advertisement">
+        {% if current_user.allows_ads() %}
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- Dotabank banner bottom -->
+            <ins class="adsbygoogle"
+                 style="display:inline-block;width:728px;height:90px"
+                 data-ad-client="ca-pub-0889116873012495"
+                 data-ad-slot="3594270642"></ins>
+            <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        {% endif %}
+    </div>
+{% endmacro %}

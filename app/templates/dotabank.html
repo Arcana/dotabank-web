@@ -1,6 +1,6 @@
-{% extends "layout.html" %}
+{% extends "layouts/hero_top.html" %}
 
-{% block content %}
+{% block hero %}
     <div class="jumbotron">
         <div class="container">
             <div class="row">
@@ -29,34 +29,39 @@
                         {{ search_form.hidden_tag() }}
                         <div class="input-group input-group-lg">
                             {{ search_form.query(class='form-control', placeholder='Match ID') }}
-                            <span class="input-group-btn">
-                                <input type="submit" class="btn btn-primary" value="Archive"/>
-                            </span>
+                                    <span class="input-group-btn">
+                                        <input type="submit" class="btn btn-primary" value="Archive"/>
+                                    </span>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block content %}
     <div class="row">
         <div class="col-sm-6">
             <h1>Latest added</h1>
             <table class="table table-condensed table-striped">
                 <thead>
-                    <tr>
-                        <th>Replay ID</th>
-                        <th>State</th>
-                        <th>Time</th>
-                    </tr>
+                <tr>
+                    <th>Replay ID</th>
+                    <th>State</th>
+                    <th>Time</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {% for replay in last_added_replays %}
-                        <tr>
-                            <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a></td>
-                            <td>{{ replay.state }}</td>
-                            <td>{{ replay.added_to_site_time|datetime_to_datestring }}</td>
-                        </tr>
-                    {% endfor %}
+                {% for replay in last_added_replays %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a>
+                        </td>
+                        <td>{{ replay.state }}</td>
+                        <td>{{ replay.added_to_site_time|datetime_to_datestring }}</td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -64,20 +69,22 @@
             <h1>Latest archived</h1>
             <table class="table table-condensed table-striped">
                 <thead>
-                    <tr>
-                        <th>Replay ID</th>
-                        <th>State</th>
-                        <th>Time</th>
-                    </tr>
+                <tr>
+                    <th>Replay ID</th>
+                    <th>State</th>
+                    <th>Time</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {% for replay in last_archived_replays %}
-                        <tr>
-                            <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a></td>
-                            <td>{{ replay.state }}</td>
-                            <td>{{ replay.dl_done_time|datetime_to_datestring }}</td>
-                        </tr>
-                    {% endfor %}
+                {% for replay in last_archived_replays %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a>
+                        </td>
+                        <td>{{ replay.state }}</td>
+                        <td>{{ replay.dl_done_time|datetime_to_datestring }}</td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
