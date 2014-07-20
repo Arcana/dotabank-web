@@ -64,35 +64,40 @@
             <li class="{{ "" if replay.user_favourite() else "text-muted" }}">
                 <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
                     {{ iconic('star', class="iconic-sm") }}
-                    <sub>({{ replay.favourites|list|length }})</sub>
+                    <sub>{{ replay.favourites|list|length }} favourites</sub>
                 </a>
             </li>
             <li class="{{ "" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }}">
                 <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=1) }}">
                     {{ iconic('thumb', state="up", class="iconic-sm") }}
-                    <sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub>
+                    <sub>{{ replay.ratings|selectattr("positive")|list|length }} thumbs up</sub>
                 </a>
             </li>
             <li class="{{ "" if replay.user_rating() and replay.user_rating().positive != True else "text-muted" }}">
                 <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=0) }}">
                     {{ iconic('thumb', state="down", class="iconic-sm") }}
-                    <sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub>
+                    <sub>{{ replay.ratings|rejectattr("positive")|list|length }} thumbs down</sub>
                 </a>
             </li>
         {% else %}
             <li class="text-muted">
                 {{ iconic('star', class='iconic-sm') }}
-                <sub>({{ replay.favourites|list|length }})</sub>
+                <sub>{{ replay.favourites|list|length }} favourites</sub>
             </li>
             <li class="text-muted">
                 {{ iconic('thumb', state='up', class='iconic-sm') }}
-                <sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub>
+                <sub>{{ replay.ratings|selectattr("positive")|list|length }} thumbs up</sub>
             </li>
             <li class="text-muted">
                 {{ iconic('thumb', state='down', class='iconic-sm') }}
-                <sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub>
+                <sub>{{ replay.ratings|rejectattr("positive")|list|length }} thumbs down</sub>
             </li>
         {% endif %}
+    <li class="text-muted">
+        {{ iconic('data-transfer', state='download', class='iconic-sm') }}
+        <sub>{{ replay.downloads.count() }} downloads</sub>
+    </li>
+
     </ul>
 {% endmacro %}
 
