@@ -1,10 +1,26 @@
 {% from "macros.html" import iconic, pagination %}
 {% extends "layouts/standard.html" %}
 
-{% block content %}
+
+{% block page_header %}
     <div class="page-header">
         <h1>Replays <small>page {{ replays.page }}</small></h1>
     </div>
+{% endblock %}
+
+{% block top_ad %}
+    {# HR below the ad #}
+    {{ super() }}
+    <hr/>
+{% endblock %}
+
+{% block bottom_ad %}
+    {# HR above the ad #}
+    <hr/>
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
     <table class="table table-condensed table-striped">
         <thead>
             <tr>

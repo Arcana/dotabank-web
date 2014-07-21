@@ -1,17 +1,17 @@
 {% from "macros.html" import iconic, pagination %}
 {% extends "layouts/standard.html" %}
 
-{% block content %}
+{% block page_header %}
     <div class="pull-right thumbnail">
         <img src="{{ league.icon }}" alt="{{ league.name }}"/>
     </div>
+
     <div class="page-header">
         <h1>{{ league.name }}</h1>
         <p class="lead">{{ league.description }}</p>
         <a class="btn {{'btn-ti4' if league.id==600 else 'btn-primary' }}" href="{{ league.tournament_url }}" target="_blank">{{'View The International 2014 announcement' if league.id==600 else 'Visit tournament website' }}</a>
-    </div>
 
-    <h2>Replays archived from this league</h2>
+    </div>
 
     <nav id="league-view-nav" class="navbar navbar-default">
         <ul class="nav navbar-nav">
@@ -25,8 +25,22 @@
             {% endfor %}
         </ul>
     </nav>
+{% endblock %}
 
+{% block top_ad %}
+    {# Add a HR above and below the ad #}
+    <hr/>
+    {{ super() }}
+    <hr/>
+{% endblock %}
 
+{% block bottom_ad %}
+    {# Add a HR above the ad #}
+    <hr/>
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
     <table class="table table-condensed table-striped">
         <thead>
             <tr>

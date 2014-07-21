@@ -1,4 +1,4 @@
-{% macro banner_ad_top(hr=True) %}
+{% macro banner_ad_top() %}
     <div id="ad_large_top" class="text-center advertisement">
         {% if current_user.allows_ads() %}
             <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
@@ -10,21 +10,13 @@
             <script>
             (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
-
-            {% if hr == True %}
-                <hr/>
-            {% endif %}
         {% endif %}
     </div>
 {% endmacro %}
 
-{% macro banner_ad_bottom(hr=True) %}
+{% macro banner_ad_bottom() %}
     <div id="ad_large_bottom" class="text-center advertisement">
         {% if current_user.allows_ads() %}
-            {% if hr == True %}
-                <hr/>
-            {% endif %}
-
             <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
             <!-- Dotabank banner bottom -->
             <ins class="adsbygoogle"
