@@ -1,11 +1,12 @@
 from flask import render_template, abort, send_file
 from app import app, db
 from app.models import Stats, UGCFile
-from app.replays.models import Replay, ReplayFavourite, ReplayRating
+from app.replays.models import Replay, ReplayFavourite, ReplayRating, ReplayDownload
 from app.replays.forms import SearchForm
 from flask.ext.login import current_user
 import requests
 import os
+from datetime import datetime, timedelta
 
 
 @app.context_processor
@@ -37,6 +38,22 @@ def index():
         limit(app.config["LATEST_REPLAYS_LIMIT"]).\
         all()
 
+    most_downloaded = db.session.query(Replay, db.func.count(ReplayDownload)).\
+        join(ReplayDownload.replay).\
+        order_by(db.func.count(ReplayDownload).desc()).\
+        group_by(ReplayDownload.replay_id).\
+        limit(app.config["LATEST_REPLAYS_LIMIT"]).\
+        all()
+
+    THIRTY_DAYS_AGO = datetime.utcnow() - timedelta(days=30)
+    most_downloaded_30days = db.session.query(Replay,  db.func.count(ReplayDownload)).\
+        join(ReplayDownload.replay).\
+        filter(ReplayDownload.created_at >= THIRTY_DAYS_AGO).\
+        order_by(db.func.count(ReplayDownload).desc()).\
+        group_by(ReplayDownload.replay_id).\
+        limit(app.config["LATEST_REPLAYS_LIMIT"]).\
+        all()
+
     stats = Stats()
 
     search_form = SearchForm()
@@ -46,6 +63,8 @@ def index():
                            last_archived_replays=last_archived_replays,
                            most_favourited_replays=most_favourited_replays,
                            most_liked_replays=most_liked_replays,
+                           most_downloaded=most_downloaded,
+                           most_downloaded_30days=most_downloaded_30days,
                            stats=stats,
                            search_form=search_form)
 

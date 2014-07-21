@@ -142,6 +142,156 @@
         </div>
     </div>
 
+    <div class="most-downloads-30d">
+        <h2>Most downloaded replays (past 30 days)</h2>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Replay ID</th>
+                <th>&nbsp;</th>
+                <th>Radiant</th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+                <th>Dire</th>
+                <th>&nbsp;</th>
+                <th>League</th>
+                <th>Downloads</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for replay, count in most_downloaded_30days %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a>
+                    </td>
+                    <td>
+                        {% if replay.radiant_team_logo %}
+                            <img src="{{ url_for('ugcfile', _id=replay.radiant_team_logo) }}" class="team-logo">
+                        {% elif replay.team_players[0]|length == 1 %}
+                            <img class="team-logo" src="{{ replay.team_players[0][0].avatar }}"
+                                 alt="{{ replay.team_players[0][0].name }}"/>
+                        {% endif %}
+                    </td>
+                    <td class="team-name">
+                        {% if replay.radiant_team_id %}
+                            <a href="{{ url_for('teams.team', _id=replay.radiant_team_id) }}">{{ replay.radiant_team_name }}</a>
+                        {% elif replay.team_players[0]|length == 1 %}
+                            <a href="{{ url_for('users.user', _id=replay.team_players[0][0].account_id) }}">{{ replay.team_players[0][0].name }}</a>
+                        {% else %}
+                            Radiant
+                        {% endif %}
+                    </td>
+                    <td>vs</td>
+                    <td>
+                        {% if replay.dire_team_logo %}
+                            <img src="{{ url_for('ugcfile', _id=replay.dire_team_logo) }}" class="team-logo">
+                        {% elif replay.team_players[1]|length == 1 %}
+                            <img class="team-logo" src="{{ replay.team_players[1][0].avatar }}"
+                                 alt="{{ replay.team_players[1][0].name }}"/>
+                        {% endif %}
+                    </td>
+                    <td class="team-name">
+                        {% if replay.dire_team_id %}
+                            <a href="{{ url_for('teams.team', _id=replay.dire_team_id) }}">{{ replay.dire_team_name }}</a>
+                        {% elif replay.team_players[1]|length == 1 %}
+                            <a href="{{ url_for('users.user', _id=replay.team_players[1][0].account_id) }}">{{ replay.team_players[1][0].name }}</a>
+                        {% else %}
+                            Dire
+                        {% endif %}
+                    </td>
+                    {% if replay.league %}
+                        <td>
+                            <img src="{{ replay.league.icon }}" class="team-logo">
+                        </td>
+                        <td><a href="{{ url_for('leagues.league', _id=replay.league_id) }}">{{ replay.league.name }}</a>
+                        </td>
+                    {% else %}
+                        <td>&nbsp;</td>
+                        <td>-</td>
+                    {% endif %}
+                    <td>{{ count }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="most-downloads-at">
+        <h2>Most downloaded replays (all time)</h2>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Replay ID</th>
+                <th>&nbsp;</th>
+                <th>Radiant</th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+                <th>Dire</th>
+                <th>&nbsp;</th>
+                <th>League</th>
+                <th>Downloads</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for replay, count in most_downloaded %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a>
+                    </td>
+                    <td>
+                        {% if replay.radiant_team_logo %}
+                            <img src="{{ url_for('ugcfile', _id=replay.radiant_team_logo) }}" class="team-logo">
+                        {% elif replay.team_players[0]|length == 1 %}
+                            <img class="team-logo" src="{{ replay.team_players[0][0].avatar }}"
+                                 alt="{{ replay.team_players[0][0].name }}"/>
+                        {% endif %}
+                    </td>
+                    <td class="team-name">
+                        {% if replay.radiant_team_id %}
+                            <a href="{{ url_for('teams.team', _id=replay.radiant_team_id) }}">{{ replay.radiant_team_name }}</a>
+                        {% elif replay.team_players[0]|length == 1 %}
+                            <a href="{{ url_for('users.user', _id=replay.team_players[0][0].account_id) }}">{{ replay.team_players[0][0].name }}</a>
+                        {% else %}
+                            Radiant
+                        {% endif %}
+                    </td>
+                    <td>vs</td>
+                    <td>
+                        {% if replay.dire_team_logo %}
+                            <img src="{{ url_for('ugcfile', _id=replay.dire_team_logo) }}" class="team-logo">
+                        {% elif replay.team_players[1]|length == 1 %}
+                            <img class="team-logo" src="{{ replay.team_players[1][0].avatar }}"
+                                 alt="{{ replay.team_players[1][0].name }}"/>
+                        {% endif %}
+                    </td>
+                    <td class="team-name">
+                        {% if replay.dire_team_id %}
+                            <a href="{{ url_for('teams.team', _id=replay.dire_team_id) }}">{{ replay.dire_team_name }}</a>
+                        {% elif replay.team_players[1]|length == 1 %}
+                            <a href="{{ url_for('users.user', _id=replay.team_players[1][0].account_id) }}">{{ replay.team_players[1][0].name }}</a>
+                        {% else %}
+                            Dire
+                        {% endif %}
+                    </td>
+                    {% if replay.league %}
+                        <td>
+                            <img src="{{ replay.league.icon }}" class="team-logo">
+                        </td>
+                        <td><a href="{{ url_for('leagues.league', _id=replay.league_id) }}">{{ replay.league.name }}</a>
+                        </td>
+                    {% else %}
+                        <td>&nbsp;</td>
+                        <td>-</td>
+                    {% endif %}
+                    <td>{{ count }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
     <div class="stats">
         <h2>Stats</h2>
 
