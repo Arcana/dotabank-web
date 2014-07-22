@@ -1,12 +1,26 @@
 {% extends "layouts/standard.html" %}
 {% from "macros.html" import pagination %}
 
-{% block content %}
-    {% include "users/user_nav.html" %}
-
+{% block page_header %}
     <div class="page-header">
-        <h1>Replay Aliases  <small>page {{ aliases.page }}</small></h1>
+        {% include "users/user_nav.html" %}
     </div>
+{% endblock %}
+
+{% block top_ad %}
+    {{ super() }}
+    <hr/>
+{% endblock %}
+
+{% block bottom_ad %}
+    <hr/>
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+
+    <h1>Replay Aliases  <small>page {{ aliases.page }}</small></h1>
+
     <dl class="dl-horizontal">
         <dt>Number of aliases</dt>
         <dd>{{ aliases.total }}</dd>

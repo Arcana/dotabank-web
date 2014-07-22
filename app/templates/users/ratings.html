@@ -1,6 +1,22 @@
 {% extends "layouts/standard.html" %}
 {% from "macros.html" import pagination %}
 
+{% block page_header %}
+    <div class="page-header">
+        {% include "users/user_nav.html" %}
+    </div>
+{% endblock %}
+
+{% block top_ad %}
+    {{ super() }}
+    <hr/>
+{% endblock %}
+
+{% block bottom_ad %}
+    <hr/>
+    {{ super() }}
+{% endblock %}
+
 {% block content %}
     {% include "users/user_nav.html" %}
 
