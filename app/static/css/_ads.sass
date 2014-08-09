@@ -1,2 +1,11 @@
-.advertisement ins
-    background-color: darken($base-accent-color, 10%)
+.advertisement
+    text-align: center
+
+    &#ad_large_top
+        border-bottom: $base-border-radius dashed $base-border-color
+
+    &#ad_large_bottom
+        border-top: $base-border-radius dashed $base-border-color
+
+    ins
+        background-color: desaturate(darken($base-accent-color, 20), 30)

@@ -1,5 +1,5 @@
 {% macro banner_ad_top() %}
-    <div id="ad_large_top" class="text-center advertisement">
+    <section id="ad_large_top" class="text-center advertisement">
         {% if current_user.allows_ads() %}
             <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
             <!-- Dotabank Large Ad Top -->
@@ -11,11 +11,11 @@
             (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
         {% endif %}
-    </div>
+    </section>
 {% endmacro %}
 
 {% macro banner_ad_bottom() %}
-    <div id="ad_large_bottom" class="text-center advertisement">
+    <section id="ad_large_bottom" class="text-center advertisement">
         {% if current_user.allows_ads() %}
             <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
             <!-- Dotabank banner bottom -->
@@ -27,7 +27,7 @@
             (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
         {% endif %}
-    </div>
+    </section>
 {% endmacro %}
 
 {% macro large_rectangle_ad() %}
