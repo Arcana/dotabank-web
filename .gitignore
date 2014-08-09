@@ -5,6 +5,7 @@ fallback_data/*.json
 settings.py
 app/static/images/heroes/*
 app/static/images/items/*
+app/static/bower/*
 ugcfiles/*
 .cache/*
 bin

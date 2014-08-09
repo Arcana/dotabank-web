@@ -1,0 +1,8 @@
+// ------------------------------------------------------------
+// Omega Reset Mixin
+// http://joshfry.me/notes/omega-reset-for-bourbon-neat/
+// ------------------------------------------------------------
+@mixin omega-reset($nth) {
+  &:nth-child(#{$nth}) { margin-right: flex-gutter($grid-columns, $gutter); }
+  &:nth-child(#{$nth}+1) { clear: none }
+}

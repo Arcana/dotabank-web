@@ -1,30 +1,11 @@
 {% from "macros.html" import iconic, pagination %}
-{% extends "layouts/standard.html" %}
+{% extends "bs_layout.html" %}
 
-{% block page_header %}
+{% block content %}
     <div class="pull-right thumbnail">
         <img src="{{ team.logo }}" alt="{{ team.name }}"/>
     </div>
-
-    <div class="page-header">
-        <h1>{{ team.name }}</h1>
-        <div class="clearfix"></div>
-    </div>
-{% endblock %}
-
-{% block top_ad %}
-    {# HR below the ad #}
-    {{ super() }}
-    <hr/>
-{% endblock %}
-
-{% block bottom_ad %}
-    {# HR above the ad #}
-    <hr/>
-    {{ super() }}
-{% endblock %}
-
-{% block content %}
+    <h2>Replays archived containing {{team.name}}</h2>
     <table class="table table-condensed table-striped">
         <thead>
             <tr>
@@ -46,7 +27,7 @@
         <tbody>
             {% for replay in replays.items %}
                 <tr>
-                    <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a></td>
+                    <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
                     <td>
                         {% if replay.radiant_team_logo %}
                             <img src="{{ url_for('ugcfile', _id=replay.radiant_team_logo) }}" class="team-logo">

@@ -1,24 +1,12 @@
-{% extends "layouts/standard.html" %}
+{% extends "bs_layout.html" %}
 {% from "macros.html" import pagination %}
 
-{% block page_header %}
-    <div class="page-header">
-        {% include "users/user_nav.html" %}
-    </div>
-{% endblock %}
-
-{% block top_ad %}
-    {{ super() }}
-    <hr/>
-{% endblock %}
-
-{% block bottom_ad %}
-    <hr/>
-    {{ super() }}
-{% endblock %}
-
 {% block content %}
-    <h1>Replays  <small>page {{ replays.page }}</small></h1>
+    {% include "users/user_nav.html" %}
+
+    <div class="page-header">
+        <h1>Replays  <small>page {{ replays.page }}</small></h1>
+    </div>
     <dl class="dl-horizontal">
         <dt>Number of replays</dt>
         <dd>{{ replays.total }}</dd>
@@ -39,7 +27,7 @@
                      <tr>
                         <td>{{ replay.replay.start_time|timestamp_to_datestring }}</td>
                         <td>{{ replay.hero.localized_name if replay.hero else "No hero" }}</td>
-                        <td>{{ replay.replay.get_alias() or replay.replay.id }}</td>
+                        <td>{{ replay.replay.id }}</td>
                         <td>{{ replay.replay.state }}</td>
                         <td><a href="{{ url_for("replays.replay", _id=replay.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                     </tr>

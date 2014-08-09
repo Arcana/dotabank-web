@@ -1,0 +1,132 @@
+@import "normalize"
+@import "../bower/bourbon/dist/bourbon"
+@import "bitters/bitters"
+@import "../bower/neat/app/assets/stylesheets/neat"
+@import mixins/omega-reset
+@import mixins/horizontal-list
+
+// General layout
+@import nav
+@import hero
+@import footer
+@import pagination
+@import flash
+
+// Forms
+@import forms
+
+// Sections
+main > section
+  @include outer-container
+  padding: $base-line-height
+
+  &.advertisement
+    border-top: $base-border-radius dashed $base-border-color
+    text-align: center
+
+  &.league-page
+    &> img
+      float: right
+
+  &.see-also
+    table
+      tr
+        td, th
+          padding-right: 1em
+
+          &:nth-child(1)
+            text-align: right
+            width: 25%
+
+          &:nth-child(2)
+            text-align: left
+            width: auto
+
+          &:nth-child(3)
+            text-align: left
+            padding-right: 0
+            width: 71px
+
+
+  &.event-page
+    @include breakpoint($medium-screen)
+      article
+        @include span-columns(6)
+      aside
+        @include span-columns(6)
+
+    @include breakpoint($large-screen)
+      article
+        @include span-columns(8)
+      aside
+        @include span-columns(4)
+
+    header
+      > *
+        display: inline-block
+
+      > a.button
+        float: right
+
+    aside
+      section
+        background: lighten($base-border-color, 10)
+        border: 1px solid $base-border-color
+        margin: 0 0 $base-line-height 0
+        padding: $base-line-height / 2
+        border-radius: $base-border-radius
+
+        h3
+          padding-bottom: $base-line-height / 4
+          margin-bottom: $base-line-height / 4
+
+          border-bottom: 1px solid $base-body-color
+          font-size: $base-font-size * 1.5
+
+          overflow: hidden
+          text-overflow: ellipsis
+          white-space: nowrap
+
+        dl
+          margin: 0
+          @include horizontal-list(7em)
+
+        .google-map
+          min-height: 200px
+
+      button,
+      a.button
+        text-align: center
+        width: 100%
+
+  @include breakpoint($medium-screen)
+    &.home-page
+      .popular-cities,
+      .new-events
+        @include span-columns(6)
+        @include omega(2)
+
+  @include breakpoint($large-screen)
+    &.about-us
+      .about-pubstomp,
+      .about-arcana
+        @include span-columns(6)
+        @include omega(2)
+
+      .about-arcana
+        table
+          th
+            width: 110px
+
+// Buttons
+a.button
+  @include button(simple, $base-accent-color)
+
+p.footnote
+  font-size: $base-font-size * 0.75
+  color: darken($base-font-color, 50%)
+  text-align: center
+
+.footer
+  p.version
+    font-size: x-small

@@ -1,24 +1,7 @@
-{% extends "layouts/standard.html" %}
-
-{% block page_header %}
-    <div class="page-header">
-        {% include "users/user_nav.html" %}
-    </div>
-{% endblock %}
-
-{% block top_ad %}
-    {{ super() }}
-    <hr/>
-{% endblock %}
-
-{% block bottom_ad %}
-    <hr/>
-    {{ super() }}
-{% endblock %}
+{% extends "bs_layout.html" %}
 
 {% block content %}
-    <h1>Overview</h1>
-
+    {% include "users/user_nav.html" %}
 
     <dl class="dl-horizontal">
         <dt>First seen</dt>
@@ -28,9 +11,8 @@
         <dt>Premium?</dt>
         <dd>{{ user.is_premium }}</dd>
     </dl>
-
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-sm-6">
             <h2><a href='{{ url_for("users.user_favourites", _id = user.id) }}'>Favourites</a></h2>
             <table class="table table-striped table-condensed">
                 <thead>
@@ -45,7 +27,7 @@
                     {% for favourite in favourites %}
                         <tr>
                             <td>{{ favourite.created_at|datetime_to_datestring }}</td>
-                            <td>{{ favourite.replay.get_alias() or favourite.replay_id }}</td>
+                            <td>{{ favourite.replay_id }}</td>
                             <td><a href="{{ url_for("replays.replay", _id=favourite.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
                     {% endfor %}
@@ -59,7 +41,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-md-6">
+        <div class="col-sm-6">
             <h2><a href='{{ url_for("users.user_ratings", _id = user.id) }}'>Ratings</a></h2>
             <table class="table table-striped table-condensed">
                 <thead>
@@ -75,7 +57,7 @@
                     {% for rating in ratings %}
                         <tr>
                             <td>{{ rating.created_at|datetime_to_datestring }}</td>
-                            <td>{{ rating.replay.get_alias() or rating.replay.id }}</td>
+                            <td>{{ rating.replay_id }}</td>
                             <td>{{ rating.positive }}</td>
                             <td><a href="{{ url_for("replays.replay", _id=rating.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
@@ -92,7 +74,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-sm-6">
             <h2><a href='{{ url_for("users.user_searches", _id = user.id) }}'>Search history</a></h2>
             <table class="table table-striped table-condensed">
                 <thead>
@@ -123,7 +105,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-md-6">
+        <div class="col-sm-6">
             <h2><a href='{{ url_for("users.user_downloads", _id = user.id) }}'>Downloads</a></h2>
             <table class="table table-striped table-condensed">
                 <thead>
@@ -138,7 +120,7 @@
                     {% for download in downloads %}
                         <tr>
                             <td>{{ download.created_at|datetime_to_datestring }}</td>
-                            <td>{{ download.replay.get_alias() or download.replay.id }}</td>
+                            <td>{{ download.replay_id }}</td>
                             <td><a href="{{ url_for("replays.replay", _id=download.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
                     {% endfor %}
@@ -154,7 +136,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-lg-12">
             <h2><a href='{{ url_for("users.user_replays", _id = user.id) }}'>Replays</a></h2>
             <table class="table table-striped table-condensed">
                 <thead>
@@ -172,7 +154,7 @@
                         <tr>
                             <td>{{ replay_player.replay.start_time|timestamp_to_datestring }}</td>
                             <td>{{ replay_player.hero.localized_name if replay_player.hero else 'No hero' }}</td>
-                            <td>{{ replay_player.replay.get_alias() or replay_player.replay.id }}</td>
+                            <td>{{ replay_player.replay_id }}</td>
                             <td>{{ replay_player.replay.state }}</td>
                             <td><a href="{{ url_for("replays.replay", _id=replay_player.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
                         </tr>
@@ -181,37 +163,6 @@
                     <tr>
                         <td colspan="3" class="text-muted">
                             <em>No replay history</em>
-                        </td>
-                    </tr>
-                {% endif %}
-                </tbody>
-            </table>
-        </div>
-        <div class="col-md-6">
-            <h2><a href='{{ url_for("users.user_aliases", _id = user.id) }}'>Replay Aliases</a></h2>
-            <table class="table table-striped table-condensed">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Replay ID</th>
-                        <th>Replay Alias</th>
-                        <th>Replay</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% if aliases.count() > 0 %}
-                    {% for replay_alias in aliases %}
-                        <tr>
-                            <td>{{ replay_alias.updated_at|datetime_to_datestring }}</td>
-                            <td>{{ replay_alias.replay.id }}</td>
-                            <td>{{ replay_alias.alias }}</td>
-                            <td><a href="{{ url_for("replays.replay", _id=replay_alias.replay.id) }}" class="btn btn-xs btn-default">View replay</a></td>
-                        </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr>
-                        <td colspan="3" class="text-muted">
-                            <em>No replay aliases</em>
                         </td>
                     </tr>
                 {% endif %}

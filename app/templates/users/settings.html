@@ -1,24 +1,10 @@
 {% import "macros.html" as wtf %}
 
-{% extends "layouts/standard.html" %}
-
-{% block page_header %}
-    <div class="page-header">
-        {% include "users/user_nav.html" %}
-    </div>
-{% endblock %}
-
-{% block top_ad %}
-    {{ super() }}
-    <hr/>
-{% endblock %}
-
-{% block bottom_ad %}
-    <hr/>
-    {{ super() }}
-{% endblock %}
+{% extends "bs_layout.html" %}
 
 {% block content %}
+    {% include "users/user_nav.html" %}
+
     <form class="form-horizontal" role="form" method="POST">
         {{ form.hidden_tag() }}
         {{ wtf.horizontal_field(form.email) }}

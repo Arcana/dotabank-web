@@ -1,0 +1,33 @@
+form
+  button
+    @include button(simple, $base-accent-color)
+
+  @include breakpoint($medium-screen)
+    .two-col
+      @include outer-container
+
+      .field
+        @include span-columns(6)
+        @include omega(2n)
+
+    .three-col
+      @include outer-container
+
+      .field
+        @include span-columns(4)
+        @include omega(3n)
+
+  .field
+    border-radius: 5px
+    padding: 0.5em 0
+
+    &.error
+      padding: 0.5em
+      background-color: transparentize($red, 0.8)
+
+    span.description,
+    span.error-message
+      font-size: $base-font-size * 0.75
+
+    span.error-message
+      font-weight: bold

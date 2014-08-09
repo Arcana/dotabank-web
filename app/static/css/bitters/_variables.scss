@@ -1,0 +1,69 @@
+// Typography
+///////////////////////////////////////////////////////////////////////////////
+$sans-serif: $helvetica;
+$serif: $georgia;
+
+$base-font-family: $sans-serif;
+$header-font-family: $base-font-family;
+
+// Sizes
+///////////////////////////////////////////////////////////////////////////////
+$base-font-size: 1em;
+$base-line-height: $base-font-size * 1.5;
+$base-border-radius: em(3);
+
+// Colors
+///////////////////////////////////////////////////////////////////////////////
+
+$blue: #477DCA;
+$dark-gray: #333;
+$medium-gray: #999;
+$light-gray: #DDD;
+$light-red: #FBE3E4;
+$light-yellow: #FFF6BF;
+$light-green: #E6EFC2;
+
+// Doter colors http://d2lp.com/tutorial/
+$red: #D03D33;
+$verdant-green: #51B350;
+$deep-green: #37864D;
+$international-2012: #507DFE;
+$international-2013: #15A515;
+$earth-green: #5AC355;
+$summer-warmth: #FFEEBC;
+
+// Body Color
+$base-body-color: darken($dark-gray, 10);
+
+// Nav color
+$base-nav-color: $dark-gray;
+
+//  Font Colors
+$base-font-color: $light-gray;
+$base-accent-color: $earth-green;
+
+//  Text Link Colors
+$base-link-color: $base-accent-color;
+$hover-link-color: lighten($base-accent-color, 15);
+
+// Border color
+$base-border-color: $dark-gray;
+
+// Flash Colors
+$error-color: desaturate($red, 15%);
+$notice-color: desaturate(darken($summer-warmth, 25%), 40%);
+$success-color: $deep-green;
+
+// Forms
+$form-border-color: $base-border-color;
+$form-border-color-hover: darken($base-border-color, 10);
+$form-border-color-focus: $base-accent-color;
+$form-border-radius: $base-border-radius;
+$form-box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+$form-box-shadow-focus: $form-box-shadow, 0 0 5px rgba(darken($form-border-color-focus, 5), 0.7);
+$form-font-size: $base-font-size;
+$form-font-family: $base-font-family;
+$form-input-font-color: $dark-gray;
+
+// Buttons
+$button-style: simple;

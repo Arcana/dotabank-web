@@ -1,0 +1,11 @@
+@mixin horizontal-list($title_width: 10em)
+  dt
+    float: left
+    width: ($title_width - $base-line-height)
+    clear: left
+    text-align: right
+    margin: 0
+
+  dd
+    margin-left: $title_width
+    @include clearfix()

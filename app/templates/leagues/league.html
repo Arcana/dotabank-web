@@ -1,46 +1,18 @@
 {% from "macros.html" import iconic, pagination %}
-{% extends "layouts/standard.html" %}
+{% extends "bs_layout.html" %}
 
-{% block page_header %}
+{% block content %}
     <div class="pull-right thumbnail">
         <img src="{{ league.icon }}" alt="{{ league.name }}"/>
     </div>
-
     <div class="page-header">
         <h1>{{ league.name }}</h1>
         <p class="lead">{{ league.description }}</p>
         <a class="btn {{'btn-ti4' if league.id==600 else 'btn-primary' }}" href="{{ league.tournament_url }}" target="_blank">{{'View The International 2014 announcement' if league.id==600 else 'Visit tournament website' }}</a>
-
     </div>
 
-    <nav id="league-view-nav" class="navbar navbar-default">
-        <ul class="nav navbar-nav">
-            <li class="{{ "active" if current_view == None }}">
-                <a href="{{ url_for("leagues.league", _id=league.id, page=page) }}">All replays</a>
-            </li>
-            {% for view in views %}
-                <li class="{{ "active" if current_view != None and view.id == current_view.id }}">
-                    <a href="{{ url_for("leagues.league", _id=league.id, view=view.id, page=page) }}">{{ view.name }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    </nav>
-{% endblock %}
 
-{% block top_ad %}
-    {# Add a HR above and below the ad #}
-    <hr/>
-    {{ super() }}
-    <hr/>
-{% endblock %}
-
-{% block bottom_ad %}
-    {# Add a HR above the ad #}
-    <hr/>
-    {{ super() }}
-{% endblock %}
-
-{% block content %}
+    <h2>Replays archived from this league</h2>
     <table class="table table-condensed table-striped">
         <thead>
             <tr>
@@ -62,19 +34,15 @@
         <tbody>
             {% for replay in replays.items %}
                 <tr>
-                    <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a></td>
+                    <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
                     <td>
                         {% if replay.radiant_team_logo %}
                             <img src="{{ url_for('ugcfile', _id=replay.radiant_team_logo) }}" class="team-logo">
-                        {% elif replay.team_players[0]|length == 1 %}
-                            <img class="team-logo" src="{{ replay.team_players[0][0].avatar }}" alt="{{ replay.team_players[0][0].name }}"/>
                         {% endif %}
                     </td>
                     <td class="team-name">
                         {% if replay.radiant_team_id %}
                             <a href="{{url_for('teams.team', _id=replay.radiant_team_id)}}">{{replay.radiant_team_name}}</a>
-                        {% elif replay.team_players[0]|length == 1 %}
-                            <a href="{{ url_for('users.user', _id=replay.team_players[0][0].account_id) }}">{{ replay.team_players[0][0].name }}</a>
                         {% else %}
                             Radiant
                         {% endif %}
@@ -83,15 +51,11 @@
                     <td>
                         {% if replay.dire_team_logo %}
                             <img src="{{ url_for('ugcfile', _id=replay.dire_team_logo) }}" class="team-logo">
-                        {% elif replay.team_players[1]|length == 1 %}
-                            <img class="team-logo" src="{{ replay.team_players[1][0].avatar }}" alt="{{ replay.team_players[1][0].name }}"/>
                         {% endif %}
                     </td>
                     <td class="team-name">
                         {% if replay.dire_team_id %}
                             <a href="{{url_for('teams.team', _id=replay.dire_team_id)}}">{{replay.dire_team_name}}</a>
-                        {% elif replay.team_players[1]|length == 1 %}
-                            <a href="{{ url_for('users.user', _id=replay.team_players[1][0].account_id) }}">{{ replay.team_players[1][0].name }}</a>
                         {% else %}
                             Dire
                         {% endif %}
@@ -150,5 +114,5 @@
             {% endfor %}
         </tbody>
     </table>
-    {{ pagination(replays, "leagues.league", {'_id': league.id} if current_view == None else {'_id': league.id, 'view': current_view.id}) }}
+    {{ pagination(replays, "leagues.league", {'_id': league.id}) }}
 {% endblock %}

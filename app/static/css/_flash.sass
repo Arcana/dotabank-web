@@ -1,0 +1,17 @@
+.flash
+  &.error
+    @extend %flash-error
+
+  &.notice
+    @extend %flash-notice
+
+  &.success
+    @extend %flash-success
+
+  span
+    @include outer-container
+    display: block
+
+    a.close
+      float: right
+      cursor: pointer

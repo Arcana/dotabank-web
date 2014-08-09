@@ -1,20 +1,20 @@
-{% extends "layouts/standard.html" %}
-{% from "replays/macros.html" import replay_header %}
-{% from "ads.html" import large_rectangle_ad with context %}
+{% extends "bs_layout.html" %}
 
 {% block content %}
-    {{ replay_header(replay) }}
+    <div class="page-header">
+        <h1>Replay <small>{{ replay.id }}</small></h1>
+        {% include "replays/replay_nav.html" %}
+    </div>
 
     <div class="row text-center">
         <div class="col-sm-6">
             <h2>Aw yea, you're a human!</h2>
-            <p>Your replay should start downloading within a few seconds.</p>
+            <p>Your replay should start dowloading within a few seconds.</p>
             <p>If it doesn't, mash the green button.</p>
             <a href="{{ url|safe }}" class="btn btn-lg btn-success">Download replay</a>
-
-            <hr/>
-
-            <dl class="text-muted text-center">
+        </div>
+        <div class="col-sm-6">
+            <dl class="text-muted">
                 <dt>Name</dt>
                 <dd>{{ name }}</dd>
                 <dt>File size</dt>
@@ -24,9 +24,6 @@
                 <dt>Download link expires at</dt>
                 <dd>{{ expires_at }} UTC</dd>
             </dl>
-        </div>
-        <div class="col-sm-6">
-            {{ large_rectangle_ad() }}
         </div>
     </div>
 
