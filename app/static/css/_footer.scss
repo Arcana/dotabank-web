@@ -28,26 +28,37 @@
   .footer-links {
     @include clearfix;
     margin-bottom: $base-line-height;
-  }
 
-  ul {
-    margin-bottom: $base-line-height*2;
+    ul {
 
-    @include media($medium-screen) {
-      @include span-columns(6);
-      @include omega(2n);
-      @include clearfix;
+      @include media($medium-screen) {
+        @include span-columns(6);
+        @include omega(2n);
+        @include clearfix;
 
-      &:nth-child(odd) {
-        li {
-          text-align: right;
+        &:nth-child(odd) {
+          li {
+            text-align: right;
+          }
+        }
+
+        &:nth-child(even) {
+          li {
+            text-align: left;
+          }
         }
       }
+    }
+  }
 
-      &:nth-child(even) {
-        li {
-          text-align: left;
-        }
+  .footer-share {
+    @include clearfix;
+    margin-bottom: $base-line-height;
+    text-align: center;
+
+    ul {
+      li {
+        display: inline-block;
       }
     }
   }

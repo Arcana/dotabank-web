@@ -66,6 +66,11 @@ app.add_template_filter(dotabuff_item_link)
 app.add_template_filter(dotabuff_match_link)
 
 
+# Load current app version into globals
+from .helpers import current_version
+app.config['VERSION'] = current_version()
+
+
 # Load views
 import views
 

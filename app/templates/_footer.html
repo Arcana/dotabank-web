@@ -1,0 +1,63 @@
+{% from "macros.html" import logo, arcana_logo %}
+
+<footer class="footer">
+    <div class="footer-logo">
+        <a href="{{ url_for('index') }}">{{ logo() }}</a>
+        <a href="http://arcana.io">{{ arcana_logo() }}</a>
+    </div>
+    <div class="footer-links">
+        <ul>
+            <li><h3>{{ config['SITE_NAME'] }}</h3></li>
+            <li><a href="{{ url_for('about') }}">About</a></li>
+            <li><a href="{{ url_for("privacy") }}">Privacy Policy</a></li>
+            <li><a href="{{ url_for("tos") }}">Terms of Service</a></li>
+            <li><a href="{{ config['GITHUB_URL'] }}">Contribute via GitHub</a></li>
+            <li><a href="{{ config['ISSUE_TRACKER_URL'] }}">Report a problem</a></li>
+        </ul>
+        <ul>
+            <li><h3>Arcana.io</h3></li>
+            <li><a href="http://pubstomp.hu">Pubstomp.hu</a></li>
+            <li><a href="http://10herochallenge.com">10 Hero Challenge</a></li>
+            <li><a href="http://shouldibuyacompendium.com">Should I buy a compendium?</a></li>
+            <li><a href="http://doigetthepreviousrewards.com">Do I get the previous rewards?</a></li>
+        </ul>
+    </div>
+
+    <div class="footer-share">
+
+        <ul class="list-inline">
+            <li class="twitter">
+                <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://dotabank.com" data-text="Dotabank - Dota 2 replay archiving">Tweet</a>
+                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+            </li>
+
+            <li class="gplus1">
+                <!-- Place this tag where you want the +1 button to render. -->
+                <div class="g-plusone" data-size="medium" data-href="http://dotabank.com"></div>
+
+                <!-- Place this tag after the last +1 button tag. -->
+                <script type="text/javascript">
+                  window.___gcfg = {lang: 'en-GB'};
+
+                  (function() {
+                    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+                    po.src = 'https://apis.google.com/js/platform.js';
+                    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+                  })();
+                </script>
+            </li>
+
+            <li class="flattr">
+                <script id='fbetzks'>(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=RJackson&button=compact&url=http%3A%2F%2Fdotabank.com';f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('fbetzks');</script>
+            </li>
+        </ul>
+    </div>
+
+    <p>© <a href="http://arcana.io">Arcana.io</a></p>
+
+    <p>Powered by <a href="http://steampowered.com">Steam</a>.</p>
+
+    <p>Dota is a registered trademark of <a href="http://valvesoftware.com">Valve Corporation</a>.</p>
+
+    <p class="version"><a href="{{ config['GITHUB_URL'] }}/commit/{{ config['VERSION'] }}">{{ config['VERSION'] }}</a></p>
+</footer>

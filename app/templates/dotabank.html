@@ -1,148 +1,139 @@
 {% extends "layouts/standard.html" %}
+{% from "macros.html" import logo %}
 
 {% block page_header %}
-    <div class="jumbotron">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-6">
-                    <p>
-                        Dotabank archives replays of your Dota 2 matches. Valve can't keep replays for every match ever
-                        played available to download, Dotabank can - by only downloading and storing matches which users
-                        request, and we keep them available to download for free, forever!
-                    </p>
-                </div>
-                <div class="col-sm-6">
-                    <ul>
-                        <li>Easy replay archiving - just input a match id</li>
-                        <li>Unlimited & fast downloads</li>
-                        <li>Automatically archive matches <sup><span class="label label-premium">Premium</span></sup></li>
-                        <li>Other features coming soon… <sup><span class="label label-premium">Premium</span></sup></li>
-                    </ul>
-                </div>
+
+    <div class="hero">
+        <div class="hero-inner">
+            <div class="hero-logo">
+                <a href="{{ url_for('index') }}">{{ logo() }}</a>
             </div>
 
-            <hr>
+            <div class="hero-copy">
+                <p>
+                    Dotabank archives replays of your Dota 2 matches. Valve can't keep replays for every match ever
+                    played available to download, Dotabank can - by only downloading and storing matches which users
+                    request, and we keep them available to download for free, forever!
+                </p>
+            </div>
+            <div class="hero-copy">
+                <ul>
+                    <li>Easy replay archiving - just input a match id</li>
+                    <li>Unlimited & fast downloads</li>
+                    <li>Automatically archive matches <sup><span class="label label-premium">Premium</span></sup></li>
+                    <li>Other features coming soon… <sup><span class="label label-premium">Premium</span></sup></li>
+                </ul>
+            </div>
 
-            <div class="row">
-                <div class="col-sm-8 col-sm-offset-2">
-                    <form method="POST" action="{{ url_for('replays.search') }}">
-                        {{ search_form.hidden_tag() }}
-                        <div class="input-group input-group-lg">
-                            {{ search_form.query(class='form-control', placeholder='Match ID') }}
-                                    <span class="input-group-btn">
-                                        <input type="submit" class="btn btn-primary" value="Archive"/>
-                                    </span>
-                        </div>
-                    </form>
-                </div>
+            <div class="hero-action">
+                <form method="POST" action="{{ url_for('replays.search') }}">
+                    {{ search_form.hidden_tag() }}
+                    <div class="input-group input-group-lg">
+                        {{ search_form.query(class='form-control', placeholder='Match ID') }}
+                        <span class="input-group-btn">
+                            <input type="submit" class="btn btn-primary" value="Archive"/>
+                        </span>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-sm-6">
+    <section class="replay-tables">
+        <section class="latest-added">
             <h1>Latest added</h1>
             <table class="table table-condensed table-striped">
                 <thead>
-                <tr>
-                    <th>Replay ID</th>
-                    <th>State</th>
-                    <th>Time</th>
-                </tr>
+                    <tr>
+                        <td>Replay ID</td>
+                        <td>State</td>
+                        <td>Time</td>
+                    </tr>
                 </thead>
                 <tbody>
-                {% for replay in last_added_replays %}
-                    <tr>
-                        <td>
-                            <a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a>
-                        </td>
-                        <td>{{ replay.state }}</td>
-                        <td>{{ replay.added_to_site_time|datetime_to_datestring }}</td>
-                    </tr>
-                {% endfor %}
+                    {% for replay in last_added_replays %}
+                        <tr>
+                            <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                            <td>{{ replay.state }}</td>
+                            <td>{{ replay.added_to_site_time|datetime_to_datestring }}</td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
-        </div>
-        <div class="col-sm-6">
+        </section>
+
+        <section class="latest-archived">
             <h1>Latest archived</h1>
             <table class="table table-condensed table-striped">
                 <thead>
+                    <tr>
+                        <td>Replay ID</td>
+                        <td>State</td>
+                        <td>Time</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for replay in last_archived_replays %}
+                        <tr>
+                            <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.id }}</a></td>
+                            <td>{{ replay.state }}</td>
+                            <td>{{ replay.dl_done_time|datetime_to_datestring }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="most-favs">
+            <h2>Most favourited replays</h2>
+
+            <table class="table">
+                <thead>
                 <tr>
                     <th>Replay ID</th>
-                    <th>State</th>
-                    <th>Time</th>
+                    <th>Favourites</th>
+                    <th>Added time</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for replay in last_archived_replays %}
+                {% for replay_id, replay_added_time, count in most_favourited_replays %}
                     <tr>
-                        <td>
-                            <a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a>
-                        </td>
-                        <td>{{ replay.state }}</td>
-                        <td>{{ replay.dl_done_time|datetime_to_datestring }}</td>
+                        <td><a href="{{ url_for("replays.replay", _id=replay_id) }}">{{ replay_id }}</a></td>
+                        <td>{{ count }}</td>
+                        <td>{{ replay_added_time|datetime_to_datestring }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-        </div>
-    </div>
+        </section>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="most-favs">
-                <h2>Most favourited replays</h2>
+        <section class="most-likes">
+            <h2>Most liked replays</h2>
 
-                <table class="table">
-                    <thead>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Replay ID</th>
+                    <th>Likes</th>
+                    <th>Added time</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for replay_id, replay_added_time, count in most_liked_replays %}
                     <tr>
-                        <th>Replay ID</th>
-                        <th>Favourites</th>
-                        <th>Added time</th>
+                        <td><a href="{{ url_for("replays.replay", _id=replay_id) }}">{{ replay_id }}</a></td>
+                        <td>{{ count }}</td>
+                        <td>{{ replay_added_time|datetime_to_datestring }}</td>
                     </tr>
-                    </thead>
-                    <tbody>
-                    {% for replay_id, replay_added_time, count in most_favourited_replays %}
-                        <tr>
-                            <td><a href="{{ url_for("replays.replay", _id=replay_id) }}">{{ replay_id }}</a></td>
-                            <td>{{ count }}</td>
-                            <td>{{ replay_added_time|datetime_to_datestring }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="col-md-6">
+                {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </section>
 
-            <div class="most-licks">
-                <h2>Most liked replays</h2>
-
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Replay ID</th>
-                        <th>Likes</th>
-                        <th>Added time</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for replay_id, replay_added_time, count in most_liked_replays %}
-                        <tr>
-                            <td><a href="{{ url_for("replays.replay", _id=replay_id) }}">{{ replay_id }}</a></td>
-                            <td>{{ count }}</td>
-                            <td>{{ replay_added_time|datetime_to_datestring }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="most-downloads-30d">
+    <section class="most-downloads-30d">
         <h2>Most downloaded replays (past 30 days)</h2>
 
         <table class="table">
@@ -215,9 +206,9 @@
             {% endfor %}
             </tbody>
         </table>
-    </div>
+    </section>
 
-    <div class="most-downloads-at">
+    <section class="most-downloads-at">
         <h2>Most downloaded replays (all time)</h2>
 
         <table class="table">
@@ -290,9 +281,9 @@
             {% endfor %}
             </tbody>
         </table>
-    </div>
+    </section>
 
-    <div class="stats">
+    <section class="stats">
         <h2>Stats</h2>
 
         <table class="table">
@@ -336,5 +327,5 @@
             </tr>
             </tbody>
         </table>
-    </div>
+    </section>
 {% endblock %}

@@ -1,3 +1,11 @@
+{% macro logo(width=None, height=None) %}
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="{{ config['SITE_NAME'] }}" {% if width %}width="{{ width }}{% endif %}" {% if height %}height="{{ height }}{% endif %}">
+{% endmacro %}
+
+{% macro arcana_logo(width=None, height=None) %}
+    <img src="{{ url_for('static', filename='images/arcana_logo.png') }}" alt="Arcana.io" {% if width %}width="{{ width }}{% endif %}" {% if height %}height="{{ height }}{% endif %}">
+{% endmacro %}
+
 {%- macro field_label(field) -%}
     <label for="{{ field.id }}">{{ field.label.text }}</label>
 {% endmacro %}

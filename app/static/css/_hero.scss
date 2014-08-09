@@ -5,11 +5,6 @@
   background: $hero-background url('../img/hero_background.jpg') no-repeat center;
   background-size: cover;
 
-  .hero-logo img {
-    height: 3em;
-    margin-bottom: 1em;
-  }
-
   .hero-inner {
     @include outer-container;
     @include clearfix;
@@ -18,33 +13,33 @@
     text-align: center;
     color: $hero-color;
 
-    a.button {
-      @include button(simple, $base-accent-color);
-      font-size: $base-font-size;
-      outline: none;
+
+    .hero-logo {
+      @include span-columns(12);
+      margin-bottom: 1em;
+
+      img {
+        height: 3em;
+      }
     }
 
+
     .hero-copy {
+      @include span-columns(6);
+      @include shift(3);
       text-align: center;
 
-      h1 {
-        font-size: 1.4em;
-        margin-bottom: .2em;
+      margin: 1.5em auto;
+      font-weight: 200;
 
-        @include media($large-screen) {
-          font-size: 1.8em;
-        }
+      @include media($large-screen) {
+        font-size: 1.2em;
       }
+    }
 
-      p {
-        margin: 1.5em auto;
-        font-weight: 200;
-
-        @include media($large-screen) {
-          font-size: 1.2em;
-          max-width: 40%;
-        }
-      }
+    .hero-action {
+      @include span-columns(6);
+      @include shift(3);
     }
   }
 }
