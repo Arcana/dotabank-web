@@ -27,11 +27,9 @@
             <div class="hero-action">
                 <form method="POST" action="{{ url_for('replays.search') }}">
                     {{ search_form.hidden_tag() }}
-                    <div class="input-group input-group-lg">
+                    <div class="input-group">
                         {{ search_form.query(class='form-control', placeholder='Match ID') }}
-                        <span class="input-group-btn">
-                            <input type="submit" class="btn btn-primary" value="Archive"/>
-                        </span>
+                        <button type="submit">Archive</button>
                     </div>
                 </form>
             </div>
