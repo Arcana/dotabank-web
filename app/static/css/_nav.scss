@@ -225,7 +225,19 @@ header.navigation {
       float: left;
 
       .dropdown-container {
-          padding: .6em .8em;
+        margin-top: 8px;
+        margin-bottom: 13px;
+        padding: .4em .5em;
+
+        .dropdown-button {
+          line-height: 32px;
+          border: $navigation-search-border;
+        }
+
+        .menu {
+          right: 8px;
+          top: 45px;
+        }
       }
     }
 

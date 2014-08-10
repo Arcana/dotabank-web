@@ -41,8 +41,6 @@
 
                         <p class="dropdown-button">{{ current_user.name }}</p>
                         <ul class="menu">
-                            <li><a href="{{ url_for('users.user', _id=current_user.get_id()) }}" class="user-profile">Visit
-                                profile</a></li>
                             <li><a href="{{ url_for("users.user", _id=current_user.id) }}">Profile</a></li>
                             <li><a href="{{ url_for("users.settings", _id=current_user.id) }}">Settings</a></li>
                             <li class="divider"></li>
