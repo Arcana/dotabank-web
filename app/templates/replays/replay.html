@@ -1,4 +1,5 @@
-{% extends "layouts/bootstrap.html" %}
+{% extends "layouts/standard.html" %}
+{% from "replays/macros.html" import replay_header, replay_progress %}
 
 {% block style %}
     {{ super() }}
@@ -10,27 +11,8 @@
     <script src="{{ url_for("static", filename="js/map.js") }}"></script>
 {% endblock %}
 
-{% macro you_want_a_fucking_medal(player, _attr) %}
-    <td>{{ player|attr(_attr) }} {{ iconic('medal', class='iconic-sm') if player.id == superlatives[_attr].id }}</td>
-{% endmacro %}
-
-{% block content %}
-    <div class="page-header">
-        <h1>Replay <small>{{ replay.id }}{% if replay.start_time %}; {{ replay.start_time|timestamp_to_datestring }} UTC{% endif %}</small></h1>
-
-        {% include "replays/replay_nav.html" %}
-
-        <div class="row progress-tracker">
-            <span class="col-xs-4 progress-tracker-{{ "done" if replay.added_to_site_time else "todo" }}">Added to site</span>
-            <span class="col-xs-4 progress-tracker-{{ "done" if replay.gc_done_time else "todo" }}">Get match details</span>
-            <span class="col-xs-4 progress-tracker-{{ "done" if replay.dl_done_time else "todo" }}">Archive replay</span>
-        </div>
-        <div class="row text-muted text-center">
-            <span class="col-xs-4">{{ replay.added_to_site_time }}</span>
-            <span class="col-xs-4">{{ replay.gc_done_time }}</span>
-            <span class="col-xs-4">{{ replay.dl_done_time }}</span>
-        </div>
-    </div>
+{% block page_header %}
+    {{ replay_header(replay, extras=[replay_progress(replay)]) }}
 
     {% if replay.state in ["WAITING_GC", "WAITING_DOWNLOAD", "DOWNLOAD_IN_PROGRESS"] %}
         <div class="alert alert-warning"><strong>I'm not ready!</strong> The replay is in limbo ({{ replay.state }}), check back soon.</div>
@@ -48,7 +30,25 @@
             {% endif %}
         </div>
     {% endif %}
+{% endblock %}
 
+{% block top_ad %}
+    {# HR below the ad #}
+    {{ super() }}
+    <hr/>
+{% endblock %}
+
+{% block bottom_ad %}
+    {# HR above the ad #}
+    <hr/>
+    {{ super() }}
+{% endblock %}
+
+{% macro attribute_row_medal(player, _attr) %}
+    <td>{{ player|attr(_attr) }} {{ iconic('medal', class='iconic-sm') if player|attr(_attr) == superlatives[_attr]|attr(_attr) }}</td>
+{% endmacro %}
+
+{% block content %}
     {% if replay.league %}
         {% if replay.league.icon %}
             <div class="pull-right thumbnail">
@@ -76,10 +76,6 @@
                     <dd>{{ replay.state }}</dd>
                     <dt>replay_state</dt>
                     <dd>{{ replay.replay_state }}</dd>
-                    <dt>ratings</dt>
-                    <dd>{{ replay.ratings }}</dd>
-                    <dt>downloads</dt>
-                    <dd>{{ replay.downloads.count() }}</dd>
                 </dl>
                 
                 {% if s3_data: %}
@@ -109,17 +105,17 @@
                         <table class="table table-striped table-bordered table-condensed endgame-table">
                             <thead>
                                 <tr>
-                                    <td class="col-md-2 col-sm-2">Hero</td>
-                                    <td>Lvl</td>
-                                    <td>K</td>
-                                    <td>D</td>
-                                    <td>A</td>
-                                    <td class="col-md-3 col-sm-3">Items</td>
-                                    <td>Gold</td>
-                                    <td>LH</td>
-                                    <td>DN</td>
-                                    <td>GPM</td>
-                                    <td>XPM</td>
+                                    <th class="col-md-2 col-sm-2">Hero</th>
+                                    <th>Lvl</th>
+                                    <th>K</th>
+                                    <th>D</th>
+                                    <th>A</th>
+                                    <th class="col-md-3 col-sm-3">Items</th>
+                                    <th>Gold</th>
+                                    <th>LH</th>
+                                    <th>DN</th>
+                                    <th>GPM</th>
+                                    <th>XPM</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -140,7 +136,7 @@
                                         </td>
                                     {% endif %}
                                     {% for attr in ["level", "kills", "deaths", "assists"] %}
-                                        {{ you_want_a_fucking_medal(player, attr) }}
+                                        {{ attribute_row_medal(player, attr) }}
                                     {% endfor %}
                                     <td class="item-cell">
                                         <div class="item-boxes">
@@ -158,14 +154,14 @@
                                     </td>
                                     <td>{{ player.gold }}</td>
                                     {% for attr in ["last_hits", "denies", "gold_per_min", "xp_per_min"] %}
-                                        {{ you_want_a_fucking_medal(player, attr) }}
+                                        {{ attribute_row_medal(player, attr) }}
                                     {% endfor %}
                                 </tr>
                                 {% endfor %}
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="2"><em>Totals</em></td>
+                                    <th colspan="2">Totals</th>
                                     <td>{{ team_players|map(attribute="kills")|sum }}</td>
                                     <td>{{ team_players|map(attribute="deaths")|sum }}</td>
                                     <td>{{ team_players|map(attribute="assists")|sum }}</td>
