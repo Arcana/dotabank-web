@@ -22,9 +22,9 @@
     {% if current_user.is_admin() %}
         {% include "admin/toolbar.html" %}
     {% endif %}
-    {% include "site_nav.html" %}
+    {% include "_site_nav.html" %}
 
-    {% include "site_notice.html" %}
+    {% include "_site_notice.html" %}
 
     <div class="container">
         {% for category, message in get_flashed_messages(with_categories=true) %}

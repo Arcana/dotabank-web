@@ -87,33 +87,33 @@ header.navigation {
       margin: 0;
       padding: 0;
     }
-  }
 
-  ul li {
-    background: $navigation-background;
-    display: block;
-    line-height: $navigation-height;
-    overflow: hidden;
-    padding-right: .8em;
-    text-align: right;
-    width: 100%;
-    z-index: 9999;
-
-    @include media($horizontal-bar-mode) {
-      background: transparent;
-      display: inline;
+    li {
+      background: $navigation-background;
+      display: block;
       line-height: $navigation-height;
-      padding-right: 2em;
-      text-decoration: none;
-      width: auto;
-    }
+      overflow: hidden;
+      padding-right: .8em;
+      text-align: right;
+      width: 100%;
+      z-index: 9999;
 
-    a {
-      font-weight: 400;
-      color: $navigation-color;
+      @include media($horizontal-bar-mode) {
+        background: transparent;
+        display: inline;
+        line-height: $navigation-height;
+        padding-right: 2em;
+        text-decoration: none;
+        width: auto;
+      }
 
-      &:hover {
-        color: $navigation-color-hover;
+      a {
+        font-weight: 400;
+        color: $navigation-color;
+
+        &:hover {
+          color: $navigation-color-hover;
+        }
       }
     }
   }
@@ -195,32 +195,94 @@ header.navigation {
       float: right;
       clear: none;
     }
-  }
 
+    a.sign-up {
+      margin-top: 13px;
+      margin-bottom: 13px;
+      margin-left: 1em;
+      float: right;
+      @include transition(all 0.2s ease-in-out);
+      display: inline;
+      background: $navigation-nav-button-background;
+      border-radius: $base-border-radius;
+      color: white;
+      font-size: .8em;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: .4em .5em;
 
-  a.user-logout,
-  a.user-profile,
-  a.sign-up {
-    margin-top: 13px;
-    margin-bottom: 13px;
-    margin-left: 1em;
-    float: right;
-    @include transition(all 0.2s ease-in-out);
-    display: inline;
-    background: $navigation-nav-button-background;
-    border-radius: $base-border-radius;
-    color: white;
-    font-size: .8em;
-    font-weight: 800;
-    text-transform: uppercase;
-    padding: .4em .5em;
+      @include media($large-screen) {
+        padding: .4em 1em;
+      }
 
-    @include media($large-screen) {
-      padding: .4em 1em;
+      &:hover {
+        background: lighten($navigation-nav-button-background, 10);
+      }
     }
 
-    &:hover {
-      background: lighten($navigation-nav-button-background, 10);
+    div.dropdown {
+      display: inline-block;
+      float: left;
+
+      .dropdown-container {
+          padding: .6em .8em;
+      }
+    }
+
+    // Search bar
+
+    .search-bar {
+      $search-bar-border-color: $base-border-color;
+      $search-bar-border: 1px solid $search-bar-border-color;
+      $search-bar-background: lighten($search-bar-border-color, 10);
+
+      padding: .85em .6em;
+      float: left;
+      .search-and-submit {
+        position: relative;
+
+        input[type=search] {
+          background: $navigation-search-background;
+          border: $navigation-search-border;
+          padding: .6em .8em;
+          font-size: .9em;
+          font-style: italic;
+          color: $navigation-color;
+          border-radius: $base-border-radius * 2;
+          margin: 0;
+
+          @include media($large-screen) {
+            width: 100%;
+          }
+        }
+
+        button[type=submit] {
+          @include button(simple, lighten($navigation-search-background, 10));
+          position: absolute;
+          top: 0.3em;
+          right: 0.3em;
+          bottom: 0.3em;
+          left: auto;
+          outline: none;
+          padding: 0 15px;
+
+          img {
+            height: 12px;
+            opacity: .7;
+          }
+        }
+      }
+
+      @include media($horizontal-bar-mode) {
+        width: 16em;
+        position: relative;
+        display: inline-block;
+
+        input {
+          @include box-sizing(border-box);
+          display: block;
+        }
+      }
     }
   }
 }

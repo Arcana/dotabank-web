@@ -1,5 +1,5 @@
 {% from "macros.html" import iconic %}
-{% from "ads.html" import banner_ad_top, banner_ad_bottom with context %}
+{% from "_ads.html" import banner_ad_top, banner_ad_bottom with context %}
 
 <!DOCTYPE html>
 <html>
@@ -18,9 +18,9 @@
     {% if current_user.is_admin() %}
         {% include "admin/toolbar.html" %}
     {% endif %}
-    {% include "site_nav.html" %}
+    {% include "_site_nav.html" %}
 
-    {% include "site_notice.html" %}
+    {% include "_site_notice.html" %}
 
 <main>
     {% block page_header %}
@@ -45,6 +45,8 @@
 {% block scripts %}
     <script src="{{ url_for('static', filename='bower/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/iconic.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/_nav.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/_dropdown.js') }}"></script>
     <script src="{{ url_for('static', filename='js/common.js') }}"></script>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
