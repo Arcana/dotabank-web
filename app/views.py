@@ -71,6 +71,11 @@ def index():
 
 @app.route('/ugcfile/<int:_id>')
 def ugcfile(_id):
+
+    # If we already have on disk, serve it.
+    if os.path.exists(os.path.join(app.config['UGC_FILES_DIR'], str(_id))):
+        return send_file(os.path.join(app.config['UGC_FILES_DIR'], str(_id)))
+
     _ugcfile = UGCFile.query.filter(UGCFile.id == _id).first()
     if not _ugcfile:
         _ugcfile = UGCFile(_id)
@@ -79,10 +84,6 @@ def ugcfile(_id):
         if _ugcfile.url:
             db.session.add(_ugcfile)
             db.session.commit()
-
-    # If we already have on disk, serve it.
-    if os.path.exists(_ugcfile.local_uri):
-        return send_file(_ugcfile.local_uri)
 
     # Otherwise fetch, save to disk, then serve it.
     if _ugcfile.url:
