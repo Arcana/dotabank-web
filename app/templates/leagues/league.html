@@ -140,7 +140,7 @@
                         </span>
                     </td>
                     {% endif %}
-                    <td>{{ replay.state }}</td>
+                    <td>{{ replay.get_state() }}</td>
                     {% if current_user.is_authenticated() %}
                     <td>
                         <a class="btn btn-default btn-xs {{ "disabled" if not replay.local_uri else "" }}" href="{{ url_for("replays.download", _id=replay.id) }}">Download</a>

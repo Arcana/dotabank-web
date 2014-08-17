@@ -261,6 +261,28 @@ class Replay(db.Model):
 
         return None
 
+    def get_state(self):
+        """
+        Returns a descriptive and human-friendly representation of the replay's state.
+        :return: String
+        """
+        # TODO: Store this in a centralised string table
+        if self.state == "ARCHIVED":
+            return "Archived"
+        elif self.state == "WAITING_GC":
+            return "Waiting for GC"
+        elif self.state == "WAITING_DOWNLOAD":
+            return "Waiting to be archived"
+        elif self.state == "DOWNLOAD_IN_PROGRESS":
+            return "Archiving in progress"
+        elif self.state == "GC_ERROR":
+            return "Private"
+        elif self.state == "DOWNLOAD_ERROR":
+            if self.replay_state == "REPLAY_AVAILABLE":
+                return "Download error"
+            else:
+                return "Expired"
+
     # TODO: What is this?
     def user_rating(self):
         if current_user.is_authenticated():
