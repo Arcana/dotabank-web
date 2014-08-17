@@ -1,6 +1,7 @@
 from math import ceil
 from datetime import datetime, timedelta
 import re
+import unicodedata
 
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app, abort
 from flask.ext.login import current_user, login_required
@@ -355,6 +356,9 @@ def search():
 
         # Trim whitespace chars
         match_id = match_id.strip()
+
+        # Normalize input (in case of unicode variants of chars; can break at urllib.urlencode level later on without this)
+        match_id = unicodedata.normalize('NFKC', match_id)
 
         # If not a decimal input, let's try pull match id from inputs we recognise
         if not unicode.isdecimal(unicode(match_id)):
