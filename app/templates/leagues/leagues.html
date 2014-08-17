@@ -1,45 +1,23 @@
+{% extends "layouts/standard.html" %}
 {% from "macros.html" import iconic, pagination %}
-{% extends "layouts/bootstrap.html" %}
+{% from "leagues/macros.html" import league_card %}
+
+{% block page_header %}
+    <section class="page-header">
+        <h1>Leagues</h1>
+    </section>
+{% endblock %}
 
 {% block content %}
-    <div class="page-header">
-        <h1>Leagues</h1>
-    </div>
+    <section class="leagues-page">
+        <p>Leagues which do not have any matches archived on Dotabank are excluded from this list. <b>Some league matches can be downloaded freely, but not viewed in-client unless you own own the <a href="http://www.dota2.com/store#cat=3837590211">relevant league ticket</a>.</b></p>
 
-    <p>Leagues which do not have any matches archived on Dotabank are excluded from this list. <b>Some league matches can be downloaded freely, but not viewed in-client unless you own own the <a href="http://www.dota2.com/store#cat=3837590211">relevant league ticket</a>.</b></p>
+        <p>Ordered by download count</p>
 
-    <table class="table table-condensed table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Replays archived</th>
-                <th>Tournament link</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if leagues|length > 0 %}
-                {% for league in leagues %}
-                    <tr>
-                        <td>
-                            {% if league.icon %}
-                                <a class="thumbnail" href="{{ url_for("leagues.league", _id=league.id) }}">
-                                    <img src="{{ league.icon }}" alt="{{ league.name }}"/>
-                                </a>
-                            {% endif %}
-                        </td>
-                        <td><a href="{{ url_for("leagues.league", _id=league.id) }}">{{ league.name }}</a></td>
-                        <td>{{ league.description }}</td>
-                        <td>{{ league.count }}</td>
-                        <td><a class="btn btn-default btn-sm" href="{{ league.tournament_url }}">Tournament site</a></td>
-                    </tr>
-                {% endfor %}
-        {% else %}
-            <tr>
-                <td colspan="5" class="text-muted">No leagues found.</td>
-            </tr>
-        {% endif %}
-        </tbody>
-    </table>
+        <div class="cards">
+            {% for league in leagues %}
+                {{ league_card(league) }}
+            {% endfor %}
+        </div>
+    </section>
 {% endblock %}

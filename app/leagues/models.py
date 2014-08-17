@@ -89,7 +89,14 @@ class League():  # TODO: Persist leagues to database.
         if cls._leagues is None:
             cls._leagues = cls.fetch_leagues()
 
-        return cls._leagues
+        leagues = {}
+        raw_leagues = cls._leagues
+
+        # Filter out duplicates by only having one entry per ID
+        for league in raw_leagues:
+            leagues[league.id] = league
+
+        return leagues.values()
 
     @classmethod
     def get_by_id(cls, _id):

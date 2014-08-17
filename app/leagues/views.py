@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, current_app, abort
-from app.replays.models import Replay
+from app.replays.models import Replay, ReplayDownload
 from app import db, mem_cache, sentry
 from models import League, LeagueView
 from sqlalchemy.sql import text
@@ -8,7 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound
 mod = Blueprint("leagues", __name__, url_prefix="/leagues")
 
 
-@mem_cache.cached(timeout=60 * 60, key_prefix="leagues_data")
+@mem_cache.cached(timeout=10 * 60, key_prefix="leagues_data")  # Cache data for 10 minutes
 def _leagues_data():
     _leagues = League.get_all()
 
@@ -23,21 +23,35 @@ def _leagues_data():
                 count(*) as count
             FROM {replay_table} r
             WHERE
-                r.league_id in ({league_id_csv}) AND
                 r.state = "ARCHIVED"
             GROUP BY r.league_id
-            """.format(replay_table=Replay.__tablename__, league_id_csv=",".join(str(x.id) for x in _leagues))
+            """.format(replay_table=Replay.__tablename__)
+        )
+    )}
+
+    download_counts = {x.league_id: x.count for x in db.engine.execute(
+        text("""
+            SELECT
+                rp.league_id as league_id,
+                count(rd.id) as count
+            FROM {replay_download_table} rd
+            LEFT JOIN {replay_table} rp ON rp.id = rd.replay_id
+            WHERE
+                rp.state = "ARCHIVED"
+            GROUP BY rp.league_id
+            """.format(replay_table=Replay.__tablename__, replay_download_table=ReplayDownload.__tablename__)
         )
     )}
 
     leagues_with_replays = []
     for _league in _leagues:
         if replay_counts.get(_league.id) > 0:
-            _league.count = replay_counts.get(_league.id)
+            _league.replay_count = replay_counts.get(_league.id)
+            _league.download_count = download_counts.get(_league.id)
             leagues_with_replays.append(_league)
 
     # Sort by archived count
-    return sorted(leagues_with_replays, key=lambda r: r.count, reverse=True)
+    return sorted(leagues_with_replays, key=lambda r: r.download_count, reverse=True)
 
 
 @mod.route("/")

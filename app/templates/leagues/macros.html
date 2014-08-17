@@ -1,0 +1,19 @@
+{% macro league_card(league) %}
+    <a href="{{ url_for('leagues.league', _id=league.id) }}" class="card">
+        <div class="card-image">
+                <img src="{{ league.icon }}"
+                     alt="{{ league.name }}">
+        </div>
+        <div class="card-header">{{ league.name }}</div>
+        <div class="card-copy">
+            {{ league.description }}
+        </div>
+        <div class="card-stats">
+            <ul>
+                <li>{{ league.replay_count or 0 }} <span>Replays</span></li>
+                <li>{{ league.download_count or 0 }} <span>Downloads</span></li>
+            </ul>
+        </div>
+
+    </a>
+{% endmacro %}
