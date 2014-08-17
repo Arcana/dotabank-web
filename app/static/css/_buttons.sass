@@ -1,0 +1,21 @@
+// Buttons
+button,
+a.button
+  @include button(simple, $base-accent-color)
+
+.fav-button,
+.rating-button
+  $fav-text-color: $medium-gray
+  $fav-text-active-color: $base-accent-color
+
+  fill: $fav-text-color
+
+  &.active
+    fill: $fav-text-active-color
+
+  sub
+    color: $base-font-color
+
+.download-button
+  padding: 3px 9px
+  font-size: small

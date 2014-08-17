@@ -72,35 +72,53 @@
         class="iconic {{ class }}"
         data-src="{{ url_for('static', filename="images/iconic/smart/{}.svg".format(icon)) }}"
         {% if state %}data-state="{{ state }}"{% endif %}
+        {% for key, val in kwargs.items() %}
+            data-{{ key }}="{{ val }}"
+        {% endfor %}
     />
 {% endmacro %}
 
-{%- macro pagination(pagination_obj, endpoint, endpoint_values={}, size="sm") -%}
+{%- macro pagination(pagination_obj, endpoint, endpoint_values={}) -%}
     {% if pagination_obj.pages > 1 %}
-        <ul class="pagination pagination-{{ size }}">
-
-            {# Previous button #}
-            {% if pagination_obj.has_prev %}
-                <li><a class="prev" href="{{ url_for(endpoint, page=pagination_obj.prev_num, **endpoint_values) }}">&#9664;</a></li>
-            {% else %}
-                <li class="disabled"><a class="prev">&#9664;</a></li>
-            {% endif %}
-
-            {# Next button #}
-            {% if pagination_obj.has_next %}
-                <li><a class="next" href="{{ url_for(endpoint, page=pagination_obj.next_num, **endpoint_values) }}">&#9654;</a></li>
-            {% else %}
-                <li class="disabled"><a class="next">&#9654;</a></li>
-            {% endif %}
-
-            {# Individual page links #}
-            {% for page in pagination_obj.iter_pages() %}
-                {% if page %}
-                    <li class="{{ "active" if pagination_obj.page == page }}"><a href="{{ url_for(endpoint, page=page, **endpoint_values) }}">{{ page }}</a></li>
+        <div class="pagination">
+            <ul>
+                {# Previous button #}
+                {% if pagination_obj.has_prev %}
+                    <li class="page-prev"><a
+                            href="{{ url_for(endpoint, page=pagination_obj.prev_num, **endpoint_values) }}">&#9664;</a>
+                    </li>
                 {% else %}
-                    <li class="disabled"><a>&hellip;</a></li>
+                    <li class="page-prev"><a class="disabled">&#9664;</a></li>
                 {% endif %}
-            {% endfor %}
-        </ul>
+                <li>
+                    <ul>
+                        {% for page in pagination_obj.iter_pages() %}
+                            {% if page %}
+                                <li><a class="{{ "active" if pagination_obj.page == page }}"
+                                       href="{{ url_for(endpoint, page=page, **endpoint_values) }}">{{ page }}</a></li>
+                            {% else %}
+                                <li><a class="disabled">&hellip;</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </li>
+                {# Next button #}
+                {% if pagination_obj.has_next %}
+                    <li class="page-next"><a
+                            href="{{ url_for(endpoint, page=pagination_obj.next_num, **endpoint_values) }}">
+                        &#9654;</a></li>
+                {% else %}
+                    <li class="page-next"><a class="disabled">&#9654;</a></li>
+                {% endif %}
+            </ul>
+
+            {# Number shown on page and total #}
+            {% set first_on_page = (pagination_obj.page-1)*pagination_obj.per_page+1 %}
+            {% set total_on_page = pagination_obj.page*pagination_obj.per_page %}
+            {% if total_on_page > pagination_obj.total %}
+                {% set total_on_page = pagination_obj.total %}
+            {% endif %}
+            <div class="meta">{{ first_on_page }} - {{ total_on_page }} of {{ pagination_obj.total }}</div>
+        </div>
     {% endif %}
 {% endmacro %}

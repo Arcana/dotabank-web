@@ -1,0 +1,21 @@
+table
+  &.striped
+    tbody
+      tr:nth-child(odd)
+        td, th
+          background: transparentize(white, 0.95)
+
+      tr:hover
+        th, td
+          background: transparentize(white, 0.9)
+
+  &.condensed
+    tbody
+      tr
+        th, td
+          padding: 0.25em 0
+
+  tr:hover
+    th, td
+      background: transparentize(white, 0.9)
+

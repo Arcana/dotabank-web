@@ -15,6 +15,8 @@
 @import dropdown
 @import input_group
 @import dota_icons
+@import tables
+@import buttons
 
 // Forms
 @import forms
@@ -29,10 +31,25 @@ main > section
       @include span-columns(6)
       @include omega(2n)
 
+  &.page-header
+    border-bottom: $base-border-radius dashed $base-border-color
 
-// Buttons
-a.button
-  @include button(simple, $base-accent-color)
+    h1
+      small
+        color: $medium-gray
+
+  // TODO: Start using separate fragments for these page-specific styling
+  &.replay-page-table
+    // Fav icon
+    table thead tr th:first-child
+      width: 4em
+
+    // Download button
+    table thead tr th:last-child,
+    table tbody tr td:last-child
+      text-align: right
+      width: 6em
+      padding-right: 0.25em
 
 p.footnote
   font-size: $base-font-size * 0.75
