@@ -18,7 +18,35 @@ header.navigation {
   font-family: $sans-serif;
   height: $navigation-height * 2;
   width: 100%;
-  z-index: 999;
+  z-index: 998;
+
+  &.admin-navigation {
+    $admin-navigation-background: $base-body-color;
+
+    background-color: $admin-navigation-background;
+    z-index: 999;
+
+    .menu-wrapper {
+      z-index: 9999;
+    }
+
+    .nav {
+      z-index: 9999999;
+    }
+
+    ul#navigation-menu {
+      z-index: 9999;
+
+      li {
+        background: $admin-navigation-background;
+        z-index: 9999;
+      }
+
+      .submenu li a {
+        background: $admin-navigation-background;
+      }
+    }
+  }
 
   @include media($horizontal-bar-mode) {
     height: $navigation-height;
@@ -28,7 +56,7 @@ header.navigation {
     @include outer-container;
     @include clearfix;
     position: relative;
-    z-index: 9999;
+    z-index: 9998;
   }
 
   .logo {
@@ -65,7 +93,7 @@ header.navigation {
   }
 
   .nav {
-    z-index: 9999999;
+    z-index: 999998;
     float: none;
     @include media($horizontal-bar-mode) {
       float: left;
@@ -80,7 +108,7 @@ header.navigation {
     overflow: visible;
     padding: 0;
     width: 100%;
-    z-index: 9999;
+    z-index: 9998;
 
     @include media($horizontal-bar-mode) {
       display: inline;
@@ -96,7 +124,7 @@ header.navigation {
       padding-right: .8em;
       text-align: right;
       width: 100%;
-      z-index: 9999;
+      z-index: 9998;
 
       @include media($horizontal-bar-mode) {
         background: transparent;
@@ -133,6 +161,12 @@ header.navigation {
     @include media($horizontal-bar-mode) {
       position: relative;
       padding-right: .8em;
+    }
+
+    &:after {
+      color: $navigation-color;
+      content: "\25BE";
+      display: inline-block;
     }
   }
 
