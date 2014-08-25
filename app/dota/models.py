@@ -14,45 +14,75 @@ class Hero:
     """ Represents a Dota 2 hero. """
 
     id = None
-    name = None
-    localized_name = None
+    token = None
 
     _heroes = None
+    _CACHE_KEY = "heroes"  # Key for fscache of this file
 
-    def __init__(self, _id, name, localized_name=None):
+    def __init__(self, _id, **kwargs):
         self.id = _id
-        self.name = name
-        self.localized_name = localized_name
+
+        # Populate all other parms via kwargs - consider them optional
+        for key, arg in kwargs.items():
+            self.__dict__[key] = arg
+
+    def __repr__(self):
+        return self.localized_name
+
+    @property
+    def localized_name(self):  # TODO
+        return self.token
 
     @property
     def image(self):
-        return url_for('hero_image', hero_name=self.name.replace('npc_dota_hero_', ''))
+        return url_for('hero_image', hero_name=self.token.replace('npc_dota_hero_', ''))
 
     @classmethod
-    @fs_cache.cached(timeout=60 * 60, key_prefix="heroes")
+    @fs_cache.cached(timeout=60 * 60, key_prefix=_CACHE_KEY)
     def fetch_heroes(cls):
-        """ Fetch a list of heroes from the Dota 2 WebAPI.
+        """ Fetch a list of heroes via the game's npc_heroes.txt
 
-        Uses steamodd to interface with the WebAPI.  Falls back to data stored on the file-system in case of a HTTPError
-        when interfacing with the WebAPI.
+        Fetches npc_heroes.txt as JSON via Dotabuff's d2vpk repository, and parses it for data.
+        Falls back to data stored on the file-system in case of a HTTPError or KeyError.
+
+        Only retrieves ID and token for now, but there's a ton more data available should we ever need it.
 
         Returns:
             An array of Hero objects.
         """
         try:
-            res = steam.api.interface("IEconDOTA2_570").GetHeroes(language="en_US").get("result")
-            return list(
-                cls(
-                    hero.get("id"),
-                    hero.get("name"),
-                    hero.get("localized_name")
-                ) for hero in res.get("heroes"))
+            req = requests.get(HERO_DATA_URL)
 
-        except steam.api.HTTPError:
-            sentry.captureMessage('Hero.get_all returned with HTTPError', exc_info=sys.exc_info)
+            # Raise HTTPError if we don't get HTTP OK
+            if req.status_code != requests.codes.ok:
+                raise requests.HTTPError("Response not HTTP OK")
+
+            # Fetch relevant pieces of data from JSON data
+            input_heroes = req.json()['DOTAHeroes']
+            output_heroes = []
+
+            # Iterate through heries, create an instance of this class for each.
+            for key, hero in input_heroes.items():
+                print(key)
+
+                # Skip these keys - they're not hero definitions
+                if key in ["Version", "npc_dota_hero_base"]:
+                    continue
+
+                output_heroes.append(
+                    cls(
+                        _id=int(hero.get('HeroID')),
+                        token=key
+                    )
+                )
+
+            return output_heroes
+
+        except (steam.api.HTTPError, KeyError):
+            sentry.captureMessage('Hero.fetch_heroes failed', exc_info=sys.exc_info)
 
             # Try to get data from existing cache entry
-            data = fs_cache.cache.get('heroes', ignore_expiry=True)
+            data = fs_cache.cache.get(cls._CACHE_KEY, ignore_expiry=True)
 
             # Return data if we have any, else return an empty list()
             return data or list()
@@ -77,7 +107,7 @@ class Hero:
     def get_by_name(cls, name):
         """ Returns a Hero object for the given hero name. """
         for hero in cls.get_all():
-            if hero.name == name:
+            if hero.token == name:
                 return hero
 
         return None
@@ -291,7 +321,7 @@ class Region():
     _CACHE_KEY = "region"  # Key for fscache of this file
 
     @property
-    def display_name(self):
+    def localized_name(self):   # TODO
         return self.display_name_token
 
     def __init__(self, _id, **kwargs):
@@ -302,7 +332,7 @@ class Region():
             self.__dict__[key] = arg
 
     def __repr__(self):
-        return self.display_name
+        return self.localized_name
 
     @classmethod
     @fs_cache.cached(timeout=60 * 60, key_prefix=_CACHE_KEY)
