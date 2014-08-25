@@ -1,5 +1,5 @@
 from app import steam, fs_cache, sentry
-from flask import current_app, url_for
+from flask import current_app, url_for, g
 import requests
 import json
 import sys
@@ -8,6 +8,7 @@ HERO_DATA_URL = "https://raw.githubusercontent.com/dotabuff/d2vpk/master/json/do
 ITEM_DATA_URL = "https://raw.githubusercontent.com/dotabuff/d2vpk/master/json/dota_pak01/scripts/npc/items.json"
 REGION_DATA_URL = "https://raw.githubusercontent.com/dotabuff/d2vpk/master/json/dota_pak01/scripts/regions.json"
 SCHEMA_DATA_URL = "https://raw.githubusercontent.com/dotabuff/d2vpk/master/json/dota_pak01/scripts/items/items_game.json"
+LOCALIZATION_DATA_URL = "https://raw.githubusercontent.com/dotabuff/d2vpk/master/json/dota/resource/dota_{}.json"
 
 
 class Hero:
@@ -30,8 +31,8 @@ class Hero:
         return self.localized_name
 
     @property
-    def localized_name(self):  # TODO
-        return self.token
+    def localized_name(self):
+        return g.localization.tokens.get(self.token) or self.token
 
     @property
     def image(self):
@@ -321,8 +322,8 @@ class Region():
     _CACHE_KEY = "region"  # Key for fscache of this file
 
     @property
-    def localized_name(self):   # TODO
-        return self.display_name_token
+    def localized_name(self):
+        return g.localization.tokens.get(self.display_name_token) or self.display_name_token
 
     def __init__(self, _id, **kwargs):
         self.id = _id
@@ -368,7 +369,7 @@ class Region():
                         matchgroup=int(region.get('matchgroup')) if region.get('matchgroup') else None,
                         latitude=float(region.get('latitude')) if region.get('latitude') else None,
                         longitude=float(region.get('longitude')) if region.get('longitude') else None,
-                        display_name_token=region.get('display_name'),
+                        display_name_token=region.get('display_name')[1:] if region.get('display_name')[0] == '#' else region.get('display_name'),
                         proxy_allow=region.get('proxy_allow'),
                         division=region.get('division'),
                         alert_at_capacity=bool(region.get('alert_at_capacity', True)),
@@ -413,3 +414,54 @@ class Region():
                 return item
 
         return None
+
+
+class Localization():
+    # TODO: Figure out a better way to do this.  This feels wrong.
+
+    language = None
+    tokens = None
+
+    _language_tokens = {}
+
+    DEFAULT_LANGUAGE = "english"
+
+    def __init__(self, language=None, tokens=None):
+        self.language = language or self.DEFAULT_LANGUAGE
+        self.tokens = tokens or self.get_tokens(self.language)
+
+    def __repr__(self):
+        return "<Localization {}>".format(self.language)
+
+    @classmethod
+    @fs_cache.memoize(timeout=60 * 60)
+    def fetch_tokens(cls, language):
+        """ Fetch a localization file from the game's files.
+
+        Fetches dota_LANGUAGE.txt as JSON via Dotabuff's d2vpk repository, and parses it for data.
+
+        Returns:
+            An Localization object
+        """
+        try:
+            req = requests.get(LOCALIZATION_DATA_URL.format(language))
+
+            # Raise HTTPError if we don't get HTTP OK
+            if req.status_code != requests.codes.ok:
+                raise requests.HTTPError("Response not HTTP OK")
+
+            # Fetch relevant pieces of data from JSON data
+            input_data = req.json()['lang']
+
+            return input_data.get('Tokens')
+
+        except (requests.HTTPError, KeyError):
+            sentry.captureMessage('Localization.fetch_tokens failed', exc_info=sys.exc_info)
+            return []
+
+    @classmethod
+    def get_tokens(cls, language):
+        if language not in cls._language_tokens.keys():
+            cls._language_tokens[language] = cls.fetch_tokens(language)
+
+        return cls._language_tokens.get(language)

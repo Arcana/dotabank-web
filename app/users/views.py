@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, flash, redirect, request, url_for,
 from app import oid, steam, db, login_manager
 from models import User, AnonymousUser
 from app.replays.models import ReplayPlayer, ReplayFavourite, ReplayRating, ReplayDownload, Search, ReplayAlias
+from app.dota.models import Localization
 from forms import SettingsForm
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app.admin.views import AdminModelView
@@ -30,6 +31,11 @@ def load_user(user_id):
 @mod.before_app_request
 def add_user_to_globals():
     g.user = current_user
+
+
+@mod.before_app_request
+def load_dota_localization():
+    g.localization = Localization(current_user.get_language())
 
 
 @mod.route('/login/')

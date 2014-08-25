@@ -99,7 +99,6 @@ admin.add_view(AdminModelView(ReplayDownload, db.session, category="User actions
 # Init admin
 admin.init_app(app)
 
-
 # Setup logging
 import logging
 app.logger.setLevel(logging.INFO)  # Set root logger to handle anything info and above

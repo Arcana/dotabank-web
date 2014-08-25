@@ -12,6 +12,9 @@ class AnonymousUser(AnonymousUserMixin):
     def allows_ads(self):
         return True
 
+    def get_language(self):  # TODO: When we do localization
+        return "english"
+
 
 # noinspection PyShadowingBuiltins
 # noinspection PyMethodMayBeStatic
@@ -86,6 +89,9 @@ class User(db.Model):
 
     def allows_ads(self):
         return self.show_ads
+
+    def get_language(self):  # TODO: When we do localization
+        return "english"
 
     @property
     def is_premium(self):
