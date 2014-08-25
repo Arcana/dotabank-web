@@ -4,6 +4,11 @@ import requests
 import json
 import sys
 
+HERO_DATA_URL = "https://raw.githubusercontent.com/dotabuff/d2vpk/master/json/dota_pak01/scripts/npc/npc_heroes.json"
+ITEM_DATA_URL = "https://raw.githubusercontent.com/dotabuff/d2vpk/master/json/dota_pak01/scripts/npc/items.json"
+REGION_DATA_URL = "https://raw.githubusercontent.com/dotabuff/d2vpk/master/json/dota_pak01/scripts/regions.json"
+SCHEMA_DATA_URL = "https://raw.githubusercontent.com/dotabuff/d2vpk/master/json/dota_pak01/scripts/items/items_game.json"
+
 
 class Hero:
     """ Represents a Dota 2 hero. """
@@ -265,3 +270,116 @@ class Schema():
     @classmethod
     def get_by_id(cls, _id):
         return cls.get_schema()[_id]
+
+
+class Region():
+
+    # Properties
+    id = None
+    matchgroup = None
+    latitude = None
+    longitude = None
+    display_name_token = None
+    proxy_allow = None
+    division = None
+    alert_at_capacity = None
+    ip_range = None
+    ip_relay_peers = None
+    clusters = None
+
+    _regions = None  # List of all regions
+    _CACHE_KEY = "region"  # Key for fscache of this file
+
+    @property
+    def display_name(self):
+        return self.display_name_token
+
+    def __init__(self, _id, **kwargs):
+        self.id = _id
+
+        # Populate all other parms via kwargs - consider them optional
+        for key, arg in kwargs.items():
+            self.__dict__[key] = arg
+
+    def __repr__(self):
+        return self.display_name
+
+    @classmethod
+    @fs_cache.cached(timeout=60 * 60, key_prefix=_CACHE_KEY)
+    def fetch_regions(cls):
+        """ Fetch a list of regions via the game's regions.txt
+
+        Fetches regions.txt as JSON via Dotabuff's d2vpk repository, and parses it for data.
+        Falls back to data stored on the file-system in case of a HTTPError.
+
+        Returns:
+            An array of Hero objects.
+        """
+        try:
+            req = requests.get(REGION_DATA_URL)
+
+            # Raise HTTPError if we dont' get HTTP OK
+            if req.status_code != requests.codes.ok:
+                raise requests.HTTPError("Response not HTTP OK")
+
+            # Fetch relevant pieces of data from JSON data
+            input_regions = req.json()['regions']
+            output_regions = []
+
+            # Iterate through regions, create an instance of this class for each.
+            for key, region in input_regions.items():
+                # Skip unspecified - we don't need it
+                if key == "unspecified":
+                    continue
+
+                output_regions.append(
+                    cls(
+                        _id=int(region.get('region')),
+                        matchgroup=int(region.get('matchgroup')) if region.get('matchgroup') else None,
+                        latitude=float(region.get('latitude')) if region.get('latitude') else None,
+                        longitude=float(region.get('longitude')) if region.get('longitude') else None,
+                        display_name_token=region.get('display_name'),
+                        proxy_allow=region.get('proxy_allow'),
+                        division=region.get('division'),
+                        alert_at_capacity=bool(region.get('alert_at_capacity', True)),
+                        ip_range=region.get('ip_range', []),
+                        ip_relay_peers=region.get('ip_relay_peers', []),
+                        clusters=map(int, region.get('clusters', []))
+                    )
+                )
+
+            return output_regions
+
+        except (requests.HTTPError, KeyError):
+            sentry.captureMessage('Region.fetch_regions failed', exc_info=sys.exc_info)
+
+            # Try to get data from existing cache entry
+            data = fs_cache.cache.get(cls._CACHE_KEY, ignore_expiry=True)
+
+            # Return data if we have any, else return an empty list()
+            return data or list()
+
+    @classmethod
+    def get_all(cls):
+        if cls._regions is None:
+            cls._regions = cls.fetch_regions()
+
+        return cls._regions
+
+    @classmethod
+    def get_by_id(cls, _id):
+        """ Returns a Region object for the given region id. """
+        for item in cls.get_all():
+            if item.id == _id:
+                return item
+
+        return None
+
+    @classmethod
+    def get_by_cluster(cls, cluster_id):
+        """ Returns a Region object for the given cluster id. """
+        for item in cls.get_all():
+            if cluster_id in item.clusters:
+                return item
+
+        return None

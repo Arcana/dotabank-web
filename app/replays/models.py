@@ -3,7 +3,7 @@ from flask.ext.login import current_user
 import datetime
 from boto.sqs.message import RawMessage as sqsMessage
 from app.leagues.models import League
-from app.dota.models import Hero, Item
+from app.dota.models import Hero, Item, Region
 from app.users.models import User
 
 
@@ -239,6 +239,10 @@ class Replay(db.Model):
         if self.league_id:
             return League.get_by_id(self.league_id)
         return None
+
+    @property
+    def region(self):
+        return Region.get_by_cluster(self.replay_cluster)
 
     def get_s3_file(self):
         key = None
