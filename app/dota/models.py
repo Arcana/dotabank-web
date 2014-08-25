@@ -118,120 +118,72 @@ class Item:
     """ Represents a Dota 2 item """
 
     id = None
-    name = None
-    localized_name = None
-    image_filename = None
-    quality = None
-    cost = None
-    description = None
-    notes = None
-    attribute_html = None
-    manacost = None
-    cooldown = None
-    lore = None
-    _components = None  # List of component names
-    created = None      # Whether or not this item is built from components
+    token = None
 
     _items = None
+    _CACHE_KEY = "items"
 
-    def __init__(
-            self,
-            _id,
-            name,
-            localized_name,
-            image_filename,
-            quality,
-            cost,
-            description,
-            notes,
-            attribute_html,
-            manacost,
-            cooldown,
-            lore,
-            components,
-            created
-    ):
+    def __init__(self, _id, token=None):
         self.id = _id
-        self.name = name
-        self.localized_name = localized_name
-        self.image_filename = image_filename
-        self.quality = quality
-        self.cost = cost
-        self.description = description
-        self.notes = notes
-        self.attribute_html = attribute_html
-        self.manacost = manacost
-        self.cooldown = cooldown
-        self.lore = lore
-        self._components = components
-        self.created = created
+        self.token = token
+
+    def __repr__(self):
+        return self.localized_name
+
+    @property
+    def localized_name(self):
+        return g.localization.tokens.get("DOTA_Tooltip_Ability_{}".format(self.token)) or self.token
 
     @property
     def icon(self):
-        return url_for('item_icon', item_filename=self.image_filename)
+        return url_for('item_icon', item_filename="{}_lg.png".format(self.token[5:]))
 
     @classmethod
-    @fs_cache.cached(timeout=60 * 60, key_prefix="items")
+    @fs_cache.cached(timeout=60 * 60, key_prefix=_CACHE_KEY)
     def fetch_items(cls):
-        """ Fetch a list of items from a non-public JSON feed.
+        """ Fetch a list of items via the game's npc_items.txt
 
-        Falls back to data stored on the file-system in case of any problems fetching the data.
+        Fetches npc_items.txt as JSON via Dotabuff's d2vpk repository, and parses it for data.
+        Falls back to data stored on the file-system in case of a HTTPError or KeyError.
+
+        Only retrieves ID and token for now, but there's a ton more data available should we ever need it.
 
         Returns:
-            A dict containing data on Dota 2 items, mapped by their item IDs.
-            An empty dict if there was any errors fetching the data and we did not have a file-system fallback.
+            An array of Item objects.
         """
         try:
-            request = requests.get("http://www.dota2.com/jsfeed/itemdata")
+            req = requests.get(ITEM_DATA_URL)
 
-            if request.status_code == requests.codes.ok:
-                try:
-                    data = request.json()["itemdata"]
-                    return list(
-                        cls(
-                            v.get('id'),
-                            k,
-                            v.get('dname'),
-                            v.get('img'),
-                            v.get('qual'),
-                            v.get('cost'),
-                            v.get('desc'),
-                            v.get('notes'),
-                            v.get('attrib'),
-                            v.get('mc'),
-                            v.get('cd'),
-                            v.get('lore'),
-                            v.get('components'),
-                            v.get('created')
-                        ) for k, v in data.iteritems()
+            # Raise HTTPError if we don't get HTTP OK
+            if req.status_code != requests.codes.ok:
+                raise requests.HTTPError("Response not HTTP OK")
+
+            # Fetch relevant pieces of data from JSON data
+            input_items = req.json()['DOTAAbilities']
+            output_items = []
+
+            # Iterate through heries, create an instance of this class for each.
+            for key, item in input_items.items():
+                # Skip these keys - they're not item definitions
+                if key in ["Version"]:
+                    continue
+
+                output_items.append(
+                    cls(
+                        _id=int(item.get('ID')),
+                        token=key
                     )
-                except (KeyError, ValueError) as e:
-                    if current_app.debug:
-                        raise e
-                    current_app.logger.warning('Item.get_all threw exception', exc_info=True, extra={
-                        'extra': json.dumps({
-                            'url': request.url,
-                            'text': request.text,
-                            'status_code': request.status_code,
-                        })
-                    })
+                )
 
-            else:
-                current_app.logger.warning('Item.get_all returned with non-OK status', extra={
-                    'extra': json.dumps({
-                        'url': request.url,
-                        'text': request.text,
-                        'status_code': request.status_code,
-                    })
-                })
+            return output_items
 
-        except requests.exceptions.RequestException:
-            sentry.captureMessage('Item.get_all returned with RequestException', exc_info=sys.exc_info)
+        except (steam.api.HTTPError, KeyError):
+            sentry.captureMessage('Item.fetch_items failed', exc_info=sys.exc_info)
 
             # Try to get data from existing cache entry
-            data = fs_cache.cache.get('items', ignore_expiry=True)
+            data = fs_cache.cache.get(cls._CACHE_KEY, ignore_expiry=True)
 
-            # Return data if we have any, else return an empty list
+            # Return data if we have any, else return an empty list()
             return data or list()
 
     @classmethod
@@ -251,10 +203,10 @@ class Item:
         return None
 
     @classmethod
-    def get_by_name(cls, name):
+    def get_by_token(cls, token):
         """ Returns an Item object for the given item name. """
         for item in cls.get_all():
-            if item.name == name:
+            if item.token == token:
                 return item
 
         return None
