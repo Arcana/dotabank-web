@@ -1,0 +1,9 @@
+{% if gc_load > 80.0 %}
+    <div class="container">
+        <div class="alert alert-danger">
+            <strong>Archive queue full</strong> - Dotabank has hit the limit of replays it can archive in a single day (a
+            Valve-imposed limit). This could be due to an error in the site, or due to a sudden influx of users of the
+            site. Dotabank's developers are investigating, meanwhile <strong>please allow up to 24 hours for any newly added replays to be archived.</strong>
+        </div>
+    </div>
+{% endif %}

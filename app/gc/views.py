@@ -1,8 +1,22 @@
-from app import app
+from app import app, mem_cache
 from app.admin.views import AdminModelView
 from wtforms import PasswordField
 from models import GCWorker
 from helpers import AESCipher
+
+
+@app.context_processor
+@mem_cache.cached(timeout=60*60, key_prefix="gc_load")
+def inject_gc_load():
+    gc_workers = GCWorker.query.all()
+    max_capacity = app.config['GC_MATCH_REQUSTS_RATE_LIMIT'] * len(gc_workers)
+    jobs_processed = sum(w.job_count() for w in gc_workers)
+
+    return dict(
+        gc_jobs_processed=jobs_processed,
+        gc_max_capacity=max_capacity,
+        gc_load=(float(jobs_processed)/float(max_capacity))*100.0
+    )
 
 
 class GCWorkerAdmin(AdminModelView):

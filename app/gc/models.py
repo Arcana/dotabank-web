@@ -1,7 +1,6 @@
 from app import db
 import datetime
 
-
 # noinspection PyShadowingBuiltins
 class GCWorker(db.Model):
     __tablename__ = "gc_workers"
@@ -22,6 +21,17 @@ class GCWorker(db.Model):
 
     def __repr__(self):
         return "<GCWorker {}>".format(self.id)
+
+    def job_count(self, hours=24):
+        """ Returns the amount of jobs this worker has processed in the past `hours` hours.
+        :param hours:
+        :return: Int
+        """
+        return GCJob.query.filter(
+            GCJob.worker_id == self.id,
+            GCJob.type == "MATCH_REQUEST",
+            GCJob.timestamp >= (datetime.datetime.utcnow() - datetime.timedelta(hours=hours))
+        ).count()
 
 
 # noinspection PyShadowingBuiltins
