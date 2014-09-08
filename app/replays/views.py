@@ -367,6 +367,9 @@ def search():
             if search is not None:
                 match_id = search.group(1)
 
+        # Cast match id to int
+        match_id = int(match_id)
+
         if unicode.isdecimal(unicode(match_id)):
             _replay = Replay.query.filter(Replay.id == match_id).first()
 
@@ -377,7 +380,7 @@ def search():
                     # info returned matches the match_id we sent (Fixes edge-case bug that downed Dotabank once, where
                     # a user searched 671752079671752079 and the WebAPI returned details for 368506255).
                     match_data = steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result")
-                    if "error" not in match_data.keys() and match_data.get("match_id") == match_id:
+                    if "error" not in match_data.keys() and int(match_data.get("match_id")) == match_id:
                         # Use get_or_create in case of race-hazard where another request (e.g. double submit) has already processed this replay while we were waiting for match_data.
                         # DOESN'T FIX A FOOKIN THINGA
                         _replay, created = Replay.get_or_create(id=match_id, skip_webapi=True)
