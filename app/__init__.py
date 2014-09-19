@@ -1,3 +1,7 @@
+# New Relic agent
+import newrelic.agent
+newrelic.agent.initialize('newrelic.ini')
+
 from flask import Flask
 from flask.ext.cache import Cache
 from flask.ext.login import LoginManager
