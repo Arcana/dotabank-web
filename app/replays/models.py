@@ -16,7 +16,7 @@ class Replay(db.Model):
     #################
 
     id = db.Column(db.Integer, primary_key=True)  # optional uint32 match_id = 6;
-    local_uri = db.Column(db.String(128))
+    local_uri = db.Column(db.String(128), index=True)
     state = db.Column(db.Enum(
         "WAITING_GC",
         "WAITING_DOWNLOAD",
@@ -24,14 +24,14 @@ class Replay(db.Model):
         "ARCHIVED",
         "GC_ERROR",
         "DOWNLOAD_ERROR"
-    ), default="WAITING_GC")
+    ), default="WAITING_GC", index=True)
     gc_fails = db.Column(db.Integer, default=0)
     dl_fails = db.Column(db.Integer, default=0)
 
     # Timestamps for progress tracker
-    added_to_site_time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    gc_done_time = db.Column(db.DateTime)
-    dl_done_time = db.Column(db.DateTime)
+    added_to_site_time = db.Column(db.DateTime, default=datetime.datetime.utcnow, index=True)
+    gc_done_time = db.Column(db.DateTime, index=True)
+    dl_done_time = db.Column(db.DateTime, index=True)
 
     # Match data
     replay_state = db.Column(db.Enum(
@@ -39,14 +39,14 @@ class Replay(db.Model):
         "REPLAY_NOT_RECORDED",
         "REPLAY_EXPIRED",
         "UNKNOWN"
-    ), default="UNKNOWN")  # optional .CMsgDOTAMatch.ReplayState replay_state = 34 [default = REPLAY_AVAILABLE];
+    ), default="UNKNOWN", index=True)  # optional .CMsgDOTAMatch.ReplayState replay_state = 34 [default = REPLAY_AVAILABLE];
     replay_cluster = db.Column(db.Integer())  # optional uint32 cluster = 10;
     replay_salt = db.Column(db.Integer())  # optional fixed32 replay_salt = 13;
 
-    game_mode = db.Column(db.SmallInteger())  # optional .DOTA_GameMode game_mode = 31 [default = DOTA_GAMEMODE_NONE];
+    game_mode = db.Column(db.SmallInteger(), index=True)  # optional .DOTA_GameMode game_mode = 31 [default = DOTA_GAMEMODE_NONE];
     match_seq_num = db.Column(db.Integer())  # optional uint64 match_seq_num = 33;
     lobby_type = db.Column(db.SmallInteger())  # optional uint32 lobby_type = 16;
-    league_id = db.Column(db.Integer())  # optional uint32 leagueid = 22;
+    league_id = db.Column(db.Integer(), index=True)  # optional uint32 leagueid = 22;
     series_id = db.Column(db.Integer())  # optional uint32 series_id = 39;
     series_type = db.Column(db.Integer())  # optional uint32 series_type = 40;
 
@@ -61,14 +61,14 @@ class Replay(db.Model):
     radiant_barracks_status = db.Column(db.Integer())  # repeated uint32 barracks_status = 9;
     dire_barracks_status = db.Column(db.Integer())
 
-    radiant_team_id = db.Column(db.Integer())  # optional uint32 radiant_team_id = 20;
-    radiant_team_name = db.Column(db.String(80))  # optional string radiant_team_name = 23;
+    radiant_team_id = db.Column(db.Integer(), index=True)  # optional uint32 radiant_team_id = 20;
+    radiant_team_name = db.Column(db.String(80), index=True)  # optional string radiant_team_name = 23;
     radiant_team_logo = db.Column(db.BigInteger())  # optional uint64 radiant_team_logo = 25;
     radiant_team_tag = db.Column(db.String(80))  # optional string radiant_team_tag = 37;
     radiant_team_complete = db.Column(db.Boolean())  # optional uint32 radiant_team_complete = 27;
 
-    dire_team_id = db.Column(db.Integer())  # optional uint32 dire_team_id = 21;
-    dire_team_name = db.Column(db.String(80))  # optional string dire_team_name = 24;
+    dire_team_id = db.Column(db.Integer(), index=True)  # optional uint32 dire_team_id = 21;
+    dire_team_name = db.Column(db.String(80), index=True)  # optional string dire_team_name = 24;
     dire_team_logo = db.Column(db.BigInteger())  # optional uint64 dire_team_logo = 26;
     dire_team_tag = db.Column(db.String(80))  # optional string dire_team_tag = 38;
     dire_team_complete = db.Column(db.Boolean())  # optional uint32 dire_team_complete = 28;
@@ -347,7 +347,7 @@ class ReplayRating(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    positive = db.Column(db.Boolean, default=False, nullable=False)
+    positive = db.Column(db.Boolean, default=False, nullable=False, index=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __init__(self, replay_id=None, user_id=None, positive=None):
@@ -400,9 +400,9 @@ class ReplayPlayer(db.Model):
     replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=False)
 
     # GC data
-    account_id = db.Column(db.Integer, db.ForeignKey("users.id"))  # optional uint32 account_id = 1;
+    account_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True)  # optional uint32 account_id = 1;
     player_slot = db.Column(db.Integer)  # optional uint32 player_slot = 2;
-    hero_id = db.Column(db.Integer)  # optional uint32 hero_id = 3;
+    hero_id = db.Column(db.Integer, index=True)  # optional uint32 hero_id = 3;
     item_0 = db.Column(db.Integer)  # optional uint32 item_0 = 4;
     item_1 = db.Column(db.Integer)  # optional uint32 item_1 = 5;
     item_2 = db.Column(db.Integer)  # optional uint32 item_2 = 6;
@@ -516,7 +516,7 @@ class Search(db.Model):
     search_query = db.Column(db.Text)
     ip_address = db.Column(db.Text)
     success = db.Column(db.Boolean)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, index=True)
 
     replay_id = db.Column(db.Integer, db.ForeignKey("replays.id", ondelete="CASCADE"), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
@@ -540,7 +540,7 @@ class ReplayAlias(db.Model):
     # Metadata
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow, index=True)
 
     # Reel data
     alias = db.Column(db.String(96), nullable=False)

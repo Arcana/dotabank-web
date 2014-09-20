@@ -69,12 +69,12 @@ class Log(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)  # auto incrementing
     logger = db.Column(db.String(64))  # the name of the logger. (e.g. myapp.views)
-    level = db.Column(db.String(16))  # info, debug, or error?
+    level = db.Column(db.String(16), index=True)  # info, debug, or error?
     trace = db.Column(db.Text)  # the full traceback printout
     msg = db.Column(db.Text)  # any custom log you may have included
     extra = db.Column(db.Text)  # Any extra data given
     created_at = db.Column(db.DateTime, default=datetime.utcnow)  # the current timestamp
-    resolved_by_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    resolved_by_user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True, index=True)
     resolved_at = db.Column(db.DateTime, nullable=True)
 
     # Set default order by

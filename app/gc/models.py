@@ -43,8 +43,8 @@ class GCJob(db.Model):
         "SHITS_BROKE",
         "MATCH_REQUEST",
         "PROFILE_REQUEST"
-    ), default='SHITS_BROKE')
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    ), default='SHITS_BROKE', index=True)
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow, index=True)
 
     def __repr__(self):
         return "<GCJob {}>".format(self.id)

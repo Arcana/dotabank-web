@@ -24,7 +24,7 @@ class User(db.Model):
     name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(64), unique=False, nullable=True)
     enabled = db.Column(db.Boolean, default=True, nullable=False)
-    first_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    first_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow, index=True)
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     admin = db.Column(db.Boolean, default=False)
     show_ads = db.Column(db.Boolean, default=True)
@@ -110,7 +110,7 @@ class Subscription(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    expires_at = db.Column(db.DateTime, nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=False, index=True)
 
     def __init__(self, user_id=None, created_at=None, expires_at=None):
         self.user_id = user_id

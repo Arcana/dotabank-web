@@ -114,10 +114,10 @@ class LeagueView(db.Model):
     __tablename__ = "league_views"
 
     id = db.Column(db.Integer, primary_key=True)
-    league_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    league_id = db.Column(db.Integer, primary_key=True, nullable=False, index=True)
 
     name = db.Column(db.String(80), nullable=False)
-    menu_order = db.Column(db.Integer, nullable=False, default=0)
+    menu_order = db.Column(db.Integer, nullable=False, default=0, index=True)
 
     filters = db.relationship('LeagueViewFilter', backref='league_view', lazy='joined', cascade="all, delete-orphan")
 
