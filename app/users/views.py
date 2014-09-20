@@ -18,10 +18,13 @@ login_manager.anonymous_user = AnonymousUser
 # User authentication
 @login_manager.user_loader
 def load_user(user_id):
-    _user = User.query.get(user_id)
+    _user = User.query.filter(User.id == user_id).join(User.replay_aliases).one()
     if _user:
         _user.update_last_seen()
         _user.update_steam_name()
+
+        # Load replay_aliases for current user for easy alias-grabbing. (faster than a new query for every replay)
+        _user.replay_aliases_dict = {x.replay_id: x for x in _user.replay_aliases}
 
         if not _user.is_active():
             logout_user()

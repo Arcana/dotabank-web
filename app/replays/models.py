@@ -89,7 +89,7 @@ class Replay(db.Model):
     #################
 
     # GC relationships
-    players = db.relationship('ReplayPlayer', backref="replay", lazy="dynamic", cascade="all, delete-orphan")  # repeated .CMsgDOTAMatch.Player players = 5;
+    players = db.relationship('ReplayPlayer', backref="replay", lazy="join", cascade="all, delete-orphan")  # repeated .CMsgDOTAMatch.Player players = 5;
     # repeated .CMatchHeroSelectEvent picks_bans = 32;  # TODO
 
     # Site relationships
@@ -252,10 +252,10 @@ class Replay(db.Model):
         return key
 
     def get_alias(self, formatted=True):
-        if current_user.is_anonymous is True:
+        if current_user.is_anonymous() is True:
             return None
 
-        replay_alias = self.aliases.filter(ReplayAlias.user_id == current_user.get_id()).first()
+        replay_alias = current_user.replay_aliases_dict.get(self.id)
 
         if replay_alias is not None:
             if formatted:
