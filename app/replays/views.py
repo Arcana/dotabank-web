@@ -58,7 +58,7 @@ def replay(_id):
 
     # Find out which player had the toppest of these and give them an medal
     superlatives = None
-    if _replay.players.count() > 0:
+    if len(_replay.players) > 0:
         # Map attributes to the function which will filter the various candidates into an winner.
         superlative_map = {
             'level': max, 'kills': max, 'deaths': min, 'assists': max, 'last_hits': max,
