@@ -361,15 +361,13 @@ def search():
         match_id = unicodedata.normalize('NFKC', match_id)
 
         # If not a decimal input, let's try pull match id from inputs we recognise
-        if not unicode.isdecimal(unicode(match_id)):
-            # Dota 2 protocol or dotabuff links
-            search = re.search(r'(?:matchid=|matches\/)([0-9]+)', match_id)
+        if not unicode.isdecimal(match_id):
+            # Pull out any numbers in the search query and interpret as a match id.
+            search = re.search(r'([0-9]+)', match_id)
             if search is not None:
                 match_id = search.group(1)
 
-        # Don't cast match id to int
-
-        if unicode.isdecimal(unicode(match_id)):
+        if unicode.isdecimal(match_id):
             _replay = Replay.query.filter(Replay.id == match_id).first()
 
             # If we don't have match_id in database, check if it's a valid match via the WebAPI and if so add it to DB.
@@ -379,7 +377,7 @@ def search():
                     # info returned matches the match_id we sent (Fixes edge-case bug that downed Dotabank once, where
                     # a user searched 671752079671752079 and the WebAPI returned details for 368506255).
                     match_data = steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result")
-                    if "error" not in match_data.keys() and match_data.get("match_id") == str(match_id):
+                    if "error" not in match_data.keys() and int(match_data.get("match_id")) == int(match_id):
                         # Use get_or_create in case of race-hazard where another request (e.g. double submit) has already processed this replay while we were waiting for match_data.
                         # DOESN'T FIX A FOOKIN THINGA
                         _replay, created = Replay.get_or_create(id=match_id, skip_webapi=True)
