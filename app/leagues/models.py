@@ -1,33 +1,37 @@
 from app import app, steam, fs_cache, sentry, db
 from app.dota.models import Schema
 import sys
+import datetime
 
 
-class League():  # TODO: Persist leagues to database.
-    id = None
-    name = None
-    description = None
-    tournament_url = None
-    itemdef = None
-    image_url = None
-    image_url_large = None
+class League(db.Model):
+    __tablename__ = "leagues"
 
-    _leagues = None
+    id = db.Column(db.Integer, primary_key=True, autoincrement=False)  # We'll set this from WebAPI data
+    name = db.Column(db.String(80))
+    description = db.Column(db.Text)
+    tournament_url = db.Column(db.String(255))
+    itemdef = db.Column(db.Integer)
+    image_url = db.Column(db.String(255))
+    image_url_large = db.Column(db.String(255))
+
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
+
+    replays = db.relationship('Replay', backref=db.backref('league', lazy="joined"), lazy="dynamic")
+
+    def __repr__(self):
+        return "{} (league id: {})".format(self.name, self.id)
 
     def __init__(self, _id=None, name=None, description=None, tournament_url=None, itemdef=None, fetch_images=True):
         self.id = _id
         self.name = name
         self.description = description
+        self.tournament_url = tournament_url
         self.itemdef = itemdef
 
         if fetch_images:
             self.image_url, self.image_url_large = League.fetch_images(self.itemdef)
-
-        if tournament_url is not None and \
-            not (tournament_url.startswith("http://") or tournament_url.startswith("https://")):
-            tournament_url = "http://{}".format(tournament_url)
-
-        self.tournament_url = tournament_url
 
     @property
     def icon(self):
@@ -51,11 +55,9 @@ class League():  # TODO: Persist leagues to database.
             short_desc = short_desc[:app.config['SHORT_DESCRIPTION_LENGTH']] + "..."
         return short_desc
 
-
-
     @classmethod
     @fs_cache.cached(timeout=60 * 60, key_prefix="leagues")
-    def fetch_leagues(cls):
+    def fetch_leagues_from_webapi(cls):
         """ Fetch a list of leagues from the Dota 2 WebAPI.
 
         Uses steamodd to interface with the WebAPI.  Falls back to data stored on the file-system in case of a HTTPError
@@ -66,14 +68,13 @@ class League():  # TODO: Persist leagues to database.
         """
         try:
             res = steam.api.interface("IDOTA2Match_570").GetLeagueListing(language="en_US").get("result")
-            return list(
-                cls(
-                    _league.get("leagueid"),
-                    _league.get("name"),
-                    _league.get("description"),
-                    _league.get("tournament_url"),
-                    _league.get("itemdef")
-                ) for _league in res.get("leagues"))
+
+            # Filter out extra entries with the same league id.
+            leagues_by_id = {}
+            for _league in res.get("leagues"):
+                leagues_by_id[int(_league.get("leagueid"))] = _league
+
+            return leagues_by_id.values()
 
         except steam.api.HTTPError:
             sentry.captureMessage('League.get_all returned with HTTPError', exc_info=sys.exc_info)
@@ -85,20 +86,28 @@ class League():  # TODO: Persist leagues to database.
             return data or list()
 
     @classmethod
-    def get_all(cls):
-        if cls._leagues is None:
-            cls._leagues = cls.fetch_leagues()
+    def update_leagues_from_webapi(cls):
+        """ Loops over leagues from WebAPI inserting new data where appropriate. """
+        for webapi_league in cls.fetch_leagues_from_webapi():
 
-        return cls._leagues
+            # Check if we have a hero entry
+            _league = cls.query.filter(cls.id == webapi_league.get('leagueid')).first()
 
-    @classmethod
-    def get_by_id(cls, _id):
-        """ Returns a league object for the given league id. """
-        for league in cls.get_all():
-            if league.id == _id:
-                return league
+            # If we don't have a hero entry, make a new one
+            if not _league:
+                _league = cls(
+                    webapi_league.get("leagueid"),
+                    webapi_league.get("name"),
+                    webapi_league.get("description"),
+                    webapi_league.get("tournament_url"),
+                    webapi_league.get("itemdef")
+                )
 
-        return None
+                # Tell database we want to save it
+                db.session.add(_league)
+
+        # Commit all changes to database
+        db.session.commit()
 
     @staticmethod
     def fetch_images(itemdef=None):
@@ -114,7 +123,7 @@ class LeagueView(db.Model):
     __tablename__ = "league_views"
 
     id = db.Column(db.Integer, primary_key=True)
-    league_id = db.Column(db.Integer, primary_key=True, nullable=False, index=True)
+    league_id = db.Column(db.Integer, db.ForeignKey("leagues.id"), nullable=False)
 
     name = db.Column(db.String(80), nullable=False)
     menu_order = db.Column(db.Integer, nullable=False, default=0, index=True)

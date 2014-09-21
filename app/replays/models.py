@@ -46,7 +46,7 @@ class Replay(db.Model):
     game_mode = db.Column(db.SmallInteger(), index=True)  # optional .DOTA_GameMode game_mode = 31 [default = DOTA_GAMEMODE_NONE];
     match_seq_num = db.Column(db.Integer())  # optional uint64 match_seq_num = 33;
     lobby_type = db.Column(db.SmallInteger())  # optional uint32 lobby_type = 16;
-    league_id = db.Column(db.Integer(), index=True)  # optional uint32 leagueid = 22;
+    league_id = db.Column(db.Integer(), db.ForeignKey("leagues.id"), nullable=True)  # optional uint32 leagueid = 22;
     series_id = db.Column(db.Integer())  # optional uint32 series_id = 39;
     series_type = db.Column(db.Integer())  # optional uint32 series_type = 40;
 
@@ -233,12 +233,6 @@ class Replay(db.Model):
         dire = [p for p in players if p.team == "Dire"]  # 8th bit true
 
         return radiant, dire
-
-    @property
-    def league(self):
-        if self.league_id:
-            return League.get_by_id(self.league_id)
-        return None
 
     @property
     def region(self):

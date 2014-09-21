@@ -15,7 +15,7 @@ def inject_gc_load():
     return dict(
         gc_jobs_processed=jobs_processed,
         gc_max_capacity=max_capacity,
-        gc_load=(float(jobs_processed)/float(max_capacity))*100.0
+        gc_load=(float(jobs_processed)/float(max_capacity or 1))*100.0
     )
 
 

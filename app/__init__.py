@@ -91,10 +91,12 @@ from app.users.views import UserAdmin
 from app.users.models import Subscription
 from app.replays.views import ReplayAdmin, Search, ReplayFavourite, ReplayDownload, ReplayRating
 from app.gc.views import GCWorkerAdmin
+from app.leagues.views import LeagueAdmin
 admin.add_view(UserAdmin(db.session, category="Models"))
 admin.add_view(AdminModelView(Subscription, db.session, category="Models"))
 admin.add_view(ReplayAdmin(db.session, category="Models"))
 admin.add_view(GCWorkerAdmin(db.session, category="Models"))
+admin.add_view(LeagueAdmin(db.session, category="Models"))
 admin.add_view(AdminModelView(Search, db.session, category="User actions"))
 admin.add_view(AdminModelView(ReplayFavourite, db.session, category="User actions"))
 admin.add_view(AdminModelView(ReplayRating, db.session, category="User actions"))
