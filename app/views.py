@@ -1,5 +1,5 @@
 from flask import render_template, abort, send_file
-from app import app, db
+from app import app, db, mem_cache
 from app.models import Stats, UGCFile
 from app.replays.models import Replay, ReplayFavourite, ReplayRating, ReplayDownload
 from app.replays.forms import SearchForm
@@ -15,22 +15,29 @@ def inject_search_form():
     return dict(search_form=SearchForm())
 
 
-# Routes
-@app.route('/')
-def index():
-    """ Home page. Has a jumbotron explaining the site, with a search-box call to action. Lists latest addeed replays,
-    latest archived replays, some public stats about the state of the site. """
-    last_added_replays = Replay.query.order_by(Replay.added_to_site_time.desc()).limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
-    last_archived_replays = Replay.query.filter(Replay.state == "ARCHIVED").order_by(Replay.dl_done_time.desc()).limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
+@mem_cache.cached(key_prefix="homepage_added_replays", timeout=10*60)  # 10 minutes
+def get_last_added_replays():
+    return Replay.query.order_by(Replay.added_to_site_time.desc()).limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
 
-    most_favourited_replays = db.session.query(Replay.id, Replay.added_to_site_time, db.func.count(ReplayFavourite)).\
+
+@mem_cache.cached(key_prefix="homepage_archived_replays", timeout=10*60)  # 10 minutes
+def get_last_archived_replays():
+    return Replay.query.filter(Replay.state == "ARCHIVED").order_by(Replay.dl_done_time.desc()).limit(app.config["LATEST_REPLAYS_LIMIT"]).all()
+
+
+@mem_cache.cached(key_prefix="homepage_favourite_replays", timeout=10*60)  # 10 minutes
+def get_most_favourited_replays():
+    return db.session.query(Replay.id, Replay.added_to_site_time, db.func.count(ReplayFavourite)).\
         join(ReplayFavourite.replay).\
         order_by(db.func.count(ReplayFavourite).desc()).\
         group_by(ReplayFavourite.replay_id).\
         limit(app.config["LATEST_REPLAYS_LIMIT"]).\
         all()
 
-    most_liked_replays = db.session.query(Replay.id, Replay.added_to_site_time, db.func.count(ReplayRating)).\
+
+@mem_cache.cached(key_prefix="homepage_liked_replays", timeout=10*60)  # 10 minutes
+def get_most_liked_replays():
+    return db.session.query(Replay.id, Replay.added_to_site_time, db.func.count(ReplayRating)).\
         filter(ReplayRating.positive == True).\
         join(ReplayRating.replay).\
         order_by(db.func.count(ReplayRating).desc()).\
@@ -38,21 +45,41 @@ def index():
         limit(app.config["LATEST_REPLAYS_LIMIT"]).\
         all()
 
-    most_downloaded = db.session.query(Replay, db.func.count(ReplayDownload)).\
+
+@mem_cache.cached(key_prefix="homepage_downloaded_replays", timeout=10*60)  # 10 minutes
+def get_most_downloaded_replays():
+    return db.session.query(Replay, db.func.count(ReplayDownload)).\
         join(ReplayDownload.replay).\
         order_by(db.func.count(ReplayDownload).desc()).\
         group_by(ReplayDownload.replay_id).\
         limit(app.config["LATEST_REPLAYS_LIMIT"]).\
         all()
 
+
+@mem_cache.cached(key_prefix="homepage_downloaded_30d_replays", timeout=10*60)  # 10 minutes
+def get_most_downloaded_30days_replays():
     THIRTY_DAYS_AGO = datetime.utcnow() - timedelta(days=30)
-    most_downloaded_30days = db.session.query(Replay,  db.func.count(ReplayDownload)).\
+    return db.session.query(Replay,  db.func.count(ReplayDownload)).\
         join(ReplayDownload.replay).\
         filter(ReplayDownload.created_at >= THIRTY_DAYS_AGO).\
         order_by(db.func.count(ReplayDownload).desc()).\
         group_by(ReplayDownload.replay_id).\
         limit(app.config["LATEST_REPLAYS_LIMIT"]).\
         all()
+
+
+# Routes
+@app.route('/')
+def index():
+    """ Home page. Has a jumbotron explaining the site, with a search-box call to action. Lists latest addeed replays,
+    latest archived replays, some public stats about the state of the site. """
+
+    last_added_replays = get_last_added_replays()
+    last_archived_replays = get_last_archived_replays()
+    most_favourited_replays = get_most_favourited_replays()
+    most_liked_replays = get_most_liked_replays()
+    most_downloaded = get_most_downloaded_replays()
+    most_downloaded_30days = get_most_downloaded_30days_replays()
 
     stats = Stats()
 
