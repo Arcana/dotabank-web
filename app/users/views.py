@@ -18,7 +18,7 @@ login_manager.anonymous_user = AnonymousUser
 # User authentication
 @login_manager.user_loader
 def load_user(user_id):
-    _user = User.query.filter(User.id == user_id).join(User.replay_aliases).first()
+    _user = User.query.filter(User.id == user_id).outerjoin(User.replay_aliases).first()
     if _user:
         _user.update_last_seen()
         _user.update_steam_name()
