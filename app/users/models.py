@@ -76,11 +76,11 @@ class User(db.Model):
         db.session.commit()
 
     def update_steam_name(self):
-        # Called every page load for current_user (API is cached)
+        """ Update user's name from their name on Steam."""
         try:
             steam_account_info = steam.user.profile(self.steam_id)
             if steam_account_info is not None:
-                if self.name is not steam_account_info.persona:
+                if self.name != steam_account_info.persona:
                     self.name = steam_account_info.persona
                     db.session.add(self)
                     db.session.commit()

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app, g
 
-from app import oid, steam, db, login_manager
+from app import oid, db, login_manager, mem_cache
 from models import User, AnonymousUser
 from app.replays.models import ReplayPlayer, ReplayFavourite, ReplayRating, ReplayDownload, Search, ReplayAlias
 from app.dota.models import Localization
@@ -18,10 +18,16 @@ login_manager.anonymous_user = AnonymousUser
 # User authentication
 @login_manager.user_loader
 def load_user(user_id):
+    name_updated_key = 'league_info_updated_{}'.format(user_id)
+    name_lock_key = 'league_info_update_lock_{}'.format(user_id)
+
     _user = User.query.filter(User.id == user_id).outerjoin(User.replay_aliases).first()
     if _user:
         _user.update_last_seen()
-        _user.update_steam_name()
+
+        # Update the user's Steam name once per hour.
+        if not mem_cache.get(name_updated_key) and not mem_cache.get(name_lock_key):
+            _user.update_steam_name()
 
         # Load replay_aliases for current user for easy alias-grabbing. (faster than a new query for every replay)
         _user.replay_aliases_dict = {x.replay_id: x for x in _user.replay_aliases}
