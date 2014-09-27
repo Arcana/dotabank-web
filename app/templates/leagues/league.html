@@ -16,11 +16,11 @@
     <nav id="league-view-nav" class="navbar navbar-default">
         <ul class="nav navbar-nav">
             <li class="{{ "active" if current_view == None }}">
-                <a href="{{ url_for("leagues.league", _id=league.id, page=page) }}">All replays</a>
+                <a href="{{ url_for("leagues.league", _id=league.id) }}">All replays</a>
             </li>
             {% for view in views %}
                 <li class="{{ "active" if current_view != None and view.id == current_view.id }}">
-                    <a href="{{ url_for("leagues.league", _id=league.id, view=view.id, page=page) }}">{{ view.name }}</a>
+                    <a href="{{ url_for("leagues.league", _id=league.id, view=view.id) }}">{{ view.name }}</a>
                 </li>
             {% endfor %}
         </ul>
