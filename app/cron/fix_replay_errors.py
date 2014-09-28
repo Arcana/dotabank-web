@@ -24,7 +24,10 @@ def should_fix_be_attempted(replay_id, error, extra=None):
         db.session.commit()
         return True
     else:
-        sentry.captureMessage("Replay {} with error {} has exceeded auto-fix attempts.", extra=extra)
+        sentry.captureMessage("Replay {} with error {} has exceeded auto-fix attempts.".format(
+            replay_id,
+            error
+        ), extra=extra)
         return False
 
 
