@@ -62,6 +62,8 @@ GC_PROFILE_REQUSTS_RATE_LIMIT = 250
 
 CAPTCHA_LEAGUE_EXCEPTIONS = []  # Captcha-less downloading of TI4
 
+MAX_REPLAY_FIX_ATTEMPTS = 5
+
 # Dater update timeouts
 UPDATE_LEAGUES_TIMEOUT = 60 * 60 * 6  # Minutes; 6 hours
 UPDATE_LEAGUES_IN_DEBUG = False  # Don't update leagues table when running in debug mode.

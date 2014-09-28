@@ -5,7 +5,7 @@ from boto.sqs.message import RawMessage as sqsMessage
 from app.leagues.models import League
 from app.dota.models import Hero, Item, Region
 from app.users.models import User
-
+import json
 
 # noinspection PyShadowingBuiltins
 class Replay(db.Model):
@@ -550,3 +550,18 @@ class ReplayAlias(db.Model):
 
     def __repr__(self):
         return "<ReplayAlias {}/{}>".format(self.replay_id, self.user_id)
+
+
+class ReplayAutoFix(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    replay_id = db.Column(db.Integer, db.ForeignKey("replays.id"), nullable=False)
+    error = db.Column(db.String(32), index=True, nullable=False)
+    extra = db.Column(db.Text)
+
+    def __init__(self, replay_id, error, extra=None):
+        self.replay_id = replay_id
+        self.error = error
+
+        if extra is not None:
+            self.extra = json.dumps(extra)

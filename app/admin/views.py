@@ -74,12 +74,13 @@ class AtypicalReplays(AuthMixin, BaseView):
                 SELECT
                     r.id,
                     r.human_players,
-                    count(*) as player_count
+                    count(rp.id) as player_count
                 FROM {replay_table} r
                 LEFT JOIN {player_table} rp ON rp.replay_id = r.id
                 WHERE
+                    rp.id is NULL or
                     rp.account_id is not NULL  # Exclude bots from count (though there's the chance we have duplicate entries for bots? fack)
-                GROUP BY rp.replay_id
+                GROUP BY r.id
             """.format(
                 replay_table=Replay.__tablename__,
                 player_table=ReplayPlayer.__tablename__)

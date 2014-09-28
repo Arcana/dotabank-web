@@ -94,6 +94,10 @@ server {
 ```
 */10 * * * * /srv/www/dotabank.com/dotabank-web/manage.py archive_subscriber_matches
 0    * * * * /srv/www/dotabank.com/dotabank-web/manage.py update_league_data
+10   * * * * /srv/www/dotabank.com/dotabank-web/manage.py fix_incorrect_player_counts
+20   * * * * /srv/www/dotabank.com/dotabank-web/manage.py fix_small_replays
+30   * * * * /srv/www/dotabank.com/dotabank-web/manage.py fix_missing_files
+40   * * * * /srv/www/dotabank.com/dotabank-web/manage.py fix_long_waiting_download
 ```
 
 ## License

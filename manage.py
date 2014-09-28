@@ -25,5 +25,29 @@ def update_league_data():
     from app.leagues.models import League
     League.update_leagues_from_webapi()
 
+
+@manager.command
+def fix_incorrect_player_counts():
+    from app.cron.fix_replay_errors import fix_incorrect_player_counts
+    fix_incorrect_player_counts()
+
+
+@manager.command
+def fix_small_replays():
+    from app.cron.fix_replay_errors import fix_small_replays
+    fix_small_replays()
+
+
+@manager.command
+def fix_missing_files():
+    from app.cron.fix_replay_errors import fix_missing_files
+    fix_missing_files()
+
+
+@manager.command
+def fix_long_waiting_download():
+    from app.cron.fix_replay_errors import fix_long_waiting_download
+    fix_long_waiting_download()
+
 if __name__ == "__main__":
     manager.run()
