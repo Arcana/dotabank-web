@@ -90,6 +90,12 @@ server {
 </uwsgi>
 ```
 
+### Crons
+```
+*/10 * * * * /srv/www/dotabank.com/dotabank-web/manage.py archive_subscriber_matches
+0    * * * * /srv/www/dotabank.com/dotabank-web/manage.py update_league_data
+```
+
 ## License
 
 [CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)
