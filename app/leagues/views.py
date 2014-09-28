@@ -7,29 +7,6 @@ from app.admin.views import AdminModelView
 
 mod = Blueprint("leagues", __name__, url_prefix="/leagues")
 
-@mod.before_app_request
-def update_leagues():
-    _updated_key = 'league_info_updated'
-    _lock_key = 'league_info_update_lock'
-
-    # If we're running in debug mode, only update if the config lets us :)
-    if current_app.debug and current_app.config.get("UPDATE_LEAGUES_IN_DEBUG") is False:
-        return
-
-    # If the last-updated key has expired, and the lock is not set (the lock will be set if another request
-    # beat this one to the job)
-    if not mem_cache.get(_updated_key) and not mem_cache.get(_lock_key):
-        # Set lock before doing expensive task.
-        mem_cache.set(_lock_key, True, timeout=current_app.config.get('UPDATE_LEAGUES_TIMEOUT', 60*60))  # Timeout in case the app crashes before it releases the lock.
-
-        # Update hero data
-        League.update_leagues_from_webapi()
-
-        # Set key to say we've updated the data.  We'll re-run this process when this key expires
-        mem_cache.set(_updated_key, True, timeout=current_app.config.get('UPDATE_LEAGUES_TIMEOUT', 60*60))  # 1 hour timeout
-
-        # Release the lock
-        mem_cache.delete(_lock_key)
 
 @mem_cache.cached(timeout=60 * 60, key_prefix="leagues_data")
 def _leagues_data():

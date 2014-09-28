@@ -34,6 +34,8 @@ server {
         access_log /srv/www/dotabank.com/logs/access.log;
         error_log /srv/www/dotabank.com/logs/error.log;
 
+        server_name dotabank.com www.dotabank.com;
+
         gzip on;
         gzip_http_version 1.1;
         gzip_vary on;
@@ -57,7 +59,6 @@ server {
                 autoindex off;
                 access_log off;
                 expires max;
-
                 try_files $uri $uri/ @dotabank;
         }
 
@@ -79,7 +80,7 @@ server {
     <pythonpath>/srv/www/dotabank.com/dotabank-web/</pythonpath>
     <virtualenv>/srv/www/dotabank.com/dotabank-web/</virtualenv>
     <chdir>/srv/www/dotabank.com/dotabank-web/</chdir>
-    <wsgi-file>/srv/www/dotabank.com/dotabank-web/run.py</wsgi-file>
+    <wsgi-file>/srv/www/dotabank.com/dotabank-web/manage.py</wsgi-file>
     <callable>application</callable>
     <master />
     <processes>4</processes>
