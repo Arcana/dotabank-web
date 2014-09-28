@@ -1,3 +1,5 @@
+#!/srv/www/dotabank.com/dotabank-web/bin/python
+
 """
 Manager script :)
 """

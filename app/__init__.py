@@ -1,6 +1,11 @@
 # New Relic agent
+import os
 import newrelic.agent
-newrelic.agent.initialize('newrelic.ini')
+newrelic.agent.initialize(os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    os.pardir,
+    'newrelic.ini'
+))
 
 from flask import Flask
 from flask.ext.cache import Cache
