@@ -236,7 +236,7 @@
     <script src="https://checkout.stripe.com/checkout.js"></script>
     <script>
         var handler = StripeCheckout.configure({
-            key: 'pk_test_4VmFUF7PrXP2aUdrtk7MvBeR',
+            key: '{{ config['STRIPE_DEBUG_PUBLISHABLE_KEY'] if config['DEBUG'] else config['STRIPE_PROD_PUBLISHABLE_KEY'] }}',
 {#            image: '/square-image.png',#}
             token: function(token) {
               // Use the token to create the charge with a server-side script.
