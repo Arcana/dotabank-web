@@ -30,6 +30,14 @@
             {% endif %}
         </div>
     {% endif %}
+
+    {% if replay.state == "ARCHIVED" and not s3_data%}
+        <div class="alert alert-danger">
+            <strong>Replay missing!</strong>
+            Our systems have archived this replay but it appears to be missing from our storage server.  This issue has been
+            reported to the admins and will be investigated.
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block top_ad %}
@@ -90,6 +98,7 @@
                     <dd>{{ s3_data.get("filesize")|filesizeformat }}</dd>
                 </dl>
                 {% endif %}
+
                 {% for team_players in replay.team_players %}
                     {% if team_players|length > 0 %}
                         {% set team_name =  replay.radiant_team_name if team_players[0].team == "Radiant" else replay.dire_team_name %}

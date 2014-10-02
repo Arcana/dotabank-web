@@ -305,8 +305,11 @@ def download(_id):
         flash("Replay {} not found.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
 
-    if _replay.local_uri is None:
-        flash("Replay {} not yet stored in Dotabank.".format(_id), "danger")
+    if _replay.get_s3_file() is None:
+        if _replay.state != 'ARCHIVED':
+            flash("Replay {} not yet stored in Dotabank.".format(_id), "danger")
+        else:
+            flash("Replay file for replay {} is missing.  This issue has been reported to the site admins and will be investigated.".format(_id), "danger")
         return redirect(request.referrer or url_for("index"))
 
     form = DownloadForm()
