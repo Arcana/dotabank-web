@@ -325,3 +325,7 @@ table > tbody > tr > td.item-cell {
 .advertisement ins {
     background-color: pink;
 }
+
+#footer .donate a {
+    margin-top: -1em;
+}

@@ -31,5 +31,6 @@ raven==5.0.0
 requests==2.2.1
 rsa==3.1.2
 steamodd==4.10
+stripe==1.19.0
 unittest-data-provider==1.0.1
 wsgiref==0.1.2

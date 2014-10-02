@@ -4,6 +4,7 @@ from app.users.models import User
 from datetime import datetime, timedelta
 from flask import current_app
 import os
+import json
 
 
 class Stats:
@@ -137,3 +138,19 @@ class UGCFile(db.Model):
     @property
     def local_uri(self):
         return os.path.join(current_app.config['UGC_FILES_DIR'], str(self.id))
+
+
+class Donation(db.Model):
+    __tablename__ = "donations"
+    id = db.Column(db.BigInteger, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
+    amount = db.Column(db.Integer)
+    currency = db.Column(db.String(3))
+    charge_object = db.Column(db.Text())
+
+    def __init__(self, user_id=None, amount=None, currency=None, charge_object=None):
+        self.user_id = user_id
+        self.amount = amount
+        self.currency = currency
+        self.charge_object = json.dumps(charge_object)

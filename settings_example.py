@@ -64,6 +64,10 @@ CAPTCHA_LEAGUE_EXCEPTIONS = []  # Captcha-less downloading of TI4
 
 MAX_REPLAY_FIX_ATTEMPTS = 5
 
+# Stripe payments
+STRIPE_DEBUG_SECRET_KEY = ""
+STRIPE_PROD_SECRET_KEY = ""
+
 # Dater update timeouts
 UPDATE_LEAGUES_TIMEOUT = 60 * 60 * 6  # Minutes; 6 hours
 UPDATE_LEAGUES_IN_DEBUG = False  # Don't update leagues table when running in debug mode.

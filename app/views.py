@@ -1,12 +1,13 @@
-from flask import render_template, abort, send_file
+from flask import render_template, abort, send_file, flash, redirect, url_for, request
 from app import app, db, mem_cache
-from app.models import Stats, UGCFile
+from app.models import Stats, UGCFile, Donation
 from app.replays.models import Replay, ReplayFavourite, ReplayRating, ReplayDownload
 from app.replays.forms import SearchForm
 from flask.ext.login import current_user
 import requests
 import os
 from datetime import datetime, timedelta
+import stripe
 
 
 @app.context_processor
@@ -192,6 +193,53 @@ def tos():
 def about():
     """ Our about-us page. """
     return render_template("about.html")
+
+
+@app.route("/donate/")
+def donate():
+    """ Information about donating to Dotabank. """
+    return render_template("donate.html")
+
+
+@app.route("/donate/stripe/", methods=['POST'])
+def donate_stripe():
+    """ Charge a stripe token """
+    if app.debug is True:
+        stripe.api_key = app.config['STRIPE_DEBUG_SECRET_KEY']
+    else:
+        stripe.api_key = app.config['STRIPE_PROD_SECRET_KEY']
+
+    # Get the stripe token from the form submission
+    token = request.form.get('stripeDonationToken')
+    normalized_amount = request.form.get('stripeDonationAmountNormalized')
+    email = request.form.get('stripeDonationEmail')
+    currency = request.form.get('stripeDonationCurrency')
+
+    # Create the charge on Stripe's servers - this will charge the user's card
+    try:
+        charge = stripe.Charge.create(
+            amount=normalized_amount,  # amount in cents, again
+            currency=currency,
+            card=token,
+            description="Donation"
+        )
+
+        # Store a log of this charge in database
+        donation = Donation(
+            current_user.get_id(),
+            charge.amount,
+            charge.currency,
+            charge
+        )
+        db.session.add(donation)
+        db.session.commit()
+
+        flash("Thank you for your donation!", "success")
+    except (stripe.CardError, stripe.InvalidRequestError), e:
+        # The card has been declined
+        flash("Sorry, there was an error with your donation! Your card has not been charged.", "danger")
+        pass
+    return redirect(url_for('donate'))
 
 
 @app.route("/robots.txt")
