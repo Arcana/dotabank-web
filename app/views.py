@@ -221,7 +221,8 @@ def donate_stripe():
             amount=normalized_amount,  # amount in cents, again
             currency=currency,
             card=token,
-            description="Donation"
+            description="Donation",
+            receipt_email=email
         )
 
         # Store a log of this charge in database
