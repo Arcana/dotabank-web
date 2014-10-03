@@ -16,6 +16,7 @@
                 <li class="{{ "active" if "leagues.league" == request.endpoint and request.view_args.get('_id') == 600}}">
                     <a href="{{ url_for("leagues.league", _id=600) }}">The International 4</a>
                 </li>
+                <li class="{{ "active" if "donate" == request.endpoint }}"><a href="{{ url_for("donate") }}">Donate</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li>
