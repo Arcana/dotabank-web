@@ -110,6 +110,12 @@ def fix_missing_files():
 
     for replay in archived_replays_no_file:
         if not should_fix_be_attempted(replay.id, _error):
+            # Tag as "DOWNLOAD_ERROR" because we can't fix this - the problem is entirely in Valve (or their partners) domain.
+            replay.state = "DOWNLOAD_ERROR"
+            replay.local_uri = None
+            replay.dl_done_time = None
+            db.session.add(replay)
+            db.session.commit()
             continue
 
         print ("Replay {} is \"ARCHIVED\" but does not have a file stored on S3. Re-adding to GC queue.".format(
