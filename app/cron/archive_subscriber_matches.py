@@ -22,7 +22,7 @@ ReplayPlayer entries before doing this, else we could get duplicate DB entries. 
 """
 
 from app import steam, db  # .info
-from app.users.models import Subscription, SubscriptionLastMatch
+from app.subscriptions.models import Subscription, SubscriptionLastMatch
 from app.replays.models import Replay, ReplayPlayer
 
 

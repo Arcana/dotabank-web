@@ -1,9 +1,10 @@
 {% extends "layouts/standard.html" %}
+{% from "macros.html" import contact_email %}}}
 
 {% block content %}
     <div class="text-center">
         <h1>Dotabank</h1>
         <p class="lead">It's like databank, but dota. Get it? <strong>Dota</strong>bank.</p>
-        <a href="mailto:{{ config['CONTACT_EMAIL']|escape_every_character|safe }}">{{ config['CONTACT_EMAIL']|escape_every_character|safe }}</a>
+        {{ contact_email() }}
     </div>
 {% endblock %}

@@ -96,3 +96,7 @@
         </ul>
     {% endif %}
 {% endmacro %}
+
+{%- macro contact_email() %}
+    <a href="mailto:{{ config['CONTACT_EMAIL']|escape_every_character|safe }}">{{ config['CONTACT_EMAIL']|escape_every_character|safe }}</a>
+{%- endmacro %}

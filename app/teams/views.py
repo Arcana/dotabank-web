@@ -4,6 +4,15 @@ from sqlalchemy import or_
 
 
 mod = Blueprint("teams", __name__, url_prefix="/teams")
+
+
+@mod.route('/')
+@mod.route("/page/<int:page>")
+def teams(page=1):
+    """ Render a list of teams, sorted by the amount of replays we have archived for each team. """
+    # TODO
+    return None
+
 @mod.route("/<int:_id>/")
 @mod.route("/<int:_id>/page/<int:page>")
 def team(_id, page=1):

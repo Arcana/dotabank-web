@@ -1,23 +1,64 @@
 {% extends "layouts/standard.html" %}
 
 {% block page_header %}
-    <div class="jumbotron">
+    <div class="jumbotron" id="home-page-jumbotron">
         <div class="container">
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-6 text-center">
                     <p>
-                        Dotabank archives replays of your Dota 2 matches. Valve can't keep replays for every match ever
-                        played available to download, Dotabank can - by only downloading and storing matches which users
-                        request, and we keep them available to download for free, forever!
+                        <strong>Archive your Dota 2 Replays</strong><br/>
+                        before they expire and are lost forever.
                     </p>
+                    <ul class="text-left">
+                        <li>Easy replay archiving - just input a match id</li>
+                        <li>Archived replays will be saved forever</li>
+                        <li>Unlimited, fast, & free downloads</li>
+                        <li>Browse replays by <a href="{{ url_for('leagues.leagues') }}">Tournaments</a></li>
+                        <!-- TODO
+                        <li>Browse replays by <a href="{{ url_for('teams.teams') }}">Teams</a></li>
+                        -->
+                    </ul>
                 </div>
                 <div class="col-sm-6">
-                    <ul>
-                        <li>Easy replay archiving - just input a match id</li>
-                        <li>Unlimited & fast downloads</li>
-                        <li>Automatically archive matches <sup><span class="label label-premium">Premium</span></sup></li>
-                        <li>Other features coming soon… <sup><span class="label label-premium">Premium</span></sup></li>
-                    </ul>
+                    <p class="text-center"><strong>Subscriptions</strong></p>
+                    <table class="table table-condensed">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <a class="btn btn-success" href="{{ url_for('subscriptions.marketing_bullshit') }}">Backtrack</a>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>No advertisements</li>
+                                    <li>No captcha when downloading replays</li>
+                                </ul>
+                            </td>
+                            <td>&dollar;1.99/mo</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a class="btn btn-success" href="{{ url_for('subscriptions.marketing_bullshit') }}">Chrono</a>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>Automatically archive your own replays</li>
+                                </ul>
+                            </td>
+                            <td>&dollar;4.99/mo</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a class="btn btn-success" href="{{ url_for('subscriptions.marketing_bullshit') }}">Universe</a>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>Player watchlists: Auto-archive up to 5 other player's replays</li>
+                                </ul>
+                            </td>
+                            <td>&dollar;19.99/mo</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 

@@ -12,10 +12,8 @@
         <div class="collapse navbar-collapse"  id="site-nav-items">
             <ul class="nav navbar-nav navbar-left">
                 <li class="{{ "active" if "replays.replays" == request.endpoint }}"><a href="{{ url_for("replays.replays") }}">Replays</a></li>
-                <li class="{{ "active" if "leagues.leagues" == request.endpoint }}"><a href="{{ url_for("leagues.leagues") }}">Leagues</a></li>
-                <li class="{{ "active" if "leagues.league" == request.endpoint and request.view_args.get('_id') == 600}}">
-                    <a href="{{ url_for("leagues.league", _id=600) }}">The International 4</a>
-                </li>
+                <li class="{{ "active" if "leagues.leagues" == request.endpoint }}"><a href="{{ url_for("leagues.leagues") }}">Tournaments</a></li>
+                <li class="{{ "active" if "subscriptions.marketing_bullshit" == request.endpoint }}"><a href="{{ url_for("subscriptions.marketing_bullshit") }}">Subscriptions</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li>

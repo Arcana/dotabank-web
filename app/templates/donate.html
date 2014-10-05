@@ -1,4 +1,5 @@
 {% extends "layouts/standard.html" %}
+{% from "macros.html" import contact_email %}}}
 
 {% block page_header %}
     <div class="page-header">
@@ -59,7 +60,7 @@
         Dotabank special features for doing so, but in the meantime anybody is welcome to donate to help cover the costs
         of the site.</p>
 
-    <p>If you have any questions at all, feel free to e-mail <a href="mailto:{{ config['CONTACT_EMAIL']|escape_every_character|safe }}">{{ config['CONTACT_EMAIL']|escape_every_character|safe }}</a>.</p>
+    <p>If you have any questions at all, feel free to e-mail {{ contact_email() }}.</p>
 
     <h2>Donate via Credit Card</h2>
     <p>Credit card donations are handled and processed by <a href="https://stripe.com">Stripe</a>.</p>

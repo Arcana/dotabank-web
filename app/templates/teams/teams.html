@@ -1,0 +1,46 @@
+{% from "macros.html" import iconic, pagination %}
+{% extends "layouts/standard.html" %}
+
+{% block page_header %}
+    <div class="page-header">
+        <h1>Teams</h1>
+    </div>
+{% endblock %}
+
+{% block top_ad %}
+    {# Add a HR above and below the ad #}
+    <hr/>
+    {{ super() }}
+    <hr/>
+{% endblock %}
+
+{% block bottom_ad %}
+    {# Add a HR above the ad #}
+    <hr/>
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <th colspan="2">Team</th>
+                <th>Replays archived</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for team in teams.items %}
+                <tr>
+                    <td>
+                        <img src="{{ url_for('ugcfile', _id=team.logo) }}" class="team-logo">
+                    </td>
+                    <td class="team-name">
+                        <a href="{{url_for('teams.team', _id=team.id)}}">{{team.name}}</a>
+                    </td>
+                <td class="replays-archived">50000</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {{ pagination(replays, "teams.teams") }}
+{% endblock %}

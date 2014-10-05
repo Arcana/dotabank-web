@@ -1,0 +1,70 @@
+{% extends "layouts/standard.html" %}
+{% from "macros.html" import contact_email %}}}
+
+{% block page_header %}
+    <div class="page-header">
+        <h1>Dotabank Subscriptions</h1>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="text-center col-md-8 col-md-offset-2">
+        <p class="lead">Subscribe to Dotabank for <strong>premium features</strong>, designed to
+            make archiving and downloading games of interest to you as easy as possible.</p>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Subscription</th>
+            <th>Price/mo</th>
+            <th>Features</th>
+            <th>&nbsp;</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th>Backtrack</th>
+            <td>&dollar;1.99/mo</td>
+            <td><ul>
+                <li>No advertisements</li>
+                <li>No captcha to download replays</li>
+            </ul></td>
+            <td><a class="btn btn-primary" href="{{ url_for('donate') }}">Purchase</a></td>
+        </tr>
+        <tr>
+            <th>Chrono</th>
+            <td>&dollar;4.99/mo</td>
+            <td>
+                <ul>
+                    <li><em>All the above</em></li>
+                    <li>Automatic archiving of all of your games</li>
+                </ul>
+            </td>
+            <td><a class="btn btn-primary" href="{{ url_for('donate') }}">Purchase</a></td>
+        </tr>
+        <tr>
+            <th>Universe</th>
+            <td>&dollar;19.99/mo</td>
+            <td>
+                <ul>
+                    <li><em>All the above</em></li>
+                    <li>Catch 5 players in your <em>Chrono</em>! Add up to 5 players to a personal watch-list and their games will be automatically archived.</li>
+                </ul>
+            </td>
+            <td><a class="btn btn-primary" href="{{ url_for('donate') }}">Purchase</a></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p class="lead text-center">Got ideas for new features?  Contact us at {{ contact_email() }}</p>
+
+{% endblock %}
+
+{% block top_ad %}
+    {# Remove ads on this page #}
+{% endblock %}
+
+{% block bottom_ad %}
+    {# Remove ads on this page #}
+{% endblock %}

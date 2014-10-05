@@ -1,6 +1,7 @@
 # New Relic agent
 import os
 import newrelic.agent
+
 newrelic.agent.initialize(os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     os.pardir,
@@ -84,19 +85,21 @@ from app.users.views import mod as users_module
 from app.replays.views import mod as replays_module
 from app.leagues.views import mod as leagues_module
 from app.teams.views import mod as teams_module
+from app.subscriptions.views import mod as subs_module
 app.register_blueprint(admin_module)
 app.register_blueprint(users_module)
 app.register_blueprint(replays_module)
 app.register_blueprint(leagues_module)
 app.register_blueprint(teams_module)
+app.register_blueprint(subs_module)
 
 # Set up flask-admin views
 from app.admin.views import admin, AdminModelView
 from app.users.views import UserAdmin
-from app.users.models import Subscription
 from app.replays.views import ReplayAdmin, Search, ReplayFavourite, ReplayDownload, ReplayRating
 from app.gc.views import GCWorkerAdmin
 from app.leagues.views import LeagueAdmin
+from app.subscriptions.models import Subscription
 admin.add_view(UserAdmin(db.session, category="Models"))
 admin.add_view(AdminModelView(Subscription, db.session, category="Models"))
 admin.add_view(ReplayAdmin(db.session, category="Models"))
