@@ -3,7 +3,7 @@
         <span class="navbar-brand"><abbr title="{{ user.id }}">{{ user.name }}</abbr></span>
     </div>
     <ul class="nav navbar-nav">
-        <li class="{{ "active" if "users.user" == request.endpoint }}"">
+        <li class="{{ "active" if "users.user" == request.endpoint }}">
             <a href="{{ url_for("users.user", _id=user.id) }}">Overview</a>
         </li>
 

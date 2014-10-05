@@ -15,6 +15,7 @@ from flask.ext.openid import OpenID
 from flask.ext.sqlalchemy import SQLAlchemy
 from raven.contrib.flask import Sentry
 import steam
+import stripe
 from boto import sqs
 from boto.s3.connection import S3Connection
 
@@ -34,6 +35,12 @@ sentry = Sentry(app)
 # Setup steamodd
 steam.api.key.set(app.config['STEAM_API_KEY'])
 steam.api.socket_timeout.set(5)
+
+# Setup Stripe
+if app.debug is True:
+    stripe.api_key = app.config['STRIPE_DEBUG_SECRET_KEY']
+else:
+    stripe.api_key = app.config['STRIPE_PROD_SECRET_KEY']
 
 # Setup AWS SQS
 sqs_connection = sqs.connect_to_region(

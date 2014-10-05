@@ -80,6 +80,37 @@
         </div>
 
         <div class="col-md-6">
+            <h2>Payment details</h2>
+            {% if not customer %}
+                <p>We don't have any payment details stored for you.</p>
+
+                <form id="updateCardDetailsForm" method="POST" action="{{ url_for('subscriptions.update_card') }}">
+                    <input type="hidden" id="updateCardDetailsToken" name="updateCardDetailsToken"/>
+                    <input type="hidden" name="updateCardDetailsEmail" id="updateCardDetailsEmail" value="{{ user.email }}"/>
+                </form>
+
+                <button id="updateCardDetailsButton" class="btn btn-primary">Update payment details</button>
+            {% else %}
+                <form id="updateCardDetailsForm" method="POST" action="{{ url_for('subscriptions.update_card') }}">
+                    <input type="hidden" id="updateCardDetailsToken" name="updateCardDetailsToken"/>
+                    <input type="hidden" name="updateCardDetailsEmail" id="updateCardDetailsEmail" value="{{ customer.email }}"/>
+                    <dl class="dl-horizontal">
+                        <dt>Invoice E-mail:</dt>
+                        <dd><code>{{ customer.email }}</code></dd>
+                        <dt>Card number:</dt>
+                        <dd><code>xxxx-xxxx-xxxx-{{ customer.cards.data[0].last4 }}</code></dd>
+                        <dt>Card expires:</dt>
+                        <dd>{{ customer.cards.data[0].exp_month }} / {{ customer.cards.data[0].exp_year }}</dd>
+                        <dt>Card type:</dt>
+                        <dd>{{ customer.cards.data[0].brand }}</dd>
+                        <dt>Card country:</dt>
+                        <dd>{{ customer.cards.data[0].country }}</dd>
+                    </dl>
+                </form>
+
+                <button id="updateCardDetailsButton" class="btn btn-primary">Update payment details</button>
+            {% endif %}
+
             {# TODO #}
             <h2>Payment history</h2>
 
@@ -117,4 +148,37 @@
     </div>
 
     <p>Have any questions about your subscription?  Email us at {{ contact_email() }}</p>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+
+    <!-- Update card details -->
+    <script src="https://checkout.stripe.com/checkout.js"></script>
+
+    <script>
+        var updateCardDetailsForm = jQuery('#updateCardDetailsForm'),
+            cardTokenInput = updateCardDetailsForm.find('#updateCardDetailsToken'),
+            cardEmailInput = updateCardDetailsForm.find('#updateCardDetailsEmail');
+
+        var handler = StripeCheckout.configure({
+            key: '{{ config['STRIPE_DEBUG_PUBLISHABLE_KEY'] if config['DEBUG'] else config['STRIPE_PROD_PUBLISHABLE_KEY'] }}',
+            token: function (token) {
+                // Use the token to create the charge with a server-side script.
+                cardTokenInput.val(token.id);
+                cardEmailInput.val(token.email);
+                updateCardDetailsForm.submit();
+            }
+        });
+
+        document.getElementById('updateCardDetailsButton').addEventListener('click', function (e) {
+            // Open Checkout with further options
+            handler.open({
+                name: 'Update payment details',
+                email: cardEmailInput.val(),
+                panelLabel: 'Update payment details'
+            });
+            e.preventDefault();
+        });
+    </script>
 {% endblock %}

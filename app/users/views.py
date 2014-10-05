@@ -282,6 +282,13 @@ def settings(_id):
         _user.show_ads = form.show_ads.data
         db.session.add(_user)
         db.session.commit()
+
+        # If we have a customer on Stripe associated with this user then update the Stripe customer's invoice email address
+        stripe_customer = _user.get_stripe_customer()
+        if stripe_customer is not None:
+            stripe_customer.email = _user.email
+            stripe_customer.save()
+
         return redirect(request.args.get("next") or url_for("users.user", _id=_user.id))
 
     return render_template("users/settings.html",

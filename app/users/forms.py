@@ -9,7 +9,7 @@ from app.users.models import User
 
 class SettingsForm(Form):
     email = TextField("E-mail address",
-                      validators=[Optional(), Email()],
+                      validators=[Required(), Email()],
                       description="Used to notify you when your matches have been parsed.")
     show_ads = BooleanField("Show ads", description="Uncheck to hide advertisements on Dotabank.")
 

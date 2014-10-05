@@ -204,10 +204,6 @@ def donate():
 @app.route("/donate/stripe/", methods=['POST'])
 def donate_stripe():
     """ Charge a stripe token """
-    if app.debug is True:
-        stripe.api_key = app.config['STRIPE_DEBUG_SECRET_KEY']
-    else:
-        stripe.api_key = app.config['STRIPE_PROD_SECRET_KEY']
 
     # Get the stripe token from the form submission
     token = request.form.get('stripeDonationToken')
@@ -252,6 +248,7 @@ disallow: /replays/*/download/"""
 @app.errorhandler(401)  # Unauthorized
 @app.errorhandler(403)  # Forbidden
 @app.errorhandler(404)  # > Missing middle!
+@app.errorhandler(405)  # > Method not allowed!
 @app.errorhandler(500)  # Internal server error.
 # @app.errorhandler(Exception)  # Internal server error.
 def internalerror(error):

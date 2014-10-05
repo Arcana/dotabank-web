@@ -1,4 +1,5 @@
 import datetime
+import stripe
 
 from flask.ext.login import AnonymousUserMixin
 
@@ -23,6 +24,7 @@ class AnonymousUser(AnonymousUserMixin):
 # noinspection PyMethodMayBeStatic
 class User(db.Model):
     __tablename__ = "users"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(64), unique=False, nullable=True)
@@ -31,6 +33,8 @@ class User(db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     admin = db.Column(db.Boolean, default=False)
     show_ads = db.Column(db.Boolean, default=True)
+
+    stripe_id = db.Column(db.String(255))
 
     replay_ratings = db.relationship('ReplayRating', backref='user', lazy='dynamic', cascade="all, delete-orphan")
     favourites = db.relationship('ReplayFavourite', backref='user', lazy='dynamic', cascade="all, delete-orphan")
@@ -100,6 +104,16 @@ class User(db.Model):
         return self.subscriptions.filter(
             Subscription.expires_at >= datetime.datetime.utcnow()
         ).first()
+
+    def get_stripe_customer(self):
+        if self.stripe_id is None:
+            return None
+
+        try:
+            customer = stripe.Customer.retrieve(self.stripe_id)
+            return customer
+        except stripe.InvalidRequestError:
+            return None
 
     @property
     def is_premium(self):
