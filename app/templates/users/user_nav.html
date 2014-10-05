@@ -6,12 +6,16 @@
         <li class="{{ "active" if "users.user" == request.endpoint }}"">
             <a href="{{ url_for("users.user", _id=user.id) }}">Overview</a>
         </li>
-        <li {{ "class=active" if "users.user_favourites" == request.endpoint }}><a href='{{ url_for("users.user_favourites", _id = user.id) }}'>Favourites</a></li>
-        <li {{ "class=active" if "users.user_ratings" == request.endpoint }}><a href='{{ url_for("users.user_ratings", _id = user.id) }}'>Ratings</a></li>
-        <li {{ "class=active" if "users.user_searches" == request.endpoint }}><a href='{{ url_for("users.user_searches", _id = user.id) }}'>Searches</a></li>
-        <li {{ "class=active" if "users.user_downloads" == request.endpoint }}><a href='{{ url_for("users.user_downloads", _id = user.id) }}'>Downloads</a></li>
-        <li {{ "class=active" if "users.user_replays" == request.endpoint }}><a href='{{ url_for("users.user_replays", _id = user.id) }}'>Replays</a></li>
-        <li {{ "class=active" if "users.user_aliases" == request.endpoint }}><a href='{{ url_for("users.user_aliases", _id = user.id) }}'>Replay Aliases</a></li>
+
+        {% if current_user.get_id() == user.get_id() or current_user.is_admin() %}
+            <li {{ "class=active" if "users.user_favourites" == request.endpoint }}><a href='{{ url_for("users.user_favourites", _id = user.id) }}'>Favourites</a></li>
+            <li {{ "class=active" if "users.user_ratings" == request.endpoint }}><a href='{{ url_for("users.user_ratings", _id = user.id) }}'>Ratings</a></li>
+            <li {{ "class=active" if "users.user_searches" == request.endpoint }}><a href='{{ url_for("users.user_searches", _id = user.id) }}'>Searches</a></li>
+            <li {{ "class=active" if "users.user_downloads" == request.endpoint }}><a href='{{ url_for("users.user_downloads", _id = user.id) }}'>Downloads</a></li>
+            <li {{ "class=active" if "users.user_replays" == request.endpoint }}><a href='{{ url_for("users.user_replays", _id = user.id) }}'>Replays</a></li>
+            <li {{ "class=active" if "users.user_aliases" == request.endpoint }}><a href='{{ url_for("users.user_aliases", _id = user.id) }}'>Replay Aliases</a></li>
+            <li {{ "class=active" if "subscriptions.my_subscription" == request.endpoint }}><a href='{{ url_for("subscriptions.my_subscription") }}'>My subscriptions</a></li>
+        {% endif %}
     </ul>
     <ul class="nav navbar-nav pull-right">
         <li>

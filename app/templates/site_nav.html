@@ -31,6 +31,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="{{ url_for("users.user", _id=current_user.id) }}">Profile</a></li>
                         <li><a href="{{ url_for("users.settings", _id=current_user.id) }}">Settings</a></li>
+                        <li><a href='{{ url_for("subscriptions.my_subscription") }}'>My subscription</a></li>
                         <li class="divider"></li>
                         <li><a href="{{ url_for("users.logout") }}">Logout</a></li>
                     </ul>

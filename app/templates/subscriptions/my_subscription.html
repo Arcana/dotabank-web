@@ -1,0 +1,120 @@
+{% extends "layouts/standard.html" %}
+{% from "macros.html" import contact_email %}
+
+{% block page_header %}
+    <div class="page-header">
+        {% include "users/user_nav.html" %}
+    </div>
+{% endblock %}
+
+{% block top_ad %}
+    {# Hide ads #}
+{% endblock %}
+
+{% block bottom_ad %}
+    {# Hide ads #}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Current subscription</h2>
+
+        {% if not current_subscription %}
+            <p class="lead">You do not have a Dotabank subscription. <a
+                    href="{{ url_for('subscriptions.marketing_bullshit') }}">View our subscriptions</a></p>
+        {% else %}
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Subscription</th>
+                    <th>Created at</th>
+                    <th>Expires at</th>
+                    <th>Auto-renew?</th>
+                </tr>
+                </thead>
+            <tbody>
+            <tr>
+                <td>{{ current_subscription.plan_name }}</td>
+                <td>{{ current_subscription.created_at|datetime_to_datestring }}</td>
+                <td>{{ current_subscription.expires_at|datetime_to_datestring }}</td>
+                {% if current_subscription.auto_renew %}
+                    <td>Yes (<a href="{{ url_for('index') }}">Disable</a>)</td> {# TODO #}
+                {% else %}
+                    <td>No (<a href="{{ url_for('index') }}">Enable</a>)</td> {# TODO #}
+                {% endif %}
+            </tr>
+            </tbody>
+            </table>
+
+            <p><em>To <strong>cancel</strong> your subscription simply disable auto-renew and you will not be
+                charged when your current subscription ends.</em></p>
+        {% endif %}
+
+        <h2>All subscriptions</h2>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Subscription</th>
+                <th>Created at</th>
+                <th>Expires at</th>
+            </tr>
+            </thead>
+        <tbody>
+        {% if all_subscriptions|length > 0 %}
+        {% for sub in all_subscriptions %}
+        <tr>
+            <td>{{ sub.plan_name }}</td>
+            <td>{{ sub.created_at|datetime_to_datestring }}</td>
+            <td>{{ sub.expires_at|datetime_to_datestring }}</td>
+        </tr>
+        {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="3"><em>No past subscriptions</em></td>
+            </tr>
+            {% endif %}
+        </tbody>
+        </table>
+
+        </div>
+
+        <div class="col-md-6">
+            {# TODO #}
+            <h2>Payment history</h2>
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>Date received</th>
+                    <th>Credit card</th>
+                    <th>Receipt</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>&dollar;19.99</td>
+                    <td>2014-01-01 00:00:00</td>
+                    <td><code>xxxx-xxxx-xxxx-1234</code></td>
+                    <td><a href="{{ url_for('index') }}">Receipt</a></td>
+                </tr>
+                <tr>
+                    <td>&dollar;19.99</td>
+                    <td>2014-02-01 00:00:00</td>
+                    <td><code>xxxx-xxxx-xxxx-1234</code></td>
+                    <td><a href="{{ url_for('index') }}">Receipt</a></td>
+                </tr>
+                <tr>
+                    <td>&dollar;19.99</td>
+                    <td>2014-03-01 00:00:00</td>
+                    <td><code>xxxx-xxxx-xxxx-1234</code></td>
+                    <td><a href="{{ url_for('index') }}">Receipt</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p>Have any questions about your subscription?  Email us at {{ contact_email() }}</p>
+{% endblock %}

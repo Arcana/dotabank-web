@@ -96,6 +96,11 @@ class User(db.Model):
     def get_language(self):  # TODO: When we do localization
         return "english"
 
+    def get_active_subscription(self):
+        return self.subscriptions.filter(
+            Subscription.expires_at >= datetime.datetime.utcnow()
+        ).first()
+
     @property
     def is_premium(self):
         subscription = self.subscriptions.filter(
