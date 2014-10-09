@@ -49,5 +49,12 @@ def fix_long_waiting_download():
     from app.cron.fix_replay_errors import fix_long_waiting_download
     fix_long_waiting_download()
 
+
+@manager.command
+def fetch_league_matches(league_id):
+    from app.cron.fetch_league_matches import fetch_league_matches
+    fetch_league_matches(league_id)
+
+
 if __name__ == "__main__":
     manager.run()

@@ -286,6 +286,25 @@ table > tbody > tr > td.item-cell {
     background-color:#7a32b1;
     border-color:#4e288e;
 }
+
+.alert-eslny {
+    color: #193040;
+    background-color: #7de3fa;
+    border-color: #3ed8fa;
+}
+
+.btn-eslny {
+    background-color: #00ccfc;
+    border-color: #00a7fa;
+    color:#0f161e;
+}
+
+.btn-eslny:hover {
+    color:#0f161e;
+    background-color:#00ccfc;
+    border-color:#4e288e;
+}
+
 .team-name {
     line-height:32px !important;
 }
