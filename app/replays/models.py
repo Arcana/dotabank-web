@@ -89,7 +89,7 @@ class Replay(db.Model):
     #################
 
     # GC relationships
-    players = db.relationship('ReplayPlayer', backref="replay", lazy="join", cascade="all, delete-orphan")  # repeated .CMsgDOTAMatch.Player players = 5;
+    players = db.relationship('ReplayPlayer', backref="replay", lazy="joined", cascade="all, delete-orphan")  # repeated .CMsgDOTAMatch.Player players = 5;
     # repeated .CMatchHeroSelectEvent picks_bans = 32;  # TODO
 
     # Site relationships

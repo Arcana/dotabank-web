@@ -1,6 +1,6 @@
 from flask import Blueprint, g, current_app, redirect, request, flash, url_for, jsonify
 from flask.ext.admin import Admin, expose, AdminIndexView, BaseView
-from flask.ext.admin.contrib.sqlamodel import ModelView
+from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.login import current_user
 
 from sqlalchemy.sql import text
@@ -313,7 +313,7 @@ class Maintenance(AuthMixin, BaseView):
         )
 
 # Set up flask-admin
-admin = Admin(name="Dotabank", index_view=AdminIndex())
+admin = Admin(name="Dotabank", index_view=AdminIndex(), base_template="layouts/admin.html", template_mode="bootstrap3")
 admin.add_view(AtypicalReplays(name="Atypical Replays", category='Reports'))
 admin.add_view(Logs(name="Logs", category="Reports"))
 admin.add_view(BigDownloaders(name="Big downloaders", category="Reports"))
