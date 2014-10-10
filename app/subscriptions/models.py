@@ -11,16 +11,34 @@ class Subscription(db.Model):
     plan_id = db.Column(db.String(32))  # Corresponds to plan ID in Stripe.
     auto_renew = db.Column(db.Boolean)  # Look into Stripe docs to do this.  Think we need to send `at_period_end=False`
                                         # when creating a subscription for non-recurring subs.
-    PLAN_IDS_TO_NAMES = {
-        "backtrack": "Backtrack",
-        "chrono": "Chrono",
-        "universe": "Universe"
+
+
+    # Set default order by
+    __mapper_args__ = {
+        "order_by": [db.desc(expires_at)]
     }
 
-    def __init__(self, user_id=None, created_at=None, expires_at=None):
+    PLANS = {
+        "backtrack": {
+            "name": "Backtrack",
+            "amount": 1.99
+        },
+        "chrono": {
+            "name": "Chrono",
+            "amount": 4.99
+        },
+        "universe": {
+            "name": "Universe",
+            "amount": 19.99
+        }
+    }
+
+    def __init__(self, user_id=None, created_at=None, expires_at=None, plan_id=None, auto_renew=None):
         self.user_id = user_id
         self.created_at = created_at
         self.expires_at = expires_at
+        self.plan_id = plan_id
+        self.auto_renew = auto_renew
 
     def __repr__(self):
         return "<Subscription {}>".format(id)
@@ -30,8 +48,10 @@ class Subscription(db.Model):
         return to_timestamp(self.created_at.utctimetuple())
 
     @property
-    def plan_name(self):
-        return self.PLAN_IDS_TO_NAMES.get(self.plan_id)
+    def plan(self):
+        if self.plan_id:
+            return self.PLANS.get(self.plan_id)
+        return None
 
     @staticmethod
     def get_valid_subscriptions():

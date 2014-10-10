@@ -21,8 +21,25 @@
             <h2>Current subscription</h2>
 
         {% if not current_subscription %}
-            <p class="lead">You do not have a Dotabank subscription. <a
-                    href="{{ url_for('subscriptions.marketing_bullshit') }}">View our subscriptions</a></p>
+            <p class="lead">You do not have a Dotabank subscription.</p>
+
+            <form id="newCardDetailsForm" action="{{ url_for('subscriptions.change_subscription') }}" method="POST">
+                {% if not user.get_stripe_customer() %}
+                    {# If these fields are here we need to take card deets. #}
+                    <input type="hidden" id="newCardDetailsToken" name="newCardDetailsToken"/>
+                    <input type="hidden" name="newCardDetailsEmail" id="newCardDetailsEmail" value="{{ user.email }}"/>
+                {% endif %}
+                <div class="input-group">
+                        <select class="form-control" name="newSubscription" id="newSubscription">
+                            {% for code, plan in plans %}
+                                <option value="{{ code }}" data-name="{{ plan['name'] }}" data-amount="{{ plan['amount'] }}">{{ plan['name'] }} &ndash; &dollar;{{ plan['amount'] }}/mo</option>
+                        {% endfor %}
+                    </select>
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" id="newCardDetailsButton">Subscribe</button>
+                    </span>
+                </div>
+            </form>
         {% else %}
             <table class="table table-striped">
                 <thead>
@@ -35,7 +52,18 @@
                 </thead>
             <tbody>
             <tr>
-                <td>{{ current_subscription.plan_name }}</td>
+                <td>
+                    <form id="updateSubscriptionForm" action="{{ url_for('subscriptions.change_subscription') }}" method="POST">
+                        <select class="form-control" name="newSubscription" id="updateSubscription"
+                                data-current-code="{{ current_subscription.plan_id }}"
+                                data-current-name="{{ current_subscription.plan['name'] }}"
+                                data-current-amount="{{ current_subscription.plan['amount'] }}">
+                            {% for code, plan in plans %}
+                                <option value="{{ code }}" data-name="{{ plan['name'] }}" data-amount="{{ plan['amount'] }}" {{ "selected=\"selected\"" if code == current_subscription.plan_id else "" }}>{{ plan['name'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </td>
                 <td>{{ current_subscription.created_at|datetime_to_datestring }}</td>
                 <td>{{ current_subscription.expires_at|datetime_to_datestring }}</td>
                 {% if current_subscription.auto_renew %}
@@ -64,7 +92,7 @@
         {% if all_subscriptions|length > 0 %}
         {% for sub in all_subscriptions %}
         <tr>
-            <td>{{ sub.plan_name }}</td>
+            <td>{{ sub.plan['name']}}</td>
             <td>{{ sub.created_at|datetime_to_datestring }}</td>
             <td>{{ sub.expires_at|datetime_to_datestring }}</td>
         </tr>
@@ -152,33 +180,125 @@
 
 {% block scripts %}
     {{ super() }}
+    <script src="{{ url_for('static', filename='js/bootbox.min.js') }}"></script>
 
     <!-- Update card details -->
     <script src="https://checkout.stripe.com/checkout.js"></script>
 
     <script>
+        // UPDATE PAYMENT DEETS
         var updateCardDetailsForm = jQuery('#updateCardDetailsForm'),
-            cardTokenInput = updateCardDetailsForm.find('#updateCardDetailsToken'),
-            cardEmailInput = updateCardDetailsForm.find('#updateCardDetailsEmail');
+            updateCardTokenInput = updateCardDetailsForm.find('#updateCardDetailsToken'),
+            updateCardEmailInput = updateCardDetailsForm.find('#updateCardDetailsEmail');
 
-        var handler = StripeCheckout.configure({
+        var updateCardDetailsHandler = StripeCheckout.configure({
             key: '{{ config['STRIPE_DEBUG_PUBLISHABLE_KEY'] if config['DEBUG'] else config['STRIPE_PROD_PUBLISHABLE_KEY'] }}',
             token: function (token) {
                 // Use the token to create the charge with a server-side script.
-                cardTokenInput.val(token.id);
-                cardEmailInput.val(token.email);
+                updateCardTokenInput.val(token.id);
+                updateCardEmailInput.val(token.email);
                 updateCardDetailsForm.submit();
             }
         });
 
         document.getElementById('updateCardDetailsButton').addEventListener('click', function (e) {
             // Open Checkout with further options
-            handler.open({
+            updateCardDetailsHandler.open({
                 name: 'Update payment details',
-                email: cardEmailInput.val(),
+                email: updateCardEmailInput.val(),
                 panelLabel: 'Update payment details'
             });
             e.preventDefault();
         });
+
+        // NEW PAYMENT DEETS
+        if (jQuery('#newCardDetailsEmail').length === 1) {
+            var newCardDetailsForm = jQuery('#newCardDetailsForm'),
+                newCardTokenInput = newCardDetailsForm.find('#newCardDetailsToken'),
+                newCardEmailInput = newCardDetailsForm.find('#newCardDetailsEmail'),
+                newSubscription = newCardDetailsForm.find('#newSubscription');
+
+            var newCardDetailsHandler = StripeCheckout.configure({
+                key: '{{ config['STRIPE_DEBUG_PUBLISHABLE_KEY'] if config['DEBUG'] else config['STRIPE_PROD_PUBLISHABLE_KEY'] }}',
+                token: function (token) {
+                    // Use the token to create the charge with a server-side script.
+                    newCardTokenInput.val(token.id);
+                    newCardEmailInput.val(token.email);
+                    newCardDetailsForm.submit();
+                }
+            });
+
+            document.getElementById('newCardDetailsButton').addEventListener('click', function (e) {
+                // Get plan data
+                var plan = newSubscription.find('option:selected');
+
+                // Open Checkout with further options
+                newCardDetailsHandler.open({
+                    name: 'Dotabank Subscription',
+                    email: newCardEmailInput.val(),
+                    panelLabel: 'Subscribe',
+                    description: plan.data('name') + ' $' + plan.data('amount') + '/mo',
+                    amount: parseInt(parseFloat(plan.data('amount')) * 100, 10)
+                });
+                e.preventDefault();
+            });
+        }
+
+        // UPGRADING OR DOWNGRADING SUBCRIPTION
+    if (jQuery('#updateSubscriptionForm').length === 1)
+    {
+        var updateSubscriptionForm = jQuery('#updateSubscriptionForm'),
+            updateSubscriptionSelect = jQuery('#updateSubscription');
+
+        updateSubscriptionSelect.change(function(e){
+            var plan = updateSubscriptionSelect.find(':selected'),
+                is_upgrade = plan.data('amount') > updateSubscriptionSelect.data('current-amount'),
+                message;
+
+            if (updateSubscriptionSelect.val() == updateSubscriptionSelect.data('current-code'))
+            {
+                // Don't need to do anything: Plan selected is current plan.
+                return;
+            }
+
+            if (is_upgrade) {
+                message = "<p>Are you sure you want to upgrade your plan from <strong>" +
+                        updateSubscriptionSelect.data('current-name') + "</strong> (&dollar;" +
+                        updateSubscriptionSelect.data('current-amount') + "/mo) to " +
+                        "<strong>" + plan.data('name') + "</strong> (&dollar;" + plan.data('amount') + "/mo)?</p>" +
+                        "<p>You will be charged the difference in price between your existing and new subscription at" +
+                        " your next billing cycle.</p>";
+            }
+            else {
+                message = "<p>Are you sure you want to upgrade your plan from <strong>" +
+                        updateSubscriptionSelect.data('current-name') + "</strong> (&dollar;" +
+                        updateSubscriptionSelect.data('current-amount') + "/mo) to " +
+                        "<strong>" + plan.data('name') + "</strong> (&dollar;" + plan.data('amount') + "/mo)?</p>" +
+                        "<p>You will be credited the difference in price between your existing and new subscription.</p>";
+            }
+
+            bootbox.dialog({
+                message: message,
+                title: "Change subscription",
+                buttons: {
+                    cancel: {
+                        label: "Cancel",
+                        className: "btn-default",
+                        callback: function () {
+                            // Reset select box
+                            updateSubscriptionSelect.val(updateSubscriptionSelect.data('current-code'));
+                        }
+                    },
+                    main: {
+                        label: "Yes, " + (is_upgrade ? 'upgrade' : 'downgrade') + " my subscription",
+                        className: "btn-primary",
+                        callback: function () {
+                            updateSubscriptionForm.submit();
+                        }
+                    }
+                }
+            });
+        });
+    }
     </script>
 {% endblock %}

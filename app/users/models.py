@@ -111,9 +111,27 @@ class User(db.Model):
 
         try:
             customer = stripe.Customer.retrieve(self.stripe_id)
-            return customer
+            if not customer.get('deleted'):
+                return customer
+            else:
+                return None
         except stripe.InvalidRequestError:
             return None
+
+    @staticmethod
+    def update_stripe_details(_user, stripe_customer, stripe_token, new_email=None):
+        # Save card token
+        if new_email is not None:
+            stripe_customer.email = new_email
+            _user.email = new_email
+
+        stripe_customer.card = stripe_token
+        stripe_customer.save()
+
+        # Save or update user email address
+        _user.stripe_id = stripe_customer.id
+        db.session.add(_user)
+        db.session.commit()
 
     @property
     def is_premium(self):

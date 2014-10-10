@@ -26,11 +26,13 @@
         <tr>
             <th>Backtrack</th>
             <td>&dollar;1.99/mo</td>
-            <td><ul>
-                <li>No advertisements</li>
-                <li>No captcha to download replays</li>
-            </ul></td>
-            <td><a class="btn btn-primary" href="{{ url_for('donate') }}">Purchase</a></td>
+            <td>
+                <ul>
+                    <li>No advertisements</li>
+                    <li>No captcha to download replays</li>
+                </ul>
+            </td>
+            <td><a class="btn btn-primary" href="{{ url_for('subscriptions.my_subscription') }}">Purchase</a></td>
         </tr>
         <tr>
             <th>Chrono</th>
@@ -41,7 +43,7 @@
                     <li>Automatic archiving of all of your games</li>
                 </ul>
             </td>
-            <td><a class="btn btn-primary" href="{{ url_for('donate') }}">Purchase</a></td>
+            <td><a class="btn btn-primary" href="{{ url_for('subscriptions.my_subscription') }}">Purchase</a></td>
         </tr>
         <tr>
             <th>Universe</th>
@@ -52,7 +54,7 @@
                     <li>Catch 5 players in your <em>Chrono</em>! Add up to 5 players to a personal watch-list and their games will be automatically archived.</li>
                 </ul>
             </td>
-            <td><a class="btn btn-primary" href="{{ url_for('donate') }}">Purchase</a></td>
+            <td><a class="btn btn-primary" href="{{ url_for('subscriptions.my_subscription') }}">Purchase</a></td>
         </tr>
         </tbody>
     </table>
