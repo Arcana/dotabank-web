@@ -303,3 +303,10 @@ class UserAdmin(AdminModelView):
     def __init__(self, session, **kwargs):
         # Just call parent class with predefined model.
         super(UserAdmin, self).__init__(User, session, **kwargs)
+
+    def on_model_change(self, form, _user, is_created):
+        # If we have a customer on Stripe associated with this user then update the Stripe customer's invoice email address
+        stripe_customer = _user.get_stripe_customer()
+        if stripe_customer is not None:
+            stripe_customer.email = _user.email
+            stripe_customer.save()
