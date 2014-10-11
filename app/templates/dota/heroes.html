@@ -1,0 +1,62 @@
+{% from "macros.html" import iconic, pagination %}
+{% extends "layouts/standard.html" %}
+
+{% block page_header %}
+    <div class="page-header">
+        <h1>Heroes</h1>
+    </div>
+{% endblock %}
+
+{% block top_ad %}
+    {# HR above and below the ad #}
+    <hr/>
+    {{ super() }}
+    <hr/>
+{% endblock %}
+
+{% block bottom_ad %}
+    {# HR above the ad #}
+    <hr/>
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    <p>Ordered by most replays archived</p>
+
+    <table id="heroes_table" class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <th colspan="2">Hero</th>
+                <th>Replays archived</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if heroes|length > 0 %}
+                {% for hero in heroes %}
+                    <tr>
+                        <td class="thumbnail-cell">
+                            {% if hero.image %}
+                                <a class="thumbnail" href="{{ url_for("heroes.hero", _name=hero.name) }}">
+                                    <img src="{{ hero.image }}" alt="{{ hero.localized_name }}"/>
+                                </a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for("heroes.hero", _name=hero.name) }}">{{ hero.localized_name }}</a>
+                            <br/>
+                            <div class="btn-group">
+                                <a href="{{ hero.localized_name|dotabuff_hero_link }}" class="btn btn-xs btn-dotabuff">Dotabuff</a>
+                                <a href="{{ hero.localized_name|dota_wiki_link }}" class="btn btn-xs btn-wiki">Wiki</a>
+                            </div>
+                        </td>
+                        <td>{{ hero.count }}</td>
+                    </tr>
+                {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="5" class="text-muted">No heroes found.</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,4 +1,4 @@
-from app import steam, fs_cache, sentry
+from app import steam, fs_cache, sentry, db
 from flask import current_app, url_for, g
 import requests
 import json
@@ -15,13 +15,16 @@ class Hero:
     """ Represents a Dota 2 hero. """
 
     id = None
+    name = None
     token = None
 
     _heroes = None
     _CACHE_KEY = "heroes"  # Key for fscache of this file
 
-    def __init__(self, _id, **kwargs):
+    def __init__(self, _id, _token, **kwargs):
         self.id = _id
+        self.token = _token
+        self.name = _token.replace('npc_dota_hero_', '')
 
         # Populate all other parms via kwargs - consider them optional
         for key, arg in kwargs.items():
@@ -37,6 +40,11 @@ class Hero:
     @property
     def image(self):
         return url_for('hero_image', hero_name=self.token.replace('npc_dota_hero_', ''))
+
+    @property
+    def replays(self):
+        from app.replays.models import Replay, ReplayPlayer
+        return Replay.query.filter(Replay.players.any(hero_id=self.id))
 
     @classmethod
     @fs_cache.cached(timeout=60 * 60, key_prefix=_CACHE_KEY)
@@ -64,8 +72,6 @@ class Hero:
 
             # Iterate through heries, create an instance of this class for each.
             for key, hero in input_heroes.items():
-                print(key)
-
                 # Skip these keys - they're not hero definitions
                 if key in ["Version", "npc_dota_hero_base"]:
                     continue
@@ -73,7 +79,7 @@ class Hero:
                 output_heroes.append(
                     cls(
                         _id=int(hero.get('HeroID')),
-                        token=key
+                        _token=key
                     )
                 )
 
@@ -105,10 +111,19 @@ class Hero:
         return None
 
     @classmethod
-    def get_by_name(cls, name):
-        """ Returns a Hero object for the given hero name. """
+    def get_by_token(cls, name):
+        """ Returns a Hero object for the given hero token. """
         for hero in cls.get_all():
             if hero.token == name:
+                return hero
+
+        return None
+
+    @classmethod
+    def get_by_name(cls, name):
+        """ Returns a Hero object for the given hero token. """
+        for hero in cls.get_all():
+            if hero.name == name:
                 return hero
 
         return None

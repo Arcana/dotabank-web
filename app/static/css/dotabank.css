@@ -337,3 +337,7 @@ table > tbody > tr > td.item-cell {
 #footer .donate a {
     margin-top: -1em;
 }
+
+#heroes_table .thumbnail-cell {
+    max-width: 7em;
+}

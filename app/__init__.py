@@ -84,11 +84,13 @@ from app.users.views import mod as users_module
 from app.replays.views import mod as replays_module
 from app.leagues.views import mod as leagues_module
 from app.teams.views import mod as teams_module
+from app.dota.views import hero_mod as heroes_module
 app.register_blueprint(admin_module)
 app.register_blueprint(users_module)
 app.register_blueprint(replays_module)
 app.register_blueprint(leagues_module)
 app.register_blueprint(teams_module)
+app.register_blueprint(heroes_module)
 
 # Set up flask-admin views
 from app.admin.views import admin, AdminModelView

@@ -22,6 +22,7 @@ class HeroTestCase(DotaTestCase):
     CRYSTAL_MAIDEN = {
         'id': 5,
         'token': 'npc_dota_hero_crystal_maiden',
+        'name': 'crystal_maiden',
         'localized_name': 'Crystal Maiden',
         'image_name': 'crystal_maiden'
     }
@@ -40,16 +41,29 @@ class HeroTestCase(DotaTestCase):
         self.assertIsNotNone(crystal_maiden)
         self.assertEqual(crystal_maiden.id, self.CRYSTAL_MAIDEN['id'])
         self.assertEqual(crystal_maiden.token, self.CRYSTAL_MAIDEN['token'])
+        self.assertEqual(crystal_maiden.name, self.CRYSTAL_MAIDEN['name'])
         self.assertEqual(crystal_maiden.localized_name, self.CRYSTAL_MAIDEN['localized_name'])
         self.assertEqual(crystal_maiden.image, url_for('hero_image', hero_name=self.CRYSTAL_MAIDEN['image_name']))
 
     def test_get_by_token(self):
         """ Test we can get a hero by their token """
-        crystal_maiden = Hero.get_by_name(self.CRYSTAL_MAIDEN['token'])
+        crystal_maiden = Hero.get_by_token(self.CRYSTAL_MAIDEN['token'])
 
         self.assertIsNotNone(crystal_maiden)
         self.assertEqual(crystal_maiden.id, self.CRYSTAL_MAIDEN['id'])
         self.assertEqual(crystal_maiden.token, self.CRYSTAL_MAIDEN['token'])
+        self.assertEqual(crystal_maiden.name, self.CRYSTAL_MAIDEN['name'])
+        self.assertEqual(crystal_maiden.localized_name, self.CRYSTAL_MAIDEN['localized_name'])
+        self.assertEqual(crystal_maiden.image, url_for('hero_image', hero_name=self.CRYSTAL_MAIDEN['image_name']))
+
+    def test_get_by_name(self):
+        """ Test we can get a hero by their token """
+        crystal_maiden = Hero.get_by_name(self.CRYSTAL_MAIDEN['name'])
+
+        self.assertIsNotNone(crystal_maiden)
+        self.assertEqual(crystal_maiden.id, self.CRYSTAL_MAIDEN['id'])
+        self.assertEqual(crystal_maiden.token, self.CRYSTAL_MAIDEN['token'])
+        self.assertEqual(crystal_maiden.name, self.CRYSTAL_MAIDEN['name'])
         self.assertEqual(crystal_maiden.localized_name, self.CRYSTAL_MAIDEN['localized_name'])
         self.assertEqual(crystal_maiden.image, url_for('hero_image', hero_name=self.CRYSTAL_MAIDEN['image_name']))
 
