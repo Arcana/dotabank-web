@@ -13,10 +13,23 @@
             <ul class="nav navbar-nav navbar-left">
                 <li class="{{ "active" if "replays.replays" == request.endpoint }}"><a href="{{ url_for("replays.replays") }}">Replays</a></li>
                 <li class="{{ "active" if "leagues.leagues" == request.endpoint }}"><a href="{{ url_for("leagues.leagues") }}">Leagues</a></li>
-                <li class="{{ "active" if "leagues.league" == request.endpoint and request.view_args.get('_id') == 1886}}">
-                    <a href="{{ url_for("leagues.league", _id=1886) }}">ESL One New York 2014</a>
+                <li class="dropdown dropdown-large">
+                    <a class="dropdown-toggle" data-toggle="dropdown">Heroes <span class="caret"></span></a>
+                    <ul class="dropdown-menu dropdown-menu-large row">
+
+                        <li class="col-sm-12"><a href="{{ url_for("heroes.heroes") }}">All heroes</a></li>
+                        <li class="col-sm-12 divider"></li>
+                        {% for hero_group in g.all_heroes|slice(6) %}
+                            <li class="col-sm-2">
+                                <ul>
+                                    {% for hero in hero_group %}
+                                        <li><a href="{{ url_for('heroes.hero', _name=hero.name ) }}">{{ hero.localized_name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul>
                 </li>
-                <li class="{{ "active" if "heroes.heroes" == request.endpoint }}"><a href="{{ url_for("heroes.heroes") }}">Heroes</a></li>
                 <li class="{{ "active" if "donate" == request.endpoint }}"><a href="{{ url_for("donate") }}">Donate</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">

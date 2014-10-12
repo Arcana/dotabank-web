@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, current_app, abort
+from flask import Blueprint, render_template, current_app, abort, g
 from app.replays.models import Replay, ReplayPlayer
 from app import db, mem_cache
 from models import Hero
@@ -6,10 +6,14 @@ from models import Hero
 hero_mod = Blueprint("heroes", __name__, url_prefix="/heroes")
 
 
+@hero_mod.before_app_request
+def add_heroes_to_globals():
+    g.all_heroes = sorted(Hero.get_all(), key=lambda h: h.name)
+
+
 @mem_cache.cached(timeout=60 * 60, key_prefix="heroes_data")
 def _heroes_data():
-    all_hiroes = Hero.get_all()
-    hero_ids = [h.id for h in all_hiroes]
+    hero_ids = [h.id for h in g.all_heroes]
     _heroes_and_count = db.session.query(
         ReplayPlayer.hero_id,
         db.func.count(ReplayPlayer.replay_id)
