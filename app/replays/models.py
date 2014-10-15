@@ -309,6 +309,7 @@ class Replay(db.Model):
     def add_gc_job(_replay, skip_commit=False):
         # Reset gc fails
         _replay.gc_fails = 0
+        _replay.gc_done_time = None
         db.session.add(_replay)
 
         if not skip_commit:
@@ -323,6 +324,7 @@ class Replay(db.Model):
     def add_dl_job(_replay, skip_commit=False):
         # Reset dl fails
         _replay.dl_fails = 0
+        _replay.dl_done_time = None
         db.session.add(_replay)
 
         if not skip_commit:
