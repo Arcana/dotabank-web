@@ -3,7 +3,7 @@
         <div class="alert alert-danger">
             <strong>Archive queue full</strong> - Dotabank has hit the limit of replays it can archive in a single day (a
             Valve-imposed limit). This could be due to an error in the site, or due to a sudden influx of users of the
-            site. Dotabank's developers are investigating, meanwhile <strong>please allow up to 24 hours for any newly added replays to be archived.</strong>
+            site. Dotabank's developers are investigating, meanwhile <strong>please allow up to 48 hours for any newly added replays to be archived.</strong>
         </div>
     </div>
 {% endif %}
@@ -17,10 +17,3 @@
         </div>
     </div>
 {% endif %}
-
-<div class="container">
-    <div class="alert alert-eslny">
-            <a class="btn btn-primary pull-right" href="{{ url_for('leagues.league', _id=1886) }}">View replays</a>
-        <a href="{{ url_for('leagues.league', _id=1886) }}"><strong>ESL One New York 2014</strong></a> &ndash; We are automatically archiving all ESL One New York 2014 games, so you can download them out-of-client at any time.
-    </div>
-</div>
