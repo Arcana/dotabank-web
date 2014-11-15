@@ -320,8 +320,19 @@ class Cost(AuthMixin, BaseView):
 
     @expose('/')
     def index(self):
-        months = MonthlyCost.query.all()
-        return self.render('admin/costs/overview.html', months=months)
+        monthly_breakdown = [("{}, {}".format(m.month.strftime("%B"), m.month.year),
+                   m.cost_per_replay(),
+                   m.replay_count(),
+                   m.cost_per_replay('ARCHIVED'),
+                   m.replay_count('ARCHIVED'),
+                   m.cost_per_download(),
+                   m.download_count())
+                  for m in MonthlyCost.query.all()]
+        monthly_breakdown_exc_counts = [(m[0], m[1], m[3], m[5]) for m in monthly_breakdown]
+        return self.render('admin/costs/overview.html',
+                           monthly_breakdown=monthly_breakdown,
+                           monthly_breakdown_exc_counts=monthly_breakdown_exc_counts
+        )
 
 # Set up flask-admin
 admin = Admin(name="Dotabank", index_view=AdminIndex())

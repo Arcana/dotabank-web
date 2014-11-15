@@ -1,0 +1,14 @@
+{
+  "name": "dotabank-web",
+  "version": "0.0.0",
+  "homepage": "https://github.com/Arcana/dotabank-web",
+  "authors": [
+    "Arcana.io"
+  ],
+  "license": "CC-BY-SA 4.0",
+  "private": true,
+  "dependencies": {
+    "platform": "Polymer/platform#~0.4.2",
+    "google-chart": "GoogleWebComponents/google-chart#~0.2.0"
+  }
+}

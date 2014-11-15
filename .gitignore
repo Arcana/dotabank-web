@@ -12,3 +12,4 @@ include
 lib
 alembic.ini
 newrelic.ini
+app/static/bower/*

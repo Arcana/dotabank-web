@@ -1,41 +1,71 @@
 {% extends 'admin/master.html' %}
 
+{% block head %}
+    {{ super() }}
+
+    <script src="{{ url_for('static', filename='bower/platform/platform.js') }}"></script>
+    <link rel="import" href="{{ url_for('static', filename='bower/google-chart/google-chart.html') }}"/>
+    <style>
+    google-chart {
+      height: 500px;
+      width: 100%;
+    }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <div class="row">
-        <div class="col-md-6">
-            <!-- Chart here -->
-        </div>
-        <div class="col-md-6">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Month</th>
-                    <th>Cost Per Replay</th>
-                    <th>Replay count</th>
-                    <th>Cost Per Archived Replay</th>
-                    <th>Archived Replay count</th>
-                    <th>Cost Per Download</th>
-                    <th>Download count</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for month in months %}
-                    <tr>
-                        <td>{{ month.month }}</td>
-                        <td>&cent; {{ "%.2f"|format(month.cost_per_replay()) }}</td>
-                        <td>{{ month.replay_count() }}</td>
-                        <td>&cent;{{ "%.2f"|format(month.cost_per_replay('ARCHIVED')) }}</td>
-                        <td>{{ month.replay_count('ARCHIVED') }}</td>
-                        <td>&cent;{{ "%.2f"|format(month.cost_per_download()) }}</td>
-                        <td>{{ month.download_count() }}</td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="3"><em>No cost data in database.</em></td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <google-chart
+      type='line'
+      options='{
+        "title": "Cost per month breakdown",
+        "height": 500,
+        "vAxis": {
+            "viewWindow": {
+                "min": 0,
+                "max": 20
+            },
+            "title": "Cents"
+        }
+      }'
+      cols='[
+          {"label":"Month", "type":"string"},
+          {"label":"Replay Cost (cents)", "type":"number"},
+          {"label":"Archive Cost (cents)", "type":"number"},
+          {"label":"Download Cost (cents)", "type":"number"}
+      ]'
+      rows='{{ monthly_breakdown_exc_counts|tojson|safe }}'>
+    </google-chart>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Month</th>
+            <th>Cost Per Replay</th>
+            <th>Replay count</th>
+            <th>Cost Per Archived Replay</th>
+            <th>Archived Replay count</th>
+            <th>Cost Per Download</th>
+            <th>Download count</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for month,
+               cost_per_replay, replay_count,
+               cost_per_archive, archive_count,
+               cost_per_download, download_count in monthly_breakdown %}
+            <tr>
+                <td>{{ month }}</td>
+                <td>&cent;{{ "%.2f"|format(cost_per_replay) }}</td>
+                <td>{{ replay_count }}</td>
+                <td>&cent;{{ "%.2f"|format(cost_per_archive) }}</td>
+                <td>{{ archive_count }}</td>
+                <td>&cent;{{ "%.2f"|format(cost_per_download) }}</td>
+                <td>{{ download_count }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3"><em>No cost data in database.</em></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
