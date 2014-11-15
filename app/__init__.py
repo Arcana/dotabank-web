@@ -94,6 +94,7 @@ app.register_blueprint(heroes_module)
 
 # Set up flask-admin views
 from app.admin.views import admin, AdminModelView
+from app.admin.models import MonthlyCost
 from app.users.views import UserAdmin
 from app.users.models import Subscription
 from app.replays.views import ReplayAdmin, Search, ReplayFavourite, ReplayDownload, ReplayRating
@@ -104,10 +105,12 @@ admin.add_view(AdminModelView(Subscription, db.session, category="Models"))
 admin.add_view(ReplayAdmin(db.session, category="Models"))
 admin.add_view(GCWorkerAdmin(db.session, category="Models"))
 admin.add_view(LeagueAdmin(db.session, category="Models"))
+admin.add_view(AdminModelView(MonthlyCost, db.session, category="Models"))
 admin.add_view(AdminModelView(Search, db.session, category="User actions"))
 admin.add_view(AdminModelView(ReplayFavourite, db.session, category="User actions"))
 admin.add_view(AdminModelView(ReplayRating, db.session, category="User actions"))
 admin.add_view(AdminModelView(ReplayDownload, db.session, category="User actions"))
+
 
 # Init admin
 admin.init_app(app)

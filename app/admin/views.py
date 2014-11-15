@@ -12,6 +12,8 @@ from app.models import Log
 from app.gc.models import GCJob, GCWorker
 from app.replays.models import Replay, ReplayPlayer, ReplayDownload
 
+from models import MonthlyCost
+
 # Create blueprint
 mod = Blueprint("dotabank_admin", __name__)
 
@@ -312,12 +314,22 @@ class Maintenance(AuthMixin, BaseView):
             readded=done
         )
 
+
+class Cost(AuthMixin, BaseView):
+    """ Views relating to cost-analysis of running Dotabank """
+
+    @expose('/')
+    def index(self):
+        months = MonthlyCost.query.all()
+        return self.render('admin/costs/overview.html', months=months)
+
 # Set up flask-admin
 admin = Admin(name="Dotabank", index_view=AdminIndex())
 admin.add_view(AtypicalReplays(name="Atypical Replays", category='Reports'))
 admin.add_view(Logs(name="Logs", category="Reports"))
 admin.add_view(BigDownloaders(name="Big downloaders", category="Reports"))
 admin.add_view(Maintenance(name="Maintenance"))
+admin.add_view(Cost(name="Costs", category="Reports"))
 
 
 @mod.before_app_request
