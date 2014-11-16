@@ -49,7 +49,7 @@
                 <tr>
                     <th>Replay ID</th>
                     <th>State</th>
-                    <th>Time</th>
+                    <th>&nbsp;</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -59,7 +59,11 @@
                             <a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a>
                         </td>
                         <td>{{ replay.get_state() }}</td>
-                        <td>{{ replay.added_to_site_time|datetime_to_datestring }}</td>
+                        <td class="text-muted text-right">
+                            <time is="relative-time" datetime="{{ replay.added_to_site_time.isoformat() }}">
+                                {{ replay.added_to_site_time|datetime_to_datestring }}
+                            </time>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -72,7 +76,7 @@
                 <tr>
                     <th>Replay ID</th>
                     <th>State</th>
-                    <th>Time</th>
+                    <th>&nbsp;</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -82,7 +86,10 @@
                             <a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a>
                         </td>
                         <td>{{ replay.get_state()}}</td>
-                        <td>{{ replay.dl_done_time|datetime_to_datestring }}</td>
+                        <td class="text-muted text-right">
+                            <time is="relative-time" datetime="{{ replay.dl_done_time.isoformat() }}">
+                                {{ replay.dl_done_time|datetime_to_datestring }}
+                            </time>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -100,7 +107,7 @@
                     <tr>
                         <th>Replay ID</th>
                         <th>Favourites</th>
-                        <th>Added time</th>
+                        <th>&nbsp;</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -108,7 +115,12 @@
                         <tr>
                             <td><a href="{{ url_for("replays.replay", _id=replay_id) }}">{{ replay_id }}</a></td>
                             <td>{{ count }}</td>
-                            <td>{{ replay_added_time|datetime_to_datestring }}</td>
+                            <td class="text-muted text-right">
+                                Added
+                                <time is="relative-time" datetime="{{ replay_added_time.isoformat() }}">
+                                    {{ replay_added_time|datetime_to_datestring }}
+                                </time>
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -125,7 +137,7 @@
                     <tr>
                         <th>Replay ID</th>
                         <th>Likes</th>
-                        <th>Added time</th>
+                        <th>&nbsp;</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -133,7 +145,12 @@
                         <tr>
                             <td><a href="{{ url_for("replays.replay", _id=replay_id) }}">{{ replay_id }}</a></td>
                             <td>{{ count }}</td>
-                            <td>{{ replay_added_time|datetime_to_datestring }}</td>
+                            <td class="text-muted text-right">
+                                Added
+                                <time is="relative-time" datetime="{{ replay_added_time.isoformat() }}">
+                                    {{ replay_added_time|datetime_to_datestring }}
+                                </time>
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>

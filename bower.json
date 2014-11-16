@@ -9,6 +9,7 @@
   "private": true,
   "dependencies": {
     "platform": "Polymer/platform#~0.4.2",
-    "google-chart": "GoogleWebComponents/google-chart#~0.2.0"
+    "google-chart": "GoogleWebComponents/google-chart#~0.2.0",
+    "time-elements": "github/time-elements#~0.4.0"
   }
 }
