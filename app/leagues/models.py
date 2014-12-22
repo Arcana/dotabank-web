@@ -111,6 +111,9 @@ class League(db.Model):
 
     @staticmethod
     def fetch_images(itemdef=None):
+        # FIXME: Disabled while Dota 2's item schema WebAPI doesn't work, else every /league page load is horribly slow.
+        return None
+
         try:
             item_data = Schema.get_by_id(itemdef)
             return item_data.icon, item_data.image
