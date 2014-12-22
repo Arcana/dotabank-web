@@ -267,7 +267,7 @@ class Schema():
 
     @classmethod
     def get_by_id(cls, _id):
-        return cls.get_schema()[_id]
+        return cls.get_schema().get(_id)
 
 
 class Region():
