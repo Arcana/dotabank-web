@@ -32,7 +32,7 @@ sentry = Sentry(app)
 
 # Setup steamodd
 steam.api.key.set(app.config['STEAM_API_KEY'])
-steam.api.socket_timeout.set(5)
+steam.api.socket_timeout.set(app.config['STEAM_API_TIMEOUT'])
 
 # Setup AWS SQS
 sqs_connection = sqs.connect_to_region(

@@ -4,6 +4,7 @@ APP_DIR = os.path.abspath(os.path.dirname(__file__))
 UGC_FILES_DIR = os.path.join(APP_DIR, 'ugcfiles')
 
 STEAM_API_KEY = ""  # TODO
+STEAM_API_TIMEOUT = 10
 DEBUG = False
 TESTING = False
 SECRET_KEY = ""  # TODO
