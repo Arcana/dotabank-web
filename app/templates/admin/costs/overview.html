@@ -39,6 +39,7 @@
         <thead>
         <tr>
             <th>Month</th>
+            <th>Cost</th>
             <th>Cost Per Replay</th>
             <th>Replay count</th>
             <th>Cost Per Archived Replay</th>
@@ -48,12 +49,13 @@
         </tr>
         </thead>
         <tbody>
-        {% for month,
+        {% for month, total_cost,
                cost_per_replay, replay_count,
                cost_per_archive, archive_count,
                cost_per_download, download_count in monthly_breakdown %}
             <tr>
                 <td>{{ month }}</td>
+                <td>&cent;{{ "%.2f"|format(total_cost / 100) }}</td>
                 <td>&cent;{{ "%.2f"|format(cost_per_replay) }}</td>
                 <td>{{ replay_count }}</td>
                 <td>&cent;{{ "%.2f"|format(cost_per_archive) }}</td>

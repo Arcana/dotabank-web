@@ -321,6 +321,7 @@ class Cost(AuthMixin, BaseView):
     @expose('/')
     def index(self):
         monthly_breakdown = [("{}, {}".format(m.month.strftime("%B"), m.month.year),
+                   m.cost,
                    m.cost_per_replay(),
                    m.replay_count(),
                    m.cost_per_replay('ARCHIVED'),
@@ -328,7 +329,7 @@ class Cost(AuthMixin, BaseView):
                    m.cost_per_download(),
                    m.download_count())
                   for m in MonthlyCost.query.all()]
-        monthly_breakdown_exc_counts = [(m[0], m[1], m[3], m[5]) for m in monthly_breakdown]
+        monthly_breakdown_exc_counts = [(m[0], m[2], m[4], m[6]) for m in monthly_breakdown]
         return self.render('admin/costs/overview.html',
                            monthly_breakdown=monthly_breakdown,
                            monthly_breakdown_exc_counts=monthly_breakdown_exc_counts
