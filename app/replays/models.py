@@ -461,9 +461,12 @@ class ReplayPlayer(db.Model):
     def get_profile_data(self):
         """ Gets this user's data from the Web API.
         TODO: Find a nice elegant way to batch these requests together - on pages showing many ReplayPlayers. """
-        data = steam.user.profile(self.account_id + User.ACCOUNT_ID_TO_STEAM_ID_CORRECTION)
-        data.persona  # Touch an element to ensure steamodd loads some data
-        return data
+        # Check if bot or not
+        if self.account_id:
+            data = steam.user.profile(self.account_id + User.ACCOUNT_ID_TO_STEAM_ID_CORRECTION)
+            data.persona  # Touch an element to ensure steamodd loads some data
+            return data
+        return None
 
     @property
     def name(self):
@@ -471,7 +474,11 @@ class ReplayPlayer(db.Model):
         :return: Unicode - a player's name
         """
         try:
-            return self.get_profile_data().persona
+            profile_data = self.get_profile_data()
+            if profile_data:
+                return profile_data.persona
+            else:
+                return "Bot"
         except steam.api.SteamError:
             return self.account_id
 

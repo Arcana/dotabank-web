@@ -67,14 +67,20 @@
                         {% if replay.radiant_team_logo %}
                             <img src="{{ url_for('ugcfile', _id=replay.radiant_team_logo) }}" class="team-logo">
                         {% elif replay.team_players[0]|length == 1 %}
-                            <img class="team-logo" src="{{ replay.team_players[0][0].avatar }}" alt="{{ replay.team_players[0][0].name }}"/>
+                            {% if replay.team_players[0][0].account_id %}
+                                <img class="team-logo" src="{{ replay.team_players[0][0].avatar }}" alt="{{ replay.team_players[0][0].name }}"/>
+                            {% endif %}
                         {% endif %}
                     </td>
                     <td class="team-name">
                         {% if replay.radiant_team_id %}
                             <a href="{{url_for('teams.team', _id=replay.radiant_team_id)}}">{{replay.radiant_team_name}}</a>
                         {% elif replay.team_players[0]|length == 1 %}
-                            <a href="{{ url_for('users.user', _id=replay.team_players[0][0].account_id) }}">{{ replay.team_players[0][0].name }}</a>
+                            {% if replay.team_players[0][0].account_id %}
+                                <a href="{{ url_for('users.user', _id=replay.team_players[0][0].account_id) }}">{{ replay.team_players[0][0].name }}</a>
+                            {% else %}
+                                Bot
+                            {% endif %}
                         {% else %}
                             Radiant
                         {% endif %}
@@ -84,14 +90,20 @@
                         {% if replay.dire_team_logo %}
                             <img src="{{ url_for('ugcfile', _id=replay.dire_team_logo) }}" class="team-logo">
                         {% elif replay.team_players[1]|length == 1 %}
-                            <img class="team-logo" src="{{ replay.team_players[1][0].avatar }}" alt="{{ replay.team_players[1][0].name }}"/>
+                            {% if replay.team_players[1][0].account_id %}
+                                <img class="team-logo" src="{{ replay.team_players[1][0].avatar }}" alt="{{ replay.team_players[1][0].name }}"/>
+                            {% endif %}
                         {% endif %}
                     </td>
                     <td class="team-name">
                         {% if replay.dire_team_id %}
                             <a href="{{url_for('teams.team', _id=replay.dire_team_id)}}">{{replay.dire_team_name}}</a>
                         {% elif replay.team_players[1]|length == 1 %}
-                            <a href="{{ url_for('users.user', _id=replay.team_players[1][0].account_id) }}">{{ replay.team_players[1][0].name }}</a>
+                            {% if replay.team_players[1][0].account_id %}
+                                <a href="{{ url_for('users.user', _id=replay.team_players[1][0].account_id) }}">{{ replay.team_players[1][0].name }}</a>
+                            {% else %}
+                                Bot
+                            {% endif %}
                         {% else %}
                             Dire
                         {% endif %}
