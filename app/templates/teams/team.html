@@ -26,6 +26,6 @@
 {% endblock %}
 
 {% block content %}
-    {% render_table(replays.items) %}
+    {{ render_table(replays.items) }}
     {{ pagination(replays, "teams.team", {'_id': team.id}) }}
 {% endblock %}
