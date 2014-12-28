@@ -1,11 +1,16 @@
 {% extends "layouts/standard.html" %}
 {% from "macros.html" import iconic, pagination %}
-{% from "replays/macros/replays_table.html" import render_table %}
-
+{% from "replays/macros/replays_table.html" import render_table, render_id_header, render_radiant_header,
+    render_vs_header, render_dire_header, render_played_header, render_fav_header, render_ratings_header,
+    render_state_header, render_download_header, render_added_header, render_archived_header, render_id_cell,
+    render_radiant_cell, render_vs_cell, render_dire_cell, render_played_cell, render_fav_cell, render_ratings_cell,
+    render_state_cell, render_download_cell, render_added_cell, render_archived_cell %}
 
 {% block page_header %}
     <div class="page-header">
-        <h1>Replays <small>page {{ replays.page }}</small></h1>
+        <h1>Replays
+            <small>page {{ replays.page }}</small>
+        </h1>
     </div>
 {% endblock %}
 
@@ -22,6 +27,38 @@
 {% endblock %}
 
 {% block content %}
-    {{ render_table(replays.items) }}
+    {{ render_table(replays.items, custom_table_header=custom_table_header, custom_table_row=custom_table_row) }}
     {{ pagination(replays, "replays.replays") }}
 {% endblock %}
+
+{% macro custom_table_header(replay) %}
+    <tr>
+        {{ render_id_header(replay) }}
+        {{ render_added_header(replay) }}
+        {{ render_archived_header(replay) }}
+        {{ render_radiant_header(replay) }}
+        {{ render_vs_header(replay) }}
+        {{ render_dire_header(replay) }}
+        {{ render_played_header(replay) }}
+        {{ render_fav_header(replay) }}
+        {{ render_ratings_header(replay) }}
+        {{ render_state_header(replay) }}
+        {{ render_download_header(replay) }}
+    </tr>
+{% endmacro %}
+
+{% macro custom_table_row(replay) %}
+    <tr>
+        {{ render_id_cell(replay) }}
+        {{ render_added_cell(replay) }}
+        {{ render_archived_cell(replay) }}
+        {{ render_radiant_cell(replay) }}
+        {{ render_vs_cell(replay) }}
+        {{ render_dire_cell(replay) }}
+        {{ render_played_cell(replay) }}
+        {{ render_fav_cell(replay) }}
+        {{ render_ratings_cell(replay) }}
+        {{ render_state_cell(replay) }}
+        {{ render_download_cell(replay) }}
+    </tr>
+{% endmacro %}

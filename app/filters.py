@@ -18,10 +18,15 @@ def escape_every_character(text):
     return "".join("&#{};".format(ord(x)) for x in text)
 
 
+def timestamp_to_datetime(timestamp):
+    """ Take a timestamp and returns a datetime object. """
+    return datetime.utcfromtimestamp(int(timestamp))
+
+
 def timestamp_to_datestring(timestamp, _format=None):
     """ Take a timestamp and output it in the format specified in the site's config. """
     _format = _format or current_app.config["DATE_STRING_FORMAT"]
-    return datetime.utcfromtimestamp(int(timestamp)).strftime(_format)
+    return timestamp_to_datetime(timestamp).strftime(_format)
 
 
 def datetime_to_datestring(_input, _format=None):

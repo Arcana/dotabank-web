@@ -58,6 +58,7 @@ if app.debug:
 
 # Set up jinja2 filters.
 from filters import escape_every_character,\
+    timestamp_to_datetime,\
     timestamp_to_datestring,\
     datetime_to_datestring,\
     seconds_to_time,\
@@ -66,6 +67,7 @@ from filters import escape_every_character,\
     dotabuff_item_link,\
     dotabuff_match_link
 app.add_template_filter(escape_every_character)
+app.add_template_filter(timestamp_to_datetime)
 app.add_template_filter(timestamp_to_datestring)
 app.add_template_filter(datetime_to_datestring)
 app.add_template_filter(seconds_to_time)

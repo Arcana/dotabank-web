@@ -148,7 +148,11 @@
 {% endmacro %}
 
 {% macro render_played_cell(replay) %}
-    <td>{{ replay.start_time|timestamp_to_datestring }}</td>
+    <td>
+        <time is="relative-time" datetime="{{ (replay.start_time|timestamp_to_datetime).isoformat() }}">
+            {{ replay.start_time|timestamp_to_datestring }}
+        </time>
+    </td>
 {% endmacro %}
 
 {% macro render_fav_header(replay) %}
@@ -231,5 +235,31 @@
         </td>
     {% endif %}
 {% endif %}
+
+{% macro render_added_header(replay) %}
+    <th>Added to site</th>
+{% endmacro %}
+{% macro render_added_cell(replay) %}
+    <td>
+        <time is="relative-time" datetime="{{ replay.added_to_site_time.isoformat() }}">
+            {{ replay.added_to_site_time|datetime_to_datestring }}
+        </time>
+    </td>
+{% endmacro %}
+
+{% macro render_archived_header(replay) %}
+    <th>Added to site</th>
+{% endmacro %}
+{% macro render_archived_cell(replay) %}
+    <td>
+        {% if replay.dl_done_time %}
+            <time is="relative-time" datetime="{{ replay.dl_done_time.isoformat() }}">
+                {{ replay.dl_done_time|datetime_to_datestring }}
+            </time>
+        {% else %}
+            &ndash;
+        {% endif %}
+    </td>
+{% endmacro %}
 
 {% endmacro %}
