@@ -1,0 +1,235 @@
+{% from "macros.html" import iconic %}
+
+{# ------------------------------------------------------------------------- #}
+{# Default table                                                             #}
+{# ------------------------------------------------------------------------- #}
+
+{# Produce a table from the given replays.  Takes a custom table_header_macros list for table headers, and table_row_macro for custom table row entries. #}
+{% macro render_table(replays, custom_table_header=None, custom_table_row=None, classes="table table-striped table-condensed") %}
+    <table class="{{ classes }}">
+        <thead>
+        {% if custom_table_header %}
+            {{ custom_table_header() }}
+        {% else %}
+            {{ render_header_row(replay) }}
+        {% endif %}
+        </thead>
+        <tbody>
+        {% for replay in replays %}
+            {% if custom_table_row %}
+                {{ custom_table_row(replay) }}
+            {% else %}
+                {{ render_table_row(replay) }}
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+
+{# ------------------------------------------------------------------------- #}
+{# Default rows                                                              #}
+{# ------------------------------------------------------------------------- #}
+
+{# Standard table header entry #}
+{% macro render_header_row(replay) %}
+    <tr>
+        {{ render_id_header(replay) }}
+        {{ render_radiant_header(replay) }}
+        {{ render_vs_header(replay) }}
+        {{ render_dire_header(replay) }}
+        {{ render_played_header(replay) }}
+        {{ render_fav_header(replay) }}
+        {{ render_ratings_header(replay) }}
+        {{ render_state_header(replay) }}
+        {{ render_download_header(replay) }}
+    </tr>
+{% endmacro %}
+
+{# Standard table row entry #}
+{% macro render_table_row(replay) %}
+    <tr>
+        {{ render_id_cell(replay) }}
+        {{ render_radiant_cell(replay) }}
+        {{ render_vs_cell(replay) }}
+        {{ render_dire_cell(replay) }}
+        {{ render_played_cell(replay) }}
+        {{ render_fav_cell(replay) }}
+        {{ render_ratings_cell(replay) }}
+        {{ render_state_cell(replay) }}
+        {{ render_download_cell(replay) }}
+    </tr>
+{% endmacro %}
+
+{# ------------------------------------------------------------------------- #}
+{# Default cells                                                             #}
+{# ------------------------------------------------------------------------- #}
+
+{% macro render_id_header(replay) %}
+    <th>ID</th>
+{% endmacro %}
+
+{% macro render_id_cell(replay) %}
+    <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a></td>
+{% endmacro %}
+
+{% macro render_radiant_header(replay) %}
+    <th>&nbsp;</th>
+    <th>Radiant</th>
+{% endmacro %}
+
+{% macro render_radiant_cell(replay) %}
+    <td>
+        {% if replay.radiant_team_logo %}
+            <img src="{{ url_for('ugcfile', _id=replay.radiant_team_logo) }}" class="team-logo">
+        {% elif replay.team_players[0]|length == 1 %}
+            {% if replay.team_players[0][0].account_id %}
+                <img class="team-logo" src="{{ replay.team_players[0][0].avatar }}"
+                     alt="{{ replay.team_players[0][0].name }}"/>
+            {% endif %}
+        {% endif %}
+    </td>
+    <td class="team-name">
+        {% if replay.radiant_team_id %}
+            <a href="{{ url_for('teams.team', _id=replay.radiant_team_id) }}">{{ replay.radiant_team_name }}</a>
+        {% elif replay.team_players[0]|length == 1 %}
+            {% if replay.team_players[0][0].account_id %}
+                <a href="{{ url_for('users.user', _id=replay.team_players[0][0].account_id) }}">{{ replay.team_players[0][0].name }}</a>
+            {% else %}
+                Bot
+            {% endif %}
+        {% else %}
+            Radiant
+        {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro render_vs_header(replay) %}
+    <th>&nbsp;</th>
+{% endmacro %}
+
+{% macro render_vs_cell(replay) %}
+    <td>vs</td>
+{% endmacro %}
+
+{% macro render_dire_header(replay) %}
+    <th>&nbsp;</th>
+    <th>Dire</th>
+{% endmacro %}
+
+{% macro render_dire_cell(replay) %}
+    <td>
+        {% if replay.dire_team_logo %}
+            <img src="{{ url_for('ugcfile', _id=replay.dire_team_logo) }}" class="team-logo">
+        {% elif replay.team_players[1]|length == 1 %}
+            {% if replay.team_players[1][0].account_id %}
+                <img class="team-logo" src="{{ replay.team_players[1][0].avatar }}"
+                     alt="{{ replay.team_players[1][0].name }}"/>
+            {% endif %}
+        {% endif %}
+    </td>
+    <td class="team-name">
+        {% if replay.dire_team_id %}
+            <a href="{{ url_for('teams.team', _id=replay.dire_team_id) }}">{{ replay.dire_team_name }}</a>
+        {% elif replay.team_players[1]|length == 1 %}
+            {% if replay.team_players[1][0].account_id %}
+                <a href="{{ url_for('users.user', _id=replay.team_players[1][0].account_id) }}">{{ replay.team_players[1][0].name }}</a>
+            {% else %}
+                Bot
+            {% endif %}
+        {% else %}
+            Dire
+        {% endif %}
+    </td>
+{% endmacro %}
+
+{% macro render_played_header(replay) %}
+    <th>Played</th>
+{% endmacro %}
+
+{% macro render_played_cell(replay) %}
+    <td>{{ replay.start_time|timestamp_to_datestring }}</td>
+{% endmacro %}
+
+{% macro render_fav_header(replay) %}
+    <th><abbr title="Favourite">Fav.</abbr></th>
+{% endmacro %}
+
+{% macro render_fav_cell(replay) %}
+    {% if g.user.is_authenticated() %}
+        <td>
+            <a href="{{ url_for("replays.replay_favourite", _id=replay.id, remove=(1 if replay.user_favourite() else 0)) }}">
+                <span class="{{ "" if replay.user_favourite() else "text-muted" }}">
+                    {{ iconic('star', class='iconic-sm') }}
+                    <sub>({{ replay.favourites|list|length }})</sub>
+                </span>
+            </a>
+        </td>
+    {% else %}
+        <td>
+            <span class="text-muted">
+                {{ iconic('star', class='iconic-sm') }}
+                <sub>({{ replay.favourites|list|length }})</sub>
+            </span>
+        </td>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_ratings_header(replay) %}
+    <th>Rating</th>
+{% endmacro %}
+
+{% macro render_ratings_cell(replay) %}
+    {% if g.user.is_authenticated() %}
+        <td>
+            <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=1) }}">
+                <span class="{{ "" if replay.user_rating() and replay.user_rating().positive == True else "text-muted" }}">
+                    {{ iconic('thumb', state="up", class='iconic-sm') }}
+                    <sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub>
+                </span>
+            </a>&nbsp;
+            <a href="{{ url_for("replays.replay_rate", _id=replay.id, positive=0) }}">
+                <span class="{{ "" if replay.user_rating() and replay.user_rating().positive != True  else "text-muted" }}">
+                    {{ iconic('thumb', state="down", class='iconic-sm') }}
+                    <sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub>
+                </span>
+            </a>
+        </td>
+    {% else %}
+        <td>
+            <span class="text-muted">
+                {{ iconic('thumb', state="up", class='iconic-sm') }}
+                <sub>({{ replay.ratings|selectattr("positive")|list|length }})</sub>
+            </span>&nbsp;
+            <span class="text-muted">
+                {{ iconic('thumb', state="down", class='iconic-sm') }}
+                <sub>({{ replay.ratings|rejectattr("positive")|list|length }})</sub>
+            </span>
+        </td>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_state_header(replay) %}
+    <th>State</th>
+{% endmacro %}
+
+{% macro render_state_cell(replay) %}
+    <td>{{ replay.get_state() }}</td>
+{% endmacro %}
+
+{% macro render_download_header(replay) %}
+    {% if g.user.is_authenticated() %}
+        <th>&nbsp;</th>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_download_cell(replay) %}{% if g.user.is_authenticated() %}
+    {% if g.user.is_authenticated() %}
+        <td>
+            <a class="btn btn-default btn-xs {{ "disabled" if not replay.local_uri else "" }}"
+               href="{{ url_for("replays.download", _id=replay.id) }}">Download</a>
+        </td>
+    {% endif %}
+{% endif %}
+
+{% endmacro %}
