@@ -31,19 +31,19 @@
     {{ pagination(replays, "replays.replays") }}
 {% endblock %}
 
-{% macro custom_table_header(replay) %}
+{% macro custom_table_header() %}
     <tr>
-        {{ render_id_header(replay) }}
-        {{ render_added_header(replay) }}
-        {{ render_archived_header(replay) }}
-        {{ render_radiant_header(replay) }}
-        {{ render_vs_header(replay) }}
-        {{ render_dire_header(replay) }}
-        {{ render_played_header(replay) }}
-        {{ render_fav_header(replay) }}
-        {{ render_ratings_header(replay) }}
-        {{ render_state_header(replay) }}
-        {{ render_download_header(replay) }}
+        {{ render_id_header() }}
+        {{ render_added_header() }}
+        {{ render_archived_header() }}
+        {{ render_radiant_header() }}
+        {{ render_vs_header() }}
+        {{ render_dire_header() }}
+        {{ render_played_header() }}
+        {{ render_fav_header() }}
+        {{ render_ratings_header() }}
+        {{ render_state_header() }}
+        {{ render_download_header() }}
     </tr>
 {% endmacro %}
 

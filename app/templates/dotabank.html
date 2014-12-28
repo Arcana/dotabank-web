@@ -1,4 +1,10 @@
 {% extends "layouts/standard.html" %}
+{% from "replays/macros/replays_table.html" import render_table, render_id_header, render_radiant_header,
+    render_vs_header, render_dire_header, render_played_header, render_fav_header, render_ratings_header,
+    render_state_header, render_download_header, render_added_header, render_archived_header, render_id_cell,
+    render_radiant_cell, render_vs_cell, render_dire_cell, render_played_cell, render_fav_cell, render_ratings_cell,
+    render_state_cell, render_download_cell, render_added_cell, render_archived_cell, render_league_header,
+    render_league_cell %}
 
 {% block page_header %}
     <div class="jumbotron">
@@ -15,7 +21,8 @@
                     <ul>
                         <li>Easy replay archiving &#8212; just input a match ID</li>
                         <li>Unlimited &amp; fast downloads</li>
-                        <li>Automatically archive matches <sup><span class="label label-premium">Premium</span></sup></li>
+                        <li>Automatically archive matches <sup><span class="label label-premium">Premium</span></sup>
+                        </li>
                         <li>Other features coming soon… <sup><span class="label label-premium">Premium</span></sup></li>
                     </ul>
                 </div>
@@ -40,74 +47,63 @@
     </div>
 {% endblock %}
 
+{% macro added_table_header() %}
+    <tr>
+        {{ render_id_header() }}
+        {{ render_state_header() }}
+        {{ render_added_header(classes="text-right") }}
+    </tr>
+{% endmacro %}
+
+{% macro added_table_row(replay) %}
+    <tr>
+        {{ render_id_cell(replay) }}
+        {{ render_state_cell(replay) }}
+        {{ render_added_cell(replay, classes="text-muted text-right") }}
+    </tr>
+{% endmacro %}
+
+{% macro archived_table_header() %}
+    <tr>
+        {{ render_id_header() }}
+        {{ render_state_header() }}
+        {{ render_archived_header(classes="text-right") }}
+    </tr>
+{% endmacro %}
+
+{% macro archived_table_row(replay) %}
+    <tr>
+        {{ render_id_cell(replay) }}
+        {{ render_state_cell(replay) }}
+        {{ render_archived_cell(replay, classes="text-muted text-right") }}
+    </tr>
+{% endmacro %}
+
 {% block content %}
     <div class="row">
         <div class="col-sm-6">
             <h1>Latest added</h1>
-            <table class="table table-condensed table-striped">
-                <thead>
-                <tr>
-                    <th>Replay ID</th>
-                    <th>State</th>
-                    <th>&nbsp;</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for replay in last_added_replays %}
-                    <tr>
-                        <td>
-                            <a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a>
-                        </td>
-                        <td>{{ replay.get_state() }}</td>
-                        <td class="text-muted text-right">
-                            <time is="relative-time" datetime="{{ replay.added_to_site_time.isoformat() }}">
-                                {{ replay.added_to_site_time|datetime_to_datestring }}
-                            </time>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            {{ render_table(last_added_replays, custom_table_header=added_table_header,
+                custom_table_row=added_table_row) }}
         </div>
         <div class="col-sm-6">
             <h1>Latest archived</h1>
-            <table class="table table-condensed table-striped">
-                <thead>
-                <tr>
-                    <th>Replay ID</th>
-                    <th>State</th>
-                    <th>&nbsp;</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for replay in last_archived_replays %}
-                    <tr>
-                        <td>
-                            <a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a>
-                        </td>
-                        <td>{{ replay.get_state()}}</td>
-                        <td class="text-muted text-right">
-                            <time is="relative-time" datetime="{{ replay.dl_done_time.isoformat() }}">
-                                {{ replay.dl_done_time|datetime_to_datestring }}
-                            </time>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            {{ render_table(last_archived_replays, custom_table_header=archived_table_header,
+                custom_table_row=archived_table_row) }}
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-6">
             <div class="most-favs">
-                <h2>Most favourited replays</h2>
+                <h2>Most favoured replays</h2>
 
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>Replay ID</th>
+                        {{ render_id_header() }}
                         <th>Favourites</th>
-                        <th>&nbsp;</th>
+                        {{ render_added_header(classes="text-right") }}
                     </tr>
                     </thead>
                     <tbody>
@@ -116,7 +112,6 @@
                             <td><a href="{{ url_for("replays.replay", _id=replay_id) }}">{{ replay_id }}</a></td>
                             <td>{{ count }}</td>
                             <td class="text-muted text-right">
-                                Added
                                 <time is="relative-time" datetime="{{ replay_added_time.isoformat() }}">
                                     {{ replay_added_time|datetime_to_datestring }}
                                 </time>
@@ -135,9 +130,9 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>Replay ID</th>
+                        {{ render_id_header() }}
                         <th>Likes</th>
-                        <th>&nbsp;</th>
+                        {{ render_added_header(classes="text-right") }}
                     </tr>
                     </thead>
                     <tbody>
@@ -146,7 +141,6 @@
                             <td><a href="{{ url_for("replays.replay", _id=replay_id) }}">{{ replay_id }}</a></td>
                             <td>{{ count }}</td>
                             <td class="text-muted text-right">
-                                Added
                                 <time is="relative-time" datetime="{{ replay_added_time.isoformat() }}">
                                     {{ replay_added_time|datetime_to_datestring }}
                                 </time>
@@ -165,58 +159,22 @@
         <table class="table">
             <thead>
             <tr>
-                <th>Replay ID</th>
-                <th>&nbsp;</th>
-                <th>Radiant</th>
-                <th>&nbsp;</th>
-                <th>&nbsp;</th>
-                <th>Dire</th>
-                <th>&nbsp;</th>
-                <th>League</th>
+                {{ render_id_header() }}
+                {{ render_radiant_header() }}
+                {{ render_vs_header() }}
+                {{ render_dire_header() }}
+                {{ render_league_header() }}
                 <th>Downloads</th>
             </tr>
             </thead>
             <tbody>
             {% for replay, count in most_downloaded_30days %}
                 <tr>
-                    <td>
-                        <a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a>
-                    </td>
-                    <td>
-                        {% if replay.radiant_team_logo %}
-                            <img src="{{ url_for('ugcfile', _id=replay.radiant_team_logo) }}" class="team-logo">
-                        {% endif %}
-                    </td>
-                    <td class="team-name">
-                        {% if replay.radiant_team_id %}
-                            <a href="{{ url_for('teams.team', _id=replay.radiant_team_id) }}">{{ replay.radiant_team_name }}</a>
-                        {% else %}
-                            Radiant
-                        {% endif %}
-                    </td>
-                    <td>vs</td>
-                    <td>
-                        {% if replay.dire_team_logo %}
-                            <img src="{{ url_for('ugcfile', _id=replay.dire_team_logo) }}" class="team-logo">
-                        {% endif %}
-                    </td>
-                    <td class="team-name">
-                        {% if replay.dire_team_id %}
-                            <a href="{{ url_for('teams.team', _id=replay.dire_team_id) }}">{{ replay.dire_team_name }}</a>
-                        {% else %}
-                            Dire
-                        {% endif %}
-                    </td>
-                    {% if replay.league %}
-                        <td>
-                            <img src="{{ replay.league.icon }}" class="team-logo">
-                        </td>
-                        <td><a href="{{ url_for('leagues.league', _id=replay.league_id) }}">{{ replay.league.name }}</a>
-                        </td>
-                    {% else %}
-                        <td>&nbsp;</td>
-                        <td>-</td>
-                    {% endif %}
+                    {{ render_id_cell(replay) }}
+                    {{ render_radiant_cell(replay) }}
+                    {{ render_vs_cell(replay) }}
+                    {{ render_dire_cell(replay) }}
+                    {{ render_league_cell(replay) }}
                     <td>{{ count }}</td>
                 </tr>
             {% endfor %}
@@ -230,58 +188,22 @@
         <table class="table">
             <thead>
             <tr>
-                <th>Replay ID</th>
-                <th>&nbsp;</th>
-                <th>Radiant</th>
-                <th>&nbsp;</th>
-                <th>&nbsp;</th>
-                <th>Dire</th>
-                <th>&nbsp;</th>
-                <th>League</th>
+                {{ render_id_header() }}
+                {{ render_radiant_header() }}
+                {{ render_vs_header() }}
+                {{ render_dire_header() }}
+                {{ render_league_header() }}
                 <th>Downloads</th>
             </tr>
             </thead>
             <tbody>
             {% for replay, count in most_downloaded %}
                 <tr>
-                    <td>
-                        <a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a>
-                    </td>
-                    <td>
-                        {% if replay.radiant_team_logo %}
-                            <img src="{{ url_for('ugcfile', _id=replay.radiant_team_logo) }}" class="team-logo">
-                        {% endif %}
-                    </td>
-                    <td class="team-name">
-                        {% if replay.radiant_team_id %}
-                            <a href="{{ url_for('teams.team', _id=replay.radiant_team_id) }}">{{ replay.radiant_team_name }}</a>
-                        {% else %}
-                            Radiant
-                        {% endif %}
-                    </td>
-                    <td>vs</td>
-                    <td>
-                        {% if replay.dire_team_logo %}
-                            <img src="{{ url_for('ugcfile', _id=replay.dire_team_logo) }}" class="team-logo">
-                        {% endif %}
-                    </td>
-                    <td class="team-name">
-                        {% if replay.dire_team_id %}
-                            <a href="{{ url_for('teams.team', _id=replay.dire_team_id) }}">{{ replay.dire_team_name }}</a>
-                        {% else %}
-                            Dire
-                        {% endif %}
-                    </td>
-                    {% if replay.league %}
-                        <td>
-                            <img src="{{ replay.league.icon }}" class="team-logo">
-                        </td>
-                        <td><a href="{{ url_for('leagues.league', _id=replay.league_id) }}">{{ replay.league.name }}</a>
-                        </td>
-                    {% else %}
-                        <td>&nbsp;</td>
-                        <td>-</td>
-                    {% endif %}
+                    {{ render_id_cell(replay) }}
+                    {{ render_radiant_cell(replay) }}
+                    {{ render_vs_cell(replay) }}
+                    {{ render_dire_cell(replay) }}
+                    {{ render_league_cell(replay) }}
                     <td>{{ count }}</td>
                 </tr>
             {% endfor %}

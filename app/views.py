@@ -49,24 +49,34 @@ def get_most_liked_replays():
 
 @mem_cache.cached(key_prefix="homepage_downloaded_replays", timeout=10*60)  # 10 minutes
 def get_most_downloaded_replays():
-    return db.session.query(Replay, db.func.count(ReplayDownload)).\
+    replays = db.session.query(Replay, db.func.count(ReplayDownload)).\
         join(ReplayDownload.replay).\
         order_by(db.func.count(ReplayDownload).desc()).\
         group_by(ReplayDownload.replay_id).\
         limit(app.config["LATEST_REPLAYS_LIMIT"]).\
         all()
 
+    for replay, count in replays:
+        replay.team_players  # Touch so the data is stored in the object before we push it to mem_cache
+
+    return replays
+
 
 @mem_cache.cached(key_prefix="homepage_downloaded_30d_replays", timeout=10*60)  # 10 minutes
 def get_most_downloaded_30days_replays():
     THIRTY_DAYS_AGO = datetime.utcnow() - timedelta(days=30)
-    return db.session.query(Replay,  db.func.count(ReplayDownload)).\
+    replays = db.session.query(Replay,  db.func.count(ReplayDownload)).\
         join(ReplayDownload.replay).\
         filter(ReplayDownload.created_at >= THIRTY_DAYS_AGO).\
         order_by(db.func.count(ReplayDownload).desc()).\
         group_by(ReplayDownload.replay_id).\
         limit(app.config["LATEST_REPLAYS_LIMIT"]).\
         all()
+
+    for replay, count in replays:
+        replay.team_players  # Touch so the data is stored in the object before we push it to mem_cache
+
+    return replays
 
 
 # Routes

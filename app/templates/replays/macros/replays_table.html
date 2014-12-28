@@ -11,7 +11,7 @@
         {% if custom_table_header %}
             {{ custom_table_header() }}
         {% else %}
-            {{ render_header_row(replay) }}
+            {{ render_header_row() }}
         {% endif %}
         </thead>
         <tbody>
@@ -32,17 +32,17 @@
 {# ------------------------------------------------------------------------- #}
 
 {# Standard table header entry #}
-{% macro render_header_row(replay) %}
+{% macro render_header_row() %}
     <tr>
-        {{ render_id_header(replay) }}
-        {{ render_radiant_header(replay) }}
-        {{ render_vs_header(replay) }}
-        {{ render_dire_header(replay) }}
-        {{ render_played_header(replay) }}
-        {{ render_fav_header(replay) }}
-        {{ render_ratings_header(replay) }}
-        {{ render_state_header(replay) }}
-        {{ render_download_header(replay) }}
+        {{ render_id_header() }}
+        {{ render_radiant_header() }}
+        {{ render_vs_header() }}
+        {{ render_dire_header() }}
+        {{ render_played_header() }}
+        {{ render_fav_header() }}
+        {{ render_ratings_header() }}
+        {{ render_state_header() }}
+        {{ render_download_header() }}
     </tr>
 {% endmacro %}
 
@@ -65,7 +65,7 @@
 {# Default cells                                                             #}
 {# ------------------------------------------------------------------------- #}
 
-{% macro render_id_header(replay) %}
+{% macro render_id_header() %}
     <th>ID</th>
 {% endmacro %}
 
@@ -73,7 +73,7 @@
     <td><a href="{{ url_for("replays.replay", _id=replay.id) }}">{{ replay.get_alias() or replay.id }}</a></td>
 {% endmacro %}
 
-{% macro render_radiant_header(replay) %}
+{% macro render_radiant_header() %}
     <th>&nbsp;</th>
     <th>Radiant</th>
 {% endmacro %}
@@ -104,7 +104,7 @@
     </td>
 {% endmacro %}
 
-{% macro render_vs_header(replay) %}
+{% macro render_vs_header() %}
     <th>&nbsp;</th>
 {% endmacro %}
 
@@ -112,7 +112,7 @@
     <td>vs</td>
 {% endmacro %}
 
-{% macro render_dire_header(replay) %}
+{% macro render_dire_header() %}
     <th>&nbsp;</th>
     <th>Dire</th>
 {% endmacro %}
@@ -143,7 +143,7 @@
     </td>
 {% endmacro %}
 
-{% macro render_played_header(replay) %}
+{% macro render_played_header() %}
     <th>Played</th>
 {% endmacro %}
 
@@ -155,7 +155,7 @@
     </td>
 {% endmacro %}
 
-{% macro render_fav_header(replay) %}
+{% macro render_fav_header() %}
     <th><abbr title="Favourite">Fav.</abbr></th>
 {% endmacro %}
 
@@ -179,7 +179,7 @@
     {% endif %}
 {% endmacro %}
 
-{% macro render_ratings_header(replay) %}
+{% macro render_ratings_header() %}
     <th>Rating</th>
 {% endmacro %}
 
@@ -213,7 +213,7 @@
     {% endif %}
 {% endmacro %}
 
-{% macro render_state_header(replay) %}
+{% macro render_state_header() %}
     <th>State</th>
 {% endmacro %}
 
@@ -221,37 +221,41 @@
     <td>{{ replay.get_state() }}</td>
 {% endmacro %}
 
-{% macro render_download_header(replay) %}
+{% macro render_download_header() %}
     {% if g.user.is_authenticated() %}
         <th>&nbsp;</th>
     {% endif %}
 {% endmacro %}
 
-{% macro render_download_cell(replay) %}{% if g.user.is_authenticated() %}
+{% macro render_download_cell(replay) %}
     {% if g.user.is_authenticated() %}
-        <td>
-            <a class="btn btn-default btn-xs {{ "disabled" if not replay.local_uri else "" }}"
-               href="{{ url_for("replays.download", _id=replay.id) }}">Download</a>
-        </td>
+        {% if g.user.is_authenticated() %}
+            <td>
+                <a class="btn btn-default btn-xs {{ "disabled" if not replay.local_uri else "" }}"
+                   href="{{ url_for("replays.download", _id=replay.id) }}">Download</a>
+            </td>
+        {% endif %}
     {% endif %}
-{% endif %}
-
-{% macro render_added_header(replay) %}
-    <th>Added to site</th>
 {% endmacro %}
-{% macro render_added_cell(replay) %}
-    <td>
+
+{% macro render_added_header(classes="") %}
+    <th class="{{ classes }}">Added to site</th>
+{% endmacro %}
+
+{% macro render_added_cell(replay, classes="") %}
+    <td class="{{ classes }}">
         <time is="relative-time" datetime="{{ replay.added_to_site_time.isoformat() }}">
             {{ replay.added_to_site_time|datetime_to_datestring }}
         </time>
     </td>
 {% endmacro %}
 
-{% macro render_archived_header(replay) %}
-    <th>Added to site</th>
+{% macro render_archived_header(classes="") %}
+    <th class="{{ classes }}">Archived</th>
 {% endmacro %}
-{% macro render_archived_cell(replay) %}
-    <td>
+
+{% macro render_archived_cell(replay, classes="") %}
+    <td class="{{ classes }}">
         {% if replay.dl_done_time %}
             <time is="relative-time" datetime="{{ replay.dl_done_time.isoformat() }}">
                 {{ replay.dl_done_time|datetime_to_datestring }}
@@ -262,4 +266,20 @@
     </td>
 {% endmacro %}
 
+{% macro render_league_header() %}
+    <th>&nbsp;</th>
+    <th>League</th>
+{% endmacro %}
+
+{% macro render_league_cell(replay) %}
+    {% if replay.league %}
+        <td>
+            <img src="{{ replay.league.icon }}" class="team-logo">
+        </td>
+        <td><a href="{{ url_for('leagues.league', _id=replay.league_id) }}">{{ replay.league.name }}</a>
+        </td>
+    {% else %}
+        <td>&nbsp;</td>
+        <td>-</td>
+    {% endif %}
 {% endmacro %}

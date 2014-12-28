@@ -145,6 +145,9 @@ class Replay(db.Model):
         "order_by": [db.desc(added_to_site_time)]
     }
 
+    # Object cache
+    _team_players = None  # Object cache for team_players so if it's poked before being cached we dont need to call the database for this info.
+
     def __init__(self, id=None, replay_state="UNKNOWN", state="WAITING_GC", skip_webapi=False):
         self.id = id
         self.replay_state = replay_state
@@ -226,13 +229,20 @@ class Replay(db.Model):
     def team_players(self):
         """ Returns a tuple (radiant, dire) after splitting the replays players into teams. """
         # Sort players by their in-game slot
+
+        # If we have this cached in the object then serve it.  This means we can cache replays and poke
+        # team_players without requiring extra DB calls, as long as team_players was poked pre-cache.
+        if self._team_players:
+            return self._team_players
+
         players = sorted(self.players, key=lambda x: x.player_slot)
 
         # Split players into teams
         radiant = [p for p in players if p.team == "Radiant"]  # 8th bit false
         dire = [p for p in players if p.team == "Dire"]  # 8th bit true
 
-        return radiant, dire
+        self._team_players = (radiant, dire)
+        return self._team_players
 
     @property
     def region(self):
