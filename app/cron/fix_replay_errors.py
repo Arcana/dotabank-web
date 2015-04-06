@@ -39,26 +39,33 @@ def fix_incorrect_player_counts():
     """
     _error = "PLAYER_COUNT_MISMATCH"
 
-    human_players_discrepancy = [x for x in db.engine.execute(
+    human_players_discrepancy = db.engine.execute(
         text("""
             SELECT
-                r.id,
-                r.human_players,
-                count(rp.id) as player_count
+              r.id,
+              r.human_players,
+              (
+                SELECT count(*) FROM {player_table} rp
+                WHERE rp.replay_id=r.id
+                and (rp.id is NULL or rp.account_id is not NULL) # Exclude bots from count (though there's the chance we have duplicate entries for bots? fack)
+              ) as player_count,
+              (SELECT count(*) FROM {auto_fix_table} raf WHERE raf.replay_id=r.id) as fix_attempts
             FROM {replay_table} r
-            LEFT JOIN {player_table} rp ON rp.replay_id = r.id
             WHERE
-                r.state != "GC_ERROR" and
-                (rp.id is NULL or
-                rp.account_id is not NULL)  # Exclude bots from count (though there's the chance we have duplicate entries for bots? fack)
-            GROUP BY r.id
+              r.state != "GC_ERROR"
+            HAVING
+            r.human_players != player_count
+            and fix_attempts <= {max_fix_attempts}
+
         """.format(
             replay_table=Replay.__tablename__,
-            player_table=ReplayPlayer.__tablename__)
+            player_table=ReplayPlayer.__tablename__,
+            auto_fix_table=ReplayAutoFix.__tablename__,
+            max_fix_attempts=app.config['MAX_REPLAY_FIX_ATTEMPTS'])
         )
-    ) if x.player_count != x.human_players]
+    )
 
-    for replay_id, human_count, player_count in human_players_discrepancy:
+    for replay_id, human_count, player_count, auto_fix_attempts in human_players_discrepancy:
         if not should_fix_be_attempted(replay_id, _error, {'human_count': human_count, 'player_count': player_count}):
             continue
 
