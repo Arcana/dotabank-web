@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import re
 import unicodedata
 
-from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app, abort
+from flask import Blueprint, render_template, flash, redirect, request, url_for, current_app, abort, session, jsonify
 from flask.ext.login import current_user, login_required
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
@@ -316,11 +316,12 @@ def download(_id):
     key = _replay.get_s3_file()
 
     expires_at = (datetime.utcnow() + timedelta(seconds=current_app.config["REPLAY_DOWNLOAD_TIMEOUT"])).ctime()
-    name = key.name
-    md5 = key.etag.replace("\"", "")
-    filesize = key.size
+    name = _replay.filename
+    md5 = _replay.md5
+    filesize = _replay.filesize
+
     if form.validate_on_submit() or _replay.league_id in current_app.config['CAPTCHA_LEAGUE_EXCEPTIONS']:
-        url = key.generate_url(current_app.config["REPLAY_DOWNLOAD_TIMEOUT"])
+        url = _replay.s3_download_url
 
         download_log_entry = ReplayDownload(
             _replay.id,
@@ -418,6 +419,87 @@ def search():
         search_log.success = False
         db.session.add(search_log)
         db.session.commit()
+    return redirect(request.referrer or url_for("index"))
+
+
+@mod.route('/batch_download/', methods=['GET', 'POST'])
+def batch_download():
+    """ Endpoint for batch downloading of replays. NOTE: S3 doesn't support batching, so this is just authorising an
+    amount of replays to be downloaded at once, rather than having to complete a captcha for each replay. """
+    if not session.has_key('mass_download_replay_ids') or len(session.get('mass_download_replay_ids')) == 0:
+        flash("You have no replays marked to be batch-downloaded.  You may batch up to {} replays to download at once."
+              .format(current_app.config.get('MASS_DOWNLOAD_MAX_COUNT')), "warning")
+        return redirect(request.referrer or url_for("index"))
+
+    batched_replays = Replay.query.filter(Replay.id.in_(session.get('mass_download_replay_ids'))).all()
+
+    form = DownloadForm()
+    if form.validate_on_submit():
+        # Log download entries for each replay
+        for _replay in batched_replays:
+            download_log_entry = ReplayDownload(
+                _replay.id,
+                current_user.get_id() if current_user else None
+            )
+            db.session.add(download_log_entry)
+            db.session.commit()
+
+        return render_template('replays/batch_download_granted.html',
+                               title="Batch download replays - Dotabank",
+                               replays=batched_replays)
+
+    return render_template('replays/batch_download.html',
+                           title="Batch download replays - Dotabank",
+                           replays=batched_replays,
+                           b_replays=session.get('mass_download_replay_ids'),
+                           form=form)
+
+
+@mod.route('/batch_download/add/<int:_id>/')
+def batch_download_add(_id):
+    if not session.has_key('mass_download_replay_ids'):
+        session['mass_download_replay_ids'] = []
+
+    # Non-admins can only download X replays at a time.
+    if not current_user.is_admin() and len(session['mass_download_replay_ids']) >= current_app.config.get('MASS_DOWNLOAD_MAX_COUNT'):
+        flash("Sorry, your batch-download queue is already full. You may batch up to {} replays to download at once."
+              .format(current_app.config.get('MASS_DOWNLOAD_MAX_COUNT')), "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    _replay = Replay.query.filter(Replay.id == _id).first()
+    if _replay is None:
+        flash("Replay {} not found.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    if _replay.get_s3_file() is None:
+        if _replay.state != 'ARCHIVED':
+            flash("Replay {} not yet stored in Dotabank.".format(_id), "danger")
+        else:
+            flash("Replay file for replay {} is missing.  This issue has been reported to the site admins and will be investigated.".format(_id), "danger")
+        return redirect(request.referrer or url_for("index"))
+
+    session['mass_download_replay_ids'].append(_id)
+    session.modified = True
+
+    if request.is_xhr:
+        return jsonify(added=True, replay_id=_id, batch_download_queue=session['mass_download_replay_ids'])
+
+    flash("Added replay {} to batch-download queue.".format(_id), "success")
+    return redirect(request.referrer or url_for("index"))
+
+
+@mod.route('/batch_download/rm/<int:_id>/')
+def batch_download_rm(_id):
+    if not session.has_key('mass_download_replay_ids'):
+        session['mass_download_replay_ids'] = []
+
+    if _id in session['mass_download_replay_ids']:
+        session['mass_download_replay_ids'].remove(_id)
+        session.modified = True
+    if request.is_xhr:
+        return jsonify(removed=True, replay_id=_id, batch_download_queue=session['mass_download_replay_ids'])
+
+    flash("Removed replay {} from batch-download queue.".format(_id), "success")
     return redirect(request.referrer or url_for("index"))
 
 

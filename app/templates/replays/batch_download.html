@@ -1,0 +1,74 @@
+{% extends "layouts/standard.html" %}
+{% from "macros.html" import iconic, pagination %}
+{% from "replays/macros/replays_table.html" import render_table, render_id_header, render_radiant_header,
+    render_vs_header, render_dire_header, render_played_header, render_fav_header, render_ratings_header,
+    render_state_header, render_download_header, render_added_header, render_archived_header, render_id_cell,
+    render_radiant_cell, render_vs_cell, render_dire_cell, render_played_cell, render_fav_cell, render_ratings_cell,
+    render_state_cell, render_download_cell, render_added_cell, render_archived_cell %}
+
+{% block page_header %}
+    <div class="page-header">
+        <h1>Replays
+            <small>Batch download</small>
+        </h1>
+    </div>
+{% endblock %}
+
+{% block top_ad %}
+    {# HR below the ad #}
+    {{ super() }}
+    <hr/>
+{% endblock %}
+
+{% block bottom_ad %}
+    {# HR above the ad #}
+    <hr/>
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    <p>Sorry, but currently we have no facility to batch the downloads into a single file.  Instead, you get to only enter
+    a single captcha to get download button for multiple replays.</p>
+
+    {{ render_table(replays, custom_table_header=custom_table_header, custom_table_row=custom_table_row) }}
+
+    <hr/>
+
+    <form action="" method="post" name="download">
+        {{ form.hidden_tag() }}
+        <p>
+            Please prove you don't say "<a
+                href="https://wiki.teamfortress.com/w/images/d/d2/Soldier_robot02.wav?t=20111028120843">Beep boop</a>."
+        </p>
+        <p>{{ form.recaptcha }}</p>
+        <button type="submit" class="btn btn-primary">Download</button>
+    </form>
+{% endblock %}
+
+{% macro custom_table_header() %}
+    <tr>
+        {{ render_id_header() }}
+        {{ render_radiant_header() }}
+        {{ render_vs_header() }}
+        {{ render_dire_header() }}
+        {{ render_played_header() }}
+        <th>Filename</th>
+        <th>Filesize</th>
+        <th>MD5</th>
+        <th>&nbsp;</th>
+    </tr>
+{% endmacro %}
+
+{% macro custom_table_row(replay) %}
+    <tr>
+        {{ render_id_cell(replay) }}
+        {{ render_radiant_cell(replay) }}
+        {{ render_vs_cell(replay) }}
+        {{ render_dire_cell(replay) }}
+        {{ render_played_cell(replay) }}
+        <td>{{ replay.filename }}</td>
+        <td>{{ replay.filesize|filesizeformat }}</td>
+        <td>{{ replay.md5 }}</td>
+        <td><a href="{{ url_for('replays.batch_download_rm', _id=replay.id) }}">Remove from download</a></td>
+    </tr>
+{% endmacro %}

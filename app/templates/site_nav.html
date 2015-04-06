@@ -34,6 +34,9 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li>
+                    <a href="{{ url_for('replays.batch_download') }}">Batch download ({{ session.get('mass_download_replay_ids', [])|length }} replays)</a>
+                </li>
+                <li>
                     <form class="navbar-form navbar-input-group" method="POST" action="{{ url_for("replays.search") }}">
                         {{ search_form.hidden_tag() }}
                         <div class="form-group">

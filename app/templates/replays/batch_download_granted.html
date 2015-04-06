@@ -1,0 +1,107 @@
+{% extends "layouts/standard.html" %}
+{% from "macros.html" import iconic, pagination %}
+{% from "replays/macros/replays_table.html" import render_table, render_id_header, render_radiant_header,
+    render_vs_header, render_dire_header, render_played_header, render_fav_header, render_ratings_header,
+    render_state_header, render_download_header, render_added_header, render_archived_header, render_id_cell,
+    render_radiant_cell, render_vs_cell, render_dire_cell, render_played_cell, render_fav_cell, render_ratings_cell,
+    render_state_cell, render_download_cell, render_added_cell, render_archived_cell %}
+
+{% block page_header %}
+    <div class="page-header">
+        <h1>Replays
+            <small>Batch download</small>
+        </h1>
+    </div>
+{% endblock %}
+
+{% block top_ad %}
+    {# HR below the ad #}
+    {{ super() }}
+    <hr/>
+{% endblock %}
+
+{% block bottom_ad %}
+    {# HR above the ad #}
+    <hr/>
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    <h2>Congratulations!<br/>You're not a robot.</h2>
+    <p class="lead">The above news may come as a shock but don't fret &ndash; not being a robot is okay, and totally
+        acceptable in today's society.</p>
+
+    <p>Sorry, but currently we have no facility to batch the downloads into a single file. Instead, you get to only
+        enter
+        a single captcha to get download button for multiple replays.</p>
+
+    <div role="tabpanel">
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#dlbuttons" aria-controls="dlbuttons" role="tab"
+                                                      data-toggle="tab">Download buttons</a></li>
+            <li role="presentation"><a href="#urlslist" aria-controls="urlslist" role="tab" data-toggle="tab">URLs
+                list</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="dlbuttons">
+                <p>Hit the green buttons below to download the replays.</p>
+
+                {{ render_table(replays, custom_table_header=custom_table_header, custom_table_row=custom_table_row) }}
+            </div>
+            <div role="tabpanel" class="tab-pane" id="urlslist">
+                <p>Here are the URLs for your replays.</p>
+
+                <p>To download with:</p>
+                <dl class="dl-horizontal">
+                    <dt>wget</dt>
+                    <dd><code>wget -i urls.txt</code></dd>
+                    <dt>aria2</dt>
+                    <dd><code>aria2c -i urls.txt</code></dd>
+                </dl>
+
+                <pre>
+                    {%- for replay in replays -%}
+                        {{ replay.s3_download_url + '\n' }}
+                    {%- endfor -%}
+                </pre>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% macro custom_table_header() %}
+    <tr>
+        {{ render_id_header() }}
+        {{ render_radiant_header() }}
+        {{ render_vs_header() }}
+        {{ render_dire_header() }}
+        {{ render_played_header() }}
+        <th>Filename</th>
+        <th>Filesize</th>
+        <th>MD5</th>
+        <th>&nbsp;</th>
+    </tr>
+{% endmacro %}
+
+{% macro custom_table_row(replay) %}
+    <tr>
+        {{ render_id_cell(replay) }}
+        {{ render_radiant_cell(replay) }}
+        {{ render_vs_cell(replay) }}
+        {{ render_dire_cell(replay) }}
+        {{ render_played_cell(replay) }}
+        <td>{{ replay.filename }}</td>
+        <td>{{ replay.filesize|filesizeformat }}</td>
+        <td>{{ replay.md5 }}</td>
+        <td>
+            <a class="btn btn-success {{ "disabled" if not replay.local_uri else "" }}"
+               href="{{ replay.s3_download_url }}">Download</a>
+        </td>
+    </tr>
+{% endmacro %}

@@ -31,17 +31,27 @@
                     <th>Replay ID</th>
                     <th>Replay state</th>
                     <th>Replay</th>
+                    <th>Batch DL</th>
                 </tr>
             </thead>
             <tbody>
             {% if replays.total > 0 %}
                 {% for replay in replays.items %}
-                     <tr>
+                     <tr id="replay_row_{{ replay.replay_id }}">
                         <td>{{ replay.replay.start_time|timestamp_to_datestring }}</td>
                         <td>{{ replay.hero.localized_name if replay.hero else "No hero" }}</td>
                         <td>{{ replay.replay.get_alias() or replay.replay.id }}</td>
                         <td>{{ replay.replay.get_state() }}</td>
                         <td><a href="{{ url_for("replays.replay", _id=replay.replay_id) }}" class="btn btn-xs btn-default">View replay</a></td>
+                        <td>
+                            {% if replay.replay.local_uri != None %}
+                                {% if replay.replay_id in session.get('mass_download_replay_ids', []) %}
+                                    <a href="{{ url_for("replays.batch_download_rm", _id=replay.replay_id) }}" class="batchdl-btn btn btn-xs btn-default" data-loading="Removing...">Remove from batch DL</a>
+                                {% else %}
+                                    <a href="{{ url_for("replays.batch_download_add", _id=replay.replay_id) }}" class="batchdl-btn btn btn-xs btn-default" data-loading="Adding...">Add to batch DL</a>
+                                {% endif %}
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             {% else %}
@@ -54,4 +64,41 @@
             </tbody>
     </table>
     {{ pagination(replays, "users.user_replays", {"_id":user.id}) }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+
+    <script>
+        var BatchDownload = {
+            // Route requests over AJAX
+            onButtonClick: function(e){
+                e.preventDefault();
+                var $this = $(this);
+                $this.attr('disabled', 'disabled').text($this.data('loading'));
+                $.get(this.href, BatchDownload.onAjaxComplete);
+            },
+            onAjaxComplete: function(data){
+                var $dl_btn = $('#replay_row_' + data.replay_id + ' .batchdl-btn');
+                if (data.added) {
+                    $dl_btn.replaceWith($(BatchDownload.templates.remove_button.replace('__REPLAY_ID__', data.replay_id)));
+                }
+                else if (data.removed) {
+                    $dl_btn.replaceWith($(BatchDownload.templates.add_button.replace('__REPLAY_ID__', data.replay_id)));
+                }
+                $(this).attr('disabled', false);
+                BatchDownload.reattachEventHandlers();
+            },
+            reattachEventHandlers: function(){
+                $('.batchdl-btn').off('click').on('click', BatchDownload.onButtonClick);
+            },
+            templates: {
+                remove_button: '<a href="{{ url_for("replays.batch_download_rm", _id=99999999) }}" class="batchdl-btn btn btn-xs btn-default" data-loading="Removing...">Remove from batch DL</a>'.replace('99999999', '__REPLAY_ID__'),
+                add_button: '<a href="{{ url_for("replays.batch_download_add", _id=99999999) }}" class="batchdl-btn btn btn-xs btn-default" data-loading="Adding...">Add to batch DL</a>'.replace('99999999', '__REPLAY_ID__')
+            }
+        };
+        $(document).ready(function(){
+            BatchDownload.reattachEventHandlers();
+        });
+    </script>
 {% endblock %}

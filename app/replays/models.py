@@ -1,5 +1,5 @@
 from app import db, sqs_gc_queue, sqs_dl_queue, mem_cache, dotabank_bucket, steam
-from flask.ext.login import current_user
+from flask.ext.login import current_user, current_app
 import datetime
 from boto.sqs.message import RawMessage as sqsMessage
 from app.leagues.models import League
@@ -147,6 +147,7 @@ class Replay(db.Model):
 
     # Object cache
     _team_players = None  # Object cache for team_players so if it's poked before being cached we dont need to call the database for this info.
+    _s3_key = None
 
     def __init__(self, id=None, replay_state="UNKNOWN", state="WAITING_GC", skip_webapi=False):
         self.id = id
@@ -248,12 +249,30 @@ class Replay(db.Model):
     def region(self):
         return Region.get_by_cluster(self.replay_cluster)
 
-    def get_s3_file(self):
-        key = None
-        if self.local_uri:
-            key = dotabank_bucket.get_key(self.local_uri)
+    @property
+    def filename(self):
+        return self.get_s3_file().name
 
-        return key
+    @property
+    def md5(self):
+        return self.get_s3_file().etag.replace("\"", "")
+
+    @property
+    def filesize(self):
+        return self.get_s3_file().size
+
+    @property
+    def s3_download_url(self):
+        return self.get_s3_file().generate_url(current_app.config["REPLAY_DOWNLOAD_TIMEOUT"])
+
+    def get_s3_file(self):
+        if self._s3_key is not None:
+            return self._s3_key
+
+        if self.local_uri:
+            self._s3_key = dotabank_bucket.get_key(self.local_uri)
+
+        return self._s3_key
 
     def get_alias(self, formatted=True):
         if current_user.is_anonymous() is True:
