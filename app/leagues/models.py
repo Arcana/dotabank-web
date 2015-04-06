@@ -90,6 +90,13 @@ class League(db.Model):
         """ Loops over leagues from WebAPI inserting new data where appropriate. """
         for webapi_league in cls.fetch_leagues_from_webapi():
 
+            # Valve a great programmers and have a league with the ID 0.
+            # Valve also return {... "leagueid": 0 ...} on all GetMatchDetail requests
+            # The league with the ID 0 and all of the other replays are NOT related.
+            # Fuck you Valve.
+            if int(webapi_league.get("leagueid")) == 0:
+                continue
+
             # Check if we have a hero entry
             _league = cls.query.filter(cls.id == webapi_league.get('leagueid')).first()
 
