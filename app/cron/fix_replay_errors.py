@@ -89,17 +89,28 @@ def fix_small_replays():
     """
     _error = "SMALL_REPLAY"
 
+    # FIXME: This step will take longer and longer the more replays we store.  It would be more efficient to store
+    # the filesize in our local database after a file has been archived, and then directly query the database.
     small_replay_files = {replay_file.key[8:-8]: replay_file.size for replay_file in dotabank_bucket.list()
                           if replay_file.key[:8] == "replays/" and replay_file.size < (1024 * 1024)}
-    small_replays = Replay.query.filter(Replay.state == "ARCHIVED", Replay.id.in_(small_replay_files.keys())).all()
 
-    for replay in small_replays:
+    small_replays = db.session.query(Replay, db.func.count(ReplayAutoFix.id)).filter(
+        Replay.state == "ARCHIVED",                 # Ignore non-archived files (they shouldnt be in s3 if they aren't archived, but vOv)
+        Replay.id.in_(small_replay_files.keys()),   # Check the replays that the S3 call above has flagged as small
+        ReplayAutoFix.replay_id == Replay.id
+    ).group_by(
+        ReplayAutoFix.replay_id
+    ).having(
+        db.func.count(ReplayAutoFix.id) < app.config.get('MAX_REPLAY_FIX_ATTEMPTS')  # Ignore replays that have exceeded max fix attempts
+    ).all()
+
+    for replay, fix_attempts in small_replays:
         if not should_fix_be_attempted(replay.id, _error, extra={
             'file_size': small_replay_files[unicode(replay.id)]
         }):
             continue
 
-        print ("Replay {} has a small file stored on s3 ({} bytes).  Re-adding to GC queue.".format(
+        print ("Replay {} has a small file stored on s3 ({} bytes).  Re-adding to DL queue.".format(
             replay.id,
             small_replay_files[unicode(replay.id)]
         ))
@@ -128,7 +139,7 @@ def fix_missing_files():
         print ("Replay {} is \"ARCHIVED\" but does not have a file stored on S3. Re-adding to GC queue.".format(
             replay.id
         ))
-        replay.state = "WAITING_GC"  # Switch state back to WAITING_GC.
+        replay.state = "WAITING_DOWNLOAD"  # Switch state back to WAITING_DOWNLOAD.
         Replay.add_dl_job(replay)
 
 
@@ -143,11 +154,17 @@ def fix_long_waiting_download():
 
     for replay in replay_waiting_download_over24hrs:
         if not should_fix_be_attempted(replay.id, _error):
+            # Tag as "DOWNLOAD_ERROR" because we can't fix this - the problem is entirely in Valve (or their partners) domain.
+            replay.state = "DOWNLOAD_ERROR"
+            replay.local_uri = None
+            replay.dl_done_time = None
+            db.session.add(replay)
+            db.session.commit()
             continue
 
 
-        print ("Replay {} has been \"WAITING_DOWNLOAD\" for over 24 hours. Re-adding to GC queue.".format(
+        print ("Replay {} has been \"WAITING_DOWNLOAD\" for over 24 hours. Re-adding to DL queue.".format(
             replay.id
         ))
-        replay.state = "WAITING_GC"  # Switch state back to WAITING_GC.
+        replay.state = "WAITING_DOWNLOAD"  # Switch state back to WAITING_DOWNLOAD.
         Replay.add_dl_job(replay)
