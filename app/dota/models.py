@@ -1,3 +1,5 @@
+import datetime
+from sqlalchemy import distinct
 from app import steam, fs_cache, sentry, db
 from flask import current_app, url_for, g
 import requests
@@ -11,24 +13,25 @@ SCHEMA_DATA_URL = "https://raw.githubusercontent.com/dotabuff/d2vpk/master/json/
 LOCALIZATION_DATA_URL = "https://raw.githubusercontent.com/dotabuff/d2vpk/master/json/dota/resource/dota_{}.json"
 
 
-class Hero:
+class Hero(db.Model):
     """ Represents a Dota 2 hero. """
+    __tablename__ = "heroes"
 
-    id = None
-    name = None
-    token = None
+    id = db.Column(db.Integer, primary_key=True, autoincrement=False)  # We'll set this from game data
+    name = db.Column(db.String(80))
+    token = db.Column(db.String(80), unique=True)
 
-    _heroes = None
-    _CACHE_KEY = "heroes"  # Key for fscache of this file
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
-    def __init__(self, _id, _token, **kwargs):
+    # Relationship with players
+    replay_players = db.relationship('ReplayPlayer', backref=db.backref('hero', lazy="joined"), lazy="dynamic")
+    replays = db.relationship('Replay', secondary='replay_players', backref=db.backref('heroes', lazy="joined"), lazy="dynamic")
+
+    def __init__(self, _id, token):
         self.id = _id
-        self.token = _token
-        self.name = _token.replace('npc_dota_hero_', '')
-
-        # Populate all other parms via kwargs - consider them optional
-        for key, arg in kwargs.items():
-            self.__dict__[key] = arg
+        self.token = token
+        self.name = self.token_to_name(token)
 
     def __repr__(self):
         return self.localized_name
@@ -38,27 +41,27 @@ class Hero:
         return g.localization.tokens.get(self.token) or self.token
 
     @property
+    def icon(self):
+        return url_for('hero_icon', hero_name=self.token.replace('npc_dota_hero_', ''))
+
+    @property
     def image(self):
         return url_for('hero_image', hero_name=self.token.replace('npc_dota_hero_', ''))
 
-    @property
-    def replays(self):
-        from app.replays.models import Replay, ReplayPlayer
-        return Replay.query.filter(Replay.players.any(hero_id=self.id))
-
     @classmethod
-    @fs_cache.cached(timeout=60 * 60, key_prefix=_CACHE_KEY)
-    def fetch_heroes(cls):
-        """ Fetch a list of heroes via the game's npc_heroes.txt
+    # @fs_cache.cached(timeout=60 * 60, key_prefix=_CACHE_KEY)
+    def update_data(cls):
+        """ Fetch a list of heroes via the game's npc_heroes.txt and store the data in the database.
 
         Fetches npc_heroes.txt as JSON via Dotabuff's d2vpk repository, and parses it for data.
-        Falls back to data stored on the file-system in case of a HTTPError or KeyError.
 
         Only retrieves ID and token for now, but there's a ton more data available should we ever need it.
 
         Returns:
             An array of Hero objects.
         """
+        hero_data = None
+
         try:
             req = requests.get(HERO_DATA_URL)
 
@@ -67,66 +70,35 @@ class Hero:
                 raise requests.HTTPError("Response not HTTP OK")
 
             # Fetch relevant pieces of data from JSON data
-            input_heroes = req.json()['DOTAHeroes']
-            output_heroes = []
+            hero_data = req.json()['DOTAHeroes']
 
-            # Iterate through heries, create an instance of this class for each.
-            for key, hero in input_heroes.items():
-                # Skip these keys - they're not hero definitions
-                if key in ["Version", "npc_dota_hero_base"]:
-                    continue
-
-                output_heroes.append(
-                    cls(
-                        _id=int(hero.get('HeroID')),
-                        _token=key
-                    )
-                )
-
-            return output_heroes
-
+        # If fetch failed, yell things
         except (steam.api.HTTPError, KeyError):
-            sentry.captureMessage('Hero.fetch_heroes failed', exc_info=sys.exc_info)
+            sentry.captureMessage('Hero.update_data failed', exc_info=sys.exc_info)
+            return False
 
-            # Try to get data from existing cache entry
-            data = fs_cache.cache.get(cls._CACHE_KEY, ignore_expiry=True)
+        # Iterate through heroes, updating or creating a database row where appropriate
+        for key, hero in hero_data.items():
+            # Skip these keys - they're not hero definitions
+            if key in ["Version", "npc_dota_hero_base"]:
+                continue
 
-            # Return data if we have any, else return an empty list()
-            return data or list()
+            hero_id = int(hero.get('HeroID'))
 
-    @classmethod
-    def get_all(cls):
-        if cls._heroes is None:
-            cls._heroes = cls.fetch_heroes()
+            _hero = cls.query.filter(cls.id == hero_id).first()
+            if not _hero:
+                _hero = cls(hero_id, key)
 
-        return cls._heroes
+            _hero.id = hero_id
+            _hero.token = key
+            _hero.name = cls.token_to_name(key)
+            db.session.add(_hero)
 
-    @classmethod
-    def get_by_id(cls, _id):
-        """ Returns a Hero object for the given hero id. """
-        for hero in cls.get_all():
-            if hero.id == _id:
-                return hero
+        return db.session.commit()
 
-        return None
-
-    @classmethod
-    def get_by_token(cls, name):
-        """ Returns a Hero object for the given hero token. """
-        for hero in cls.get_all():
-            if hero.token == name:
-                return hero
-
-        return None
-
-    @classmethod
-    def get_by_name(cls, name):
-        """ Returns a Hero object for the given hero token. """
-        for hero in cls.get_all():
-            if hero.name == name:
-                return hero
-
-        return None
+    @staticmethod
+    def token_to_name(token):
+        return token.replace('npc_dota_hero_', '')
 
 
 class Item:

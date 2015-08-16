@@ -408,7 +408,7 @@ class ReplayPlayer(db.Model):
     # GC data
     account_id = db.Column(db.Integer, db.ForeignKey("users.id"), index=True)  # optional uint32 account_id = 1;
     player_slot = db.Column(db.Integer)  # optional uint32 player_slot = 2;
-    hero_id = db.Column(db.Integer, index=True)  # optional uint32 hero_id = 3;
+    hero_id = db.Column(db.Integer, db.ForeignKey("heroes.id"))  # optional uint32 hero_id = 3;
     item_0 = db.Column(db.Integer)  # optional uint32 item_0 = 4;
     item_1 = db.Column(db.Integer)  # optional uint32 item_1 = 5;
     item_2 = db.Column(db.Integer)  # optional uint32 item_2 = 6;
@@ -512,10 +512,6 @@ class ReplayPlayer(db.Model):
             Item.get_by_id(self.item_4),
             Item.get_by_id(self.item_5)
         ]
-
-    @property
-    def hero(self):
-        return Hero.get_by_id(self.hero_id)
 
     def __repr__(self):
         return "<ReplayPlayer {}>".format(self.id)

@@ -345,3 +345,7 @@ table > tbody > tr > td.item-cell {
 time[title] {
   border-bottom: 1px dotted;
 }
+
+.hero_icon {
+    height: 20px;
+}

@@ -25,6 +25,11 @@ def update_league_data():
     from app.leagues.models import League
     League.update_leagues_from_webapi()
 
+@manager.command
+def update_hero_data():
+    from app.dota.models import Hero
+    Hero.update_data()
+
 
 @manager.command
 def fix_incorrect_player_counts():

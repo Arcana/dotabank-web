@@ -29,14 +29,14 @@ class HeroTestCase(DotaTestCase):
 
     def test_get_all(self):
         """ Test we get a populated list of heroes """
-        heroes = Hero.get_all()
+        heroes = Hero.query.all()  # TODO: Refactorinate
 
         self.assertIsInstance(heroes, list)
-        self.assertGreaterEqual(len(heroes), 107)  # 107 at time of test writing.  This will fail if the WebAPI is down.
+        self.assertGreaterEqual(len(heroes), 107)  # 107 at time of test writing.
 
     def test_get_by_id(self):
         """ Test we can get a hero by their ID """
-        crystal_maiden = Hero.get_by_id(self.CRYSTAL_MAIDEN['id'])
+        crystal_maiden = Hero.query.filter(Hero.id == self.CRYSTAL_MAIDEN['id']).one()
 
         self.assertIsNotNone(crystal_maiden)
         self.assertEqual(crystal_maiden.id, self.CRYSTAL_MAIDEN['id'])
@@ -47,7 +47,7 @@ class HeroTestCase(DotaTestCase):
 
     def test_get_by_token(self):
         """ Test we can get a hero by their token """
-        crystal_maiden = Hero.get_by_token(self.CRYSTAL_MAIDEN['token'])
+        crystal_maiden = Hero.query.filter(Hero.token == self.CRYSTAL_MAIDEN['token']).one()
 
         self.assertIsNotNone(crystal_maiden)
         self.assertEqual(crystal_maiden.id, self.CRYSTAL_MAIDEN['id'])
@@ -58,7 +58,7 @@ class HeroTestCase(DotaTestCase):
 
     def test_get_by_name(self):
         """ Test we can get a hero by their token """
-        crystal_maiden = Hero.get_by_name(self.CRYSTAL_MAIDEN['name'])
+        crystal_maiden = Hero.query.filter(Hero.name == self.CRYSTAL_MAIDEN['name']).one()
 
         self.assertIsNotNone(crystal_maiden)
         self.assertEqual(crystal_maiden.id, self.CRYSTAL_MAIDEN['id'])

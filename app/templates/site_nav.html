@@ -23,7 +23,12 @@
                             <li class="col-sm-2">
                                 <ul>
                                     {% for hero in hero_group %}
-                                        <li><a href="{{ url_for('heroes.hero', _name=hero.name ) }}">{{ hero.localized_name }}</a></li>
+                                        <li>
+                                            <a href="{{ url_for('heroes.hero', _name=hero.name ) }}">
+                                                <img class="hero_icon" src="{{ hero.icon }}" alt=""/>
+                                                {{ hero.localized_name }}
+                                            </a>
+                                        </li>
                                     {% endfor %}
                                 </ul>
                             </li>

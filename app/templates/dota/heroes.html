@@ -31,8 +31,8 @@
             </tr>
         </thead>
         <tbody>
-            {% if heroes|length > 0 %}
-                {% for hero in heroes %}
+            {% if heroes_and_replay_counts|length > 0 %}
+                {% for replay_count, hero in heroes_and_replay_counts %}
                     <tr>
                         <td class="thumbnail-cell">
                             {% if hero.image %}
@@ -49,7 +49,7 @@
                                 <a href="{{ hero.localized_name|dota_wiki_link }}" class="btn btn-xs btn-wiki">Wiki</a>
                             </div>
                         </td>
-                        <td>{{ hero.count }}</td>
+                        <td>{{ replay_count }}</td>
                     </tr>
                 {% endfor %}
         {% else %}

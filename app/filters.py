@@ -1,4 +1,3 @@
-from app import mem_cache, fs_cache, steam
 from flask import current_app
 from datetime import datetime, timedelta
 
