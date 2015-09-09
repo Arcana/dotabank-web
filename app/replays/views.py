@@ -375,32 +375,8 @@ def search():
 
             # If we don't have match_id in database, check if it's a valid match via the WebAPI and if so add it to DB.
             if not _replay:
-                try:
-                    # Only continue if the WebAPI doesn't throw an error for this match ID, and if the match ID for the
-                    # info returned matches the match_id we sent (Fixes edge-case bug that downed Dotabank once, where
-                    # a user searched 671752079671752079 and the WebAPI returned details for 368506255).
-                    match_data = steam.api.interface("IDOTA2Match_570").GetMatchDetails(match_id=match_id).get("result")
-                    if "error" not in match_data.keys() and int(match_data.get("match_id")) == int(match_id):
-                        # Use get_or_create in case of race-hazard where another request (e.g. double submit) has already processed this replay while we were waiting for match_data.
-                        # DOESN'T FIX A FOOKIN THINGA
-                        _replay, created = Replay.get_or_create(id=match_id, skip_webapi=True)
-
-                        if created:
-                            _replay._populate_from_webapi(match_data)
-                            db.session.add(_replay)
-                            queued = Replay.add_gc_job(_replay, skip_commit=True)
-                            if queued:
-                                flash("Replay {} was not in our database, so we've added it to the job queue to be parsed!".format(match_id), "info")
-                                try:
-                                    db.session.commit()
-                                except IntegrityError:
-                                    db.session.rollback()
-                                    pass  # Fucking piece of shit.
-                            else:
-                                db.session.rollback()
-                                error = True
-                except steam.api.HTTPError:
-                    error = True
+                flash('Sorry, we do not have any replay stored for match ID {}'.format(match_id), 'danger')
+                return redirect(request.referrer or url_for("index"))
 
             if _replay:
                 search_log.replay_id = _replay.id

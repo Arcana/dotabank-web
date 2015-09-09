@@ -1,0 +1,122 @@
+{% extends "layouts/standard.html" %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="page-header">
+                <h1>The end of Dotabank
+                    <small>09th September 2013</small>
+                </h1>
+            </div>
+            <p>Dotabank began 2 years ago, on <a
+                    href="https://github.com/Arcana/dotabank-web/commit/66b26fc28122b7faa98b4611fd78c4b2e9c80938">September
+                5th 2013</a>, as a personal exploration into the world of replay analysis, after <a
+                    href="https://github.com/skadistats/skadi">SkadiStats’ Skadi replay parser</a> was launched. The
+                idea was simple: There is not a lot of game data available via Valve’s WebAPI, but there is a lot of
+                game data in the replays &ndash; how much of that can I extract?</p>
+
+            <p>I’m not an amazing programmer, so progress was slow, but the core components eventually came together
+                and a barely functional prototype was created. It had graphs of each team’s experience, gold, last hits,
+                and denies over an entire game, as well as hosted a copy of an entire matches combat log (which was
+                HUGE!). It was very slow, expensive, but it had data from the replays &ndash; and all you had to do to
+                get
+                that data was stick a match ID in a website.</p>
+
+            <p>Then I was hired as a full time software developer. The time I had to spend on Dotabank was greatly
+                reduced, and my motivation for side projects slowly dwindled as the work I was doing sufficiently
+                fulfilled my desire to create. I started to need my spare time to relax.</p>
+
+            <p>I realised I would not be able to commit the resources to finish a project like Dotabank. What I had
+                completed so far did not provide useful data for visitors, and I no longer had the time to solve the
+                various challenges that creating a replay-analysis service posed.</p>
+
+            <p>I realised something else too. One problem Dota 2 players had, and continue to have, is the fact replays
+                expire. Another problem is there was no service to facilitate downloading replays outside of the game
+                client (which is something I wanted, as my internet at home was very slow). I realised I had built a
+                system that stores player’s replays for them, and without much effort I could add ‘download’ buttons so
+                people could access those replays. Although I was unable to fulfil the original goals of the project,
+                what I did have in pursuit of those original goals was codebase that solved two problems facing the Dota
+                2 playerbase. So I completely dropped the idea of replay-analysis, and just opted to push Dotabank
+                purely as a replay-storage service.</p>
+
+            <p>As people started to use Dotabank, the costs of the service became rather significant &ndash; both in
+                time and
+                money. The vast majority of time I spent on the site was maintenance &ndash; fixing bugs and cleaning up
+                the
+                (rather inefficient and slow) codebase. There wasn't a lot of evidence of all that work on the
+                front-end;
+                just the site being a little faster, and the costs to me personally &ndash; as I fund this project out
+                of my
+                own pocket &ndash; being reduced slightly.</p>
+
+            <p>With the limited time I had available primarily being spent on maintenance, I lost a lot of passion for
+                the project. Now and then I would gather enough motivation to work on new features (things like browsing
+                replays by tournament, or by hero), and the results of that work were again also minor, but in the end -
+                through the first year of Dotabank’s existence &ndash; I simply lost my passion for the project.</p>
+
+            <p>I kept the service running however, because people did use it and find value in it. Every now and then
+                I’d receive a small donation from somebody &ndash; a token of appreciation for the service which I am
+                very
+                thankful for, and researchers would contact me wanting some of the replays we have stored for various
+                statistical analysis. That made me happy. It didn’t restore my passion for the project, but it at least
+                proved there was some value in the project &ndash; and so I have been unwilling to shut the project
+                down. As
+                long as I could cover its costs, I would do so, and that has been my stance on the project over this
+                past year.</p>
+
+            <p>With the launch of the Dota 2 Reborn client today, the back-end services I created 2 years ago to
+                download Dota 2 replays ceased to function &ndash; they simply don’t work with Reborn. Similarly, the
+                50,800
+                replays that are currently archived in Dotabank are now incompatible with Reborn. So starting today
+                Dotabank does not have any replays that can be viewed, and it is unable to download any new Reborn
+                replays.</p>
+
+            <p>The problem of downloading Reborn replays can be solved, but at present I have neither time nor
+                motivation to work on a Reborn compatible back-end. The other problem &ndash; having 50,800 replays that
+                are
+                effectively useless &ndash; cannot be solved, and it is relatively expensive to keep hosting them.</p>
+
+            <p>So, after 2 years, 50,800 replays, and 68,682 downloads served, it is time for Dotabank to end. The site
+                is currently in “read-only” mode, which simply the site won’t try to archive any more replays. I will
+                keep the site running for a few more months, so if you want to download any of the replays stored you
+                can, but in a few months I will shut the site down completely.</p>
+
+            <p>This may not be the end for Dotabank. I think there is value in the project; not a lot of it, but
+                certainly a little; but right now the simple fact right now is Dotabank doesn’t work and I won’t be able
+                to fix it for a long time, so I’m switching it off.</p>
+
+            <p>I am very sorry that I cannot maintain this project any longer, but I am very thankful for everybody who
+                has supported me along the way.</p>
+
+            <p>A huge thank-you goes out to those who have donated to the project; I do cover the costs of this service
+                out of my own pocket, and those costs have been a significant chunk of my salary &ndash; so any donation
+                has
+                helped me a lot &ndash; thank you.</p>
+
+            <p>Thank you to those who have gotten in touch and expressed their appreciation for this project, as well as
+                my other work in the Dota 2 space; it feels very good knowing that others have found value in the work I
+                have done.</p>
+
+            <p>And thank-you to the friends who have helped me with this project over the years, in one form or another.
+                I’d undoubtedly forget somebody if I attempted to name those friends, so I won’t even try &ndash; but
+                those
+                friends know who they are.</p>
+
+            <p>
+                Rob Jackson
+                <br/>
+                <a href="{{ "mailto:rob@rjackson.me"|escape_every_character|safe }}">{{ "rob@rjackson.me"|escape_every_character|safe }}</a>
+            </p>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block top_ad %}
+    {# Remove ads on this page #}
+{% endblock %}
+
+{% block bottom_ad %}
+    {# Remove ads on this page #}
+{% endblock %}

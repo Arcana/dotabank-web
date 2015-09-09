@@ -85,6 +85,9 @@ def index():
     """ Home page. Has a jumbotron explaining the site, with a search-box call to action. Lists latest addeed replays,
     latest archived replays, some public stats about the state of the site. """
 
+    # Redirect to "goodbye-world" blug
+    return redirect(url_for('goodbye_world'))
+
     last_added_replays = get_last_added_replays()
     last_archived_replays = get_last_archived_replays()
     most_favourited_replays = get_most_favourited_replays()
@@ -234,6 +237,11 @@ def about():
 def donate():
     """ Information about donating to Dotabank. """
     return render_template("donate.html")
+
+@app.route("/the-end-of-dotabank/")
+def goodbye_world():
+    """ Time to call it quits. """
+    return render_template("goodbye_world.html")
 
 
 @app.route("/donate/stripe/", methods=['POST'])
